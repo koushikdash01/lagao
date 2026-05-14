@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Lagao Nursery</title>
+  <title>Lagao.shop</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,14 +27,499 @@
 
     body{
       font-family:'Poppins', sans-serif;
-      background:#f7f6f2;
-      color:#1d2b1f;
+      background:#f6f5f1;
+      color:#1d2a1f;
       overflow-x:hidden;
+    }
+
+    a{
+      text-decoration:none;
     }
 
     header{
 
+      position:fixed;
+      top:0;
+      left:0;
+
       width:100%;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      padding:12px 7%;
+
+      background:rgba(255,255,255,0.78);
+      backdrop-filter:blur(14px);
+
+      z-index:1000;
+
+      border-bottom:1px solid rgba(0,0,0,0.05);
+
+    }
+
+    .logo img{
+      height:90px;
+      width:auto;
+      display:block;
+    }
+
+    nav{
+      display:flex;
+      align-items:center;
+      gap:30px;
+    }
+
+    nav a{
+      color:#17351f;
+      font-size:15px;
+      font-weight:500;
+      transition:0.3s;
+    }
+
+    nav a:hover{
+      opacity:0.6;
+    }
+
+    .hero{
+
+      min-height:100vh;
+
+      background:
+      linear-gradient(rgba(0,0,0,0.42), rgba(0,0,0,0.42)),
+      url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1800&auto=format&fit=crop');
+
+      background-size:cover;
+      background-position:center;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+
+      text-align:center;
+
+      padding:180px 20px 120px;
+
+    }
+
+    .hero-content{
+      max-width:950px;
+      color:white;
+    }
+
+    .hero-content h1{
+      font-size:76px;
+      line-height:1.15;
+      margin-bottom:20px;
+      font-weight:700;
+    }
+
+    .hero-content p{
+      font-size:24px;
+      line-height:1.8;
+      opacity:0.95;
+    }
+
+    .hero-buttons{
+
+      margin-top:45px;
+
+      display:flex;
+      justify-content:center;
+      gap:20px;
+      flex-wrap:wrap;
+
+    }
+
+    .btn{
+
+      display:inline-block;
+
+      padding:16px 34px;
+
+      border-radius:50px;
+
+      font-weight:600;
+
+      transition:0.3s;
+
+    }
+
+    .btn-primary{
+      background:#3ca55c;
+      color:white;
+    }
+
+    .btn-primary:hover{
+      background:#2d7a45;
+      transform:translateY(-2px);
+    }
+
+    .btn-secondary{
+      border:1px solid rgba(255,255,255,0.5);
+      color:white;
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(8px);
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,0.18);
+    }
+
+    .emotion-strip{
+
+      background:#17351f;
+      color:white;
+
+      text-align:center;
+
+      padding:55px 20px;
+
+    }
+
+    .emotion-strip h2{
+      font-size:42px;
+      font-weight:600;
+      line-height:1.6;
+    }
+
+    .section{
+      padding:110px 8%;
+    }
+
+    .section-title{
+      text-align:center;
+      margin-bottom:70px;
+    }
+
+    .section-title h2{
+      font-size:52px;
+      margin-bottom:18px;
+      color:#17351f;
+    }
+
+    .section-title p{
+      max-width:720px;
+      margin:auto;
+      font-size:18px;
+      line-height:1.9;
+      color:#5a665c;
+    }
+
+    .plants-grid{
+
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+
+      gap:35px;
+
+    }
+
+    .plant-card{
+
+      background:white;
+
+      border-radius:26px;
+      overflow:hidden;
+
+      box-shadow:0 10px 35px rgba(0,0,0,0.08);
+
+      transition:0.4s;
+
+    }
+
+    .plant-card:hover{
+      transform:translateY(-8px);
+    }
+
+    .plant-card img{
+      width:100%;
+      height:340px;
+      object-fit:cover;
+    }
+
+    .plant-content{
+      padding:28px;
+    }
+
+    .plant-content h3{
+      font-size:30px;
+      margin-bottom:14px;
+      color:#17351f;
+    }
+
+    .plant-content p{
+      line-height:1.8;
+      color:#5d685e;
+      font-size:16px;
+    }
+
+    .why-section{
+
+      background:#edf2eb;
+
+      border-radius:32px;
+
+      padding:80px;
+
+      text-align:center;
+
+    }
+
+    .why-section h2{
+      font-size:54px;
+      margin-bottom:30px;
+      color:#17351f;
+      line-height:1.3;
+    }
+
+    .why-section p{
+      max-width:850px;
+      margin:auto;
+      font-size:20px;
+      line-height:2;
+      color:#4f5a50;
+    }
+
+    footer{
+
+      background:#102517;
+      color:white;
+
+      text-align:center;
+
+      padding:50px 20px;
+
+    }
+
+    footer h3{
+      font-size:32px;
+      margin-bottom:14px;
+    }
+
+    footer p{
+      opacity:0.8;
+      line-height:1.8;
+    }
+
+    @media(max-width:900px){
+
+      header{
+        padding:10px 5%;
+      }
+
+      .logo img{
+        height:72px;
+      }
+
+      nav{
+        gap:18px;
+      }
+
+      nav a{
+        font-size:13px;
+      }
+
+      .hero-content h1{
+        font-size:46px;
+      }
+
+      .hero-content p{
+        font-size:18px;
+      }
+
+      .emotion-strip h2{
+        font-size:28px;
+      }
+
+      .section-title h2{
+        font-size:38px;
+      }
+
+      .why-section{
+        padding:50px 30px;
+      }
+
+      .why-section h2{
+        font-size:36px;
+      }
+
+      .why-section p{
+        font-size:17px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <header>
+
+    <div class="logo">
+      <img src="logo.png" alt="Lagao Logo">
+    </div>
+
+    <nav>
+
+      <a href="#plants">Plants</a>
+      <a href="#">Cart</a>
+      <a href="#about">About</a>
+      <a href="#">Account</a>
+
+    </nav>
+
+  </header>
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <h1>
+        As you know,<br>
+        গাছ লাগাও, প্রাণ বাঁচাও
+      </h1>
+
+      <p>
+        Stop scrolling, start planting.
+      </p>
+
+      <div class="hero-buttons">
+
+        <a href="#plants" class="btn btn-primary">
+          Explore Plants
+        </a>
+
+        <a href="https://instagram.com/gachlagao" class="btn btn-secondary">
+          Instagram
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="emotion-strip">
+
+    <h2>
+      For people tired of concrete everywhere.
+    </h2>
+
+  </section>
+
+  <section class="section" id="plants">
+
+    <div class="section-title">
+
+      <h2>
+        Popular Plants
+      </h2>
+
+      <p>
+        Beautiful greens for calmer rooms, softer mornings
+        and spaces that feel more alive.
+      </p>
+
+    </div>
+
+    <div class="plants-grid">
+
+      <div class="plant-card">
+
+        <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200&auto=format&fit=crop">
+
+        <div class="plant-content">
+
+          <h3>Snake Plant</h3>
+
+          <p>
+            Survives neglect better than most friendships.
+            Perfect for low-maintenance plant parents.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="plant-card">
+
+        <img src="https://images.unsplash.com/photo-1512428813834-c702c7702b78?q=80&w=1200&auto=format&fit=crop">
+
+        <div class="plant-content">
+
+          <h3>Peace Lily</h3>
+
+          <p>
+            Elegant, calming and slightly dramatic —
+            like every Bengali living room ever.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="plant-card">
+
+        <img src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=1200&auto=format&fit=crop">
+
+        <div class="plant-content">
+
+          <h3>Areca Palm</h3>
+
+          <p>
+            Tropical energy for homes that deserve
+            a little less stress and a little more green.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="section" id="about">
+
+    <div class="why-section">
+
+      <h2>
+        Why Lagao Exists
+      </h2>
+
+      <p>
+        Most people scroll nature all day,
+        then live inside concrete boxes.
+        <br><br>
+        Lagao exists to bring greenery back into everyday Bengali spaces —
+        through plants, calmness and a slower connection to nature.
+      </p>
+
+    </div>
+
+  </section>
+
+  <footer>
+
+    <h3>
+      Lagao.shop
+    </h3>
+
+    <p>
+      Less scrolling. More planting.
+      <br><br>
+      © 2026 Lagao Nursery
+    </p>
+
+  </footer>
+
+</body>
+
+</html>      width:100%;
       position:fixed;
       top:0;
       left:0;
