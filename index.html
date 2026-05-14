@@ -21,6 +21,10 @@
       box-sizing:border-box;
     }
 
+    html{
+      scroll-behavior:smooth;
+    }
+
     body{
       font-family:'Poppins', sans-serif;
       background:#f7f6f2;
@@ -28,11 +32,8 @@
       overflow-x:hidden;
     }
 
-    html{
-      scroll-behavior:smooth;
-    }
-
     header{
+
       width:100%;
       position:fixed;
       top:0;
@@ -43,17 +44,17 @@
       justify-content:space-between;
       align-items:center;
 
-      padding:22px 8%;
+      padding:20px 8%;
 
-      background:rgba(18, 42, 24, 0.7);
+      background:rgba(12, 34, 19, 0.65);
       backdrop-filter:blur(10px);
+
     }
 
-    .logo{
-      color:white;
-      font-size:28px;
-      font-weight:700;
-      letter-spacing:4px;
+    .logo img{
+      height:64px;
+      width:auto;
+      display:block;
     }
 
     nav a{
@@ -85,7 +86,9 @@
       align-items:center;
 
       text-align:center;
+
       padding:120px 20px 80px;
+
     }
 
     .hero-content{
@@ -101,28 +104,43 @@
     }
 
     .hero-content p{
-      font-size:22px;
+      font-size:24px;
       line-height:1.8;
       max-width:760px;
       margin:auto;
       opacity:0.95;
     }
 
+    .hero-small{
+      margin-top:10px;
+      font-size:18px !important;
+      opacity:0.8 !important;
+    }
+
     .hero-buttons{
+
       margin-top:40px;
+
       display:flex;
       justify-content:center;
       gap:20px;
       flex-wrap:wrap;
+
     }
 
     .btn{
+
       display:inline-block;
+
       padding:16px 34px;
+
       border-radius:50px;
+
       text-decoration:none;
       font-weight:600;
+
       transition:0.3s;
+
     }
 
     .btn-primary{
@@ -144,6 +162,23 @@
 
     .btn-secondary:hover{
       background:rgba(255,255,255,0.15);
+    }
+
+    .quote-strip{
+
+      background:#17351f;
+      color:white;
+
+      text-align:center;
+
+      padding:40px 20px;
+
+    }
+
+    .quote-strip h2{
+      font-size:34px;
+      font-weight:600;
+      line-height:1.8;
     }
 
     .section{
@@ -170,19 +205,25 @@
     }
 
     .products{
+
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+
       gap:35px;
+
     }
 
     .card{
+
       background:white;
+
       border-radius:24px;
       overflow:hidden;
 
       box-shadow:0 10px 30px rgba(0,0,0,0.08);
 
       transition:0.4s;
+
     }
 
     .card:hover{
@@ -210,10 +251,13 @@
     }
 
     .about{
+
       display:grid;
       grid-template-columns:1fr 1fr;
+
       gap:60px;
       align-items:center;
+
     }
 
     .about img{
@@ -236,21 +280,6 @@
       margin-bottom:20px;
     }
 
-    .quote-section{
-      background:#17351f;
-      color:white;
-      padding:120px 8%;
-      text-align:center;
-    }
-
-    .quote-section h2{
-      font-size:56px;
-      line-height:1.4;
-      max-width:900px;
-      margin:auto;
-      font-weight:600;
-    }
-
     footer{
       background:#102517;
       color:white;
@@ -269,12 +298,20 @@
         display:none;
       }
 
+      .logo img{
+        height:54px;
+      }
+
       .hero-content h1{
         font-size:48px;
       }
 
       .hero-content p{
         font-size:18px;
+      }
+
+      .quote-strip h2{
+        font-size:24px;
       }
 
       .section-title h2{
@@ -293,10 +330,6 @@
         font-size:38px;
       }
 
-      .quote-section h2{
-        font-size:36px;
-      }
-
     }
 
   </style>
@@ -308,14 +341,15 @@
   <header>
 
     <div class="logo">
-      LAGAO
+      <img src="logo.png" alt="Lagao Logo">
     </div>
 
     <nav>
+
       <a href="#">Home</a>
-      <a href="#">Plants</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
+      <a href="#plants">Plants</a>
+      <a href="#about">About</a>
+
     </nav>
 
   </header>
@@ -325,22 +359,21 @@
     <div class="hero-content">
 
       <h1>
-        Plants That Make Spaces Feel Alive
+        Stop scrolling, start planting.
       </h1>
 
-      <p>
-        Modern greenery, peaceful living and beautifully grown plants —
-        curated with care at Lagao Nursery.
+      <p class="hero-small">
+        Modern greenery for calmer spaces.
       </p>
 
       <div class="hero-buttons">
 
-        <a href="#" class="btn btn-primary">
+        <a href="#plants" class="btn btn-primary">
           Explore Plants
         </a>
 
-        <a href="#" class="btn btn-secondary">
-          Visit Nursery
+        <a href="https://instagram.com/gachlagao" class="btn btn-secondary">
+          Instagram
         </a>
 
       </div>
@@ -349,7 +382,15 @@
 
   </section>
 
-  <section class="section">
+  <section class="quote-strip">
+
+    <h2>
+      “As you know, গাছ লাগাও, প্রাণ বাঁচাও.”
+    </h2>
+
+  </section>
+
+  <section class="section" id="plants">
 
     <div class="section-title">
 
@@ -421,7 +462,7 @@
 
   </section>
 
-  <section class="section">
+  <section class="section" id="about">
 
     <div class="about">
 
@@ -451,14 +492,6 @@
       </div>
 
     </div>
-
-  </section>
-
-  <section class="quote-section">
-
-    <h2>
-      “A little more green can change how a space feels.”
-    </h2>
 
   </section>
 
