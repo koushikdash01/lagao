@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Lagao Nursery</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
 
@@ -11,40 +19,63 @@
       margin:0;
       padding:0;
       box-sizing:border-box;
-      font-family:Arial, sans-serif;
     }
 
     body{
-      background:#f4f7f2;
-      color:#1f2a1f;
+      font-family:'Poppins', sans-serif;
+      background:#f7f6f2;
+      color:#1d2b1f;
+      overflow-x:hidden;
+    }
+
+    html{
+      scroll-behavior:smooth;
     }
 
     header{
-      background:#1d4d2f;
-      color:white;
-      padding:20px 10%;
+      width:100%;
+      position:fixed;
+      top:0;
+      left:0;
+      z-index:1000;
+
       display:flex;
       justify-content:space-between;
       align-items:center;
+
+      padding:22px 8%;
+
+      background:rgba(18, 42, 24, 0.7);
+      backdrop-filter:blur(10px);
     }
 
-    header h1{
-      font-size:32px;
-      letter-spacing:2px;
+    .logo{
+      color:white;
+      font-size:28px;
+      font-weight:700;
+      letter-spacing:4px;
     }
 
     nav a{
       color:white;
       text-decoration:none;
-      margin-left:20px;
-      font-weight:bold;
+      margin-left:30px;
+      font-size:15px;
+      font-weight:500;
+      transition:0.3s;
+    }
+
+    nav a:hover{
+      opacity:0.7;
     }
 
     .hero{
-      height:90vh;
+
+      min-height:100vh;
+
       background:
-      linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
-      url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1400&auto=format&fit=crop');
+      linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+      url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1600&auto=format&fit=crop');
 
       background-size:cover;
       background-position:center;
@@ -54,109 +85,216 @@
       align-items:center;
 
       text-align:center;
-      color:white;
-      padding:20px;
+      padding:120px 20px 80px;
     }
 
-    .hero-content h2{
-      font-size:64px;
-      margin-bottom:20px;
+    .hero-content{
+      max-width:900px;
+      color:white;
+    }
+
+    .hero-content h1{
+      font-size:76px;
+      line-height:1.1;
+      margin-bottom:25px;
+      font-weight:700;
     }
 
     .hero-content p{
       font-size:22px;
-      margin-bottom:30px;
-      line-height:1.6;
+      line-height:1.8;
+      max-width:760px;
+      margin:auto;
+      opacity:0.95;
+    }
+
+    .hero-buttons{
+      margin-top:40px;
+      display:flex;
+      justify-content:center;
+      gap:20px;
+      flex-wrap:wrap;
     }
 
     .btn{
       display:inline-block;
-      background:#3ca55c;
-      color:white;
-      text-decoration:none;
-      padding:16px 32px;
+      padding:16px 34px;
       border-radius:50px;
-      font-size:18px;
+      text-decoration:none;
+      font-weight:600;
       transition:0.3s;
     }
 
-    .btn:hover{
+    .btn-primary{
+      background:#3ca55c;
+      color:white;
+    }
+
+    .btn-primary:hover{
       background:#2d7a45;
+      transform:translateY(-2px);
+    }
+
+    .btn-secondary{
+      border:1px solid rgba(255,255,255,0.5);
+      color:white;
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(8px);
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,0.15);
     }
 
     .section{
-      padding:80px 10%;
+      padding:110px 8%;
     }
 
-    .section h3{
+    .section-title{
       text-align:center;
-      font-size:42px;
-      margin-bottom:20px;
+      margin-bottom:60px;
     }
 
-    .section-text{
-      text-align:center;
-      max-width:800px;
+    .section-title h2{
+      font-size:52px;
+      margin-bottom:18px;
+      color:#17351f;
+    }
+
+    .section-title p{
+      font-size:18px;
+      color:#5c665f;
+      max-width:700px;
       margin:auto;
-      font-size:20px;
       line-height:1.8;
     }
 
     .products{
-      margin-top:50px;
-
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:30px;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:35px;
     }
 
     .card{
       background:white;
-      border-radius:20px;
+      border-radius:24px;
       overflow:hidden;
-      box-shadow:0 5px 20px rgba(0,0,0,0.1);
-      transition:0.3s;
+
+      box-shadow:0 10px 30px rgba(0,0,0,0.08);
+
+      transition:0.4s;
     }
 
     .card:hover{
-      transform:translateY(-5px);
+      transform:translateY(-8px);
     }
 
     .card img{
       width:100%;
-      height:260px;
+      height:320px;
       object-fit:cover;
     }
 
     .card-content{
-      padding:20px;
+      padding:26px;
     }
 
-    .card-content h4{
-      margin-bottom:10px;
-      font-size:24px;
+    .card-content h3{
+      font-size:28px;
+      margin-bottom:12px;
+    }
+
+    .card-content p{
+      color:#5e675f;
+      line-height:1.7;
+    }
+
+    .about{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:60px;
+      align-items:center;
+    }
+
+    .about img{
+      width:100%;
+      border-radius:28px;
+      height:520px;
+      object-fit:cover;
+    }
+
+    .about-text h2{
+      font-size:52px;
+      margin-bottom:25px;
+      color:#17351f;
+    }
+
+    .about-text p{
+      font-size:18px;
+      line-height:2;
+      color:#566057;
+      margin-bottom:20px;
+    }
+
+    .quote-section{
+      background:#17351f;
+      color:white;
+      padding:120px 8%;
+      text-align:center;
+    }
+
+    .quote-section h2{
+      font-size:56px;
+      line-height:1.4;
+      max-width:900px;
+      margin:auto;
+      font-weight:600;
     }
 
     footer{
-      background:#1d4d2f;
+      background:#102517;
       color:white;
       text-align:center;
-      padding:30px;
-      margin-top:40px;
+      padding:40px 20px;
     }
 
-    @media(max-width:768px){
+    footer p{
+      opacity:0.8;
+      line-height:1.8;
+    }
 
-      .hero-content h2{
-        font-size:42px;
+    @media(max-width:900px){
+
+      nav{
+        display:none;
+      }
+
+      .hero-content h1{
+        font-size:48px;
       }
 
       .hero-content p{
         font-size:18px;
       }
 
-      nav{
-        display:none;
+      .section-title h2{
+        font-size:38px;
+      }
+
+      .about{
+        grid-template-columns:1fr;
+      }
+
+      .about img{
+        height:380px;
+      }
+
+      .about-text h2{
+        font-size:38px;
+      }
+
+      .quote-section h2{
+        font-size:36px;
       }
 
     }
@@ -169,7 +307,9 @@
 
   <header>
 
-    <h1>LAGAO</h1>
+    <div class="logo">
+      LAGAO
+    </div>
 
     <nav>
       <a href="#">Home</a>
@@ -184,16 +324,26 @@
 
     <div class="hero-content">
 
-      <h2>Bring Nature Home</h2>
+      <h1>
+        Plants That Make Spaces Feel Alive
+      </h1>
 
       <p>
-        Beautiful plants grown with care at Lagao Nursery.
-        Fresh greenery for your home, balcony and garden.
+        Modern greenery, peaceful living and beautifully grown plants —
+        curated with care at Lagao Nursery.
       </p>
 
-      <a class="btn" href="#">
-        Explore Plants
-      </a>
+      <div class="hero-buttons">
+
+        <a href="#" class="btn btn-primary">
+          Explore Plants
+        </a>
+
+        <a href="#" class="btn btn-secondary">
+          Visit Nursery
+        </a>
+
+      </div>
 
     </div>
 
@@ -201,7 +351,18 @@
 
   <section class="section">
 
-    <h3>Popular Plants</h3>
+    <div class="section-title">
+
+      <h2>
+        Popular Plants
+      </h2>
+
+      <p>
+        Beautiful indoor and outdoor plants designed to bring freshness,
+        calmness and natural aesthetics into everyday life.
+      </p>
+
+    </div>
 
     <div class="products">
 
@@ -210,8 +371,14 @@
         <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1000&auto=format&fit=crop">
 
         <div class="card-content">
-          <h4>Snake Plant</h4>
-          <p>Low maintenance indoor plant.</p>
+
+          <h3>Snake Plant</h3>
+
+          <p>
+            Minimal, elegant and easy to maintain —
+            perfect for modern homes and workspaces.
+          </p>
+
         </div>
 
       </div>
@@ -221,8 +388,14 @@
         <img src="https://images.unsplash.com/photo-1512428813834-c702c7702b78?q=80&w=1000&auto=format&fit=crop">
 
         <div class="card-content">
-          <h4>Peace Lily</h4>
-          <p>Elegant flowering indoor plant.</p>
+
+          <h3>Peace Lily</h3>
+
+          <p>
+            A timeless indoor favorite known for
+            its soft white flowers and rich green leaves.
+          </p>
+
         </div>
 
       </div>
@@ -232,8 +405,14 @@
         <img src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=1000&auto=format&fit=crop">
 
         <div class="card-content">
-          <h4>Areca Palm</h4>
-          <p>Perfect tropical green decor.</p>
+
+          <h3>Areca Palm</h3>
+
+          <p>
+            Tropical greenery that instantly adds warmth,
+            freshness and life to any environment.
+          </p>
+
         </div>
 
       </div>
@@ -244,26 +423,54 @@
 
   <section class="section">
 
-    <h3>About Lagao Nursery</h3>
+    <div class="about">
 
-    <p class="section-text">
+      <img src="https://images.unsplash.com/photo-1463936575829-25148e1db1b8?q=80&w=1200&auto=format&fit=crop">
 
-      Lagao Nursery is a modern plant-growing and gardening brand focused on bringing greenery,
-      calmness and nature into everyday living spaces.
+      <div class="about-text">
 
-      We grow and curate beautiful healthy plants for homes, offices, balconies and gardens.
+        <h2>
+          About Lagao
+        </h2>
 
-    </p>
+        <p>
+          Lagao Nursery is a modern plant-growing brand focused on creating greener,
+          calmer and more beautiful living spaces.
+        </p>
+
+        <p>
+          From indoor plants to decorative greens, we grow and curate healthy plants
+          with attention, patience and care.
+        </p>
+
+        <p>
+          Built around nature, simplicity and aesthetic living —
+          Lagao is more than a nursery. It’s a greener lifestyle.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="quote-section">
+
+    <h2>
+      “A little more green can change how a space feels.”
+    </h2>
 
   </section>
 
   <footer>
 
     <p>
-      © 2026 Lagao Nursery • All Rights Reserved
+      © 2026 Lagao Nursery <br>
+      Designed with nature in mind.
     </p>
 
   </footer>
 
 </body>
+
 </html>
