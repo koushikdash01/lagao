@@ -3,8 +3,8 @@
 
 <head>
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Lagao.shop</title>
 
@@ -14,6 +14,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+
+    :root{
+
+      --bg:#f6f5f1;
+      --green:#17351f;
+      --green-light:#3ca55c;
+      --green-dark:#102517;
+
+      --text:#1d2a1f;
+      --muted:#5a665c;
+
+      --white:#ffffff;
+
+      --radius:26px;
+
+      --shadow:
+      0 10px 35px rgba(0,0,0,0.08);
+
+      --transition:0.35s ease;
+
+    }
 
     *{
       margin:0;
@@ -26,15 +47,28 @@
     }
 
     body{
+
       font-family:'Poppins', sans-serif;
-      background:#f6f5f1;
-      color:#1d2a1f;
+
+      background:var(--bg);
+      color:var(--text);
+
       overflow-x:hidden;
+
     }
 
     a{
       text-decoration:none;
     }
+
+    img{
+      display:block;
+      max-width:100%;
+    }
+
+    /* =========================
+       HEADER
+    ========================== */
 
     header{
 
@@ -50,7 +84,8 @@
 
       padding:10px 6%;
 
-      background:rgba(255,255,255,0.9);
+      background:rgba(255,255,255,0.90);
+
       backdrop-filter:blur(12px);
 
       border-bottom:1px solid rgba(0,0,0,0.05);
@@ -59,37 +94,75 @@
 
       height:88px;
 
+      transition:var(--transition);
+
     }
 
     .logo{
+
       display:flex;
       align-items:center;
       height:100%;
+
     }
 
     .logo img{
+
       height:54px;
       width:auto;
       object-fit:contain;
-      display:block;
+
     }
 
     nav{
+
       display:flex;
       align-items:center;
       gap:34px;
+
     }
 
     nav a{
-      color:#17351f;
+
+      color:var(--green);
+
       font-size:15px;
       font-weight:600;
-      transition:0.3s;
+
+      position:relative;
+
+      transition:var(--transition);
+
+    }
+
+    nav a::after{
+
+      content:"";
+
+      position:absolute;
+      left:0;
+      bottom:-6px;
+
+      width:0%;
+      height:2px;
+
+      background:var(--green-light);
+
+      transition:var(--transition);
+
+    }
+
+    nav a:hover::after{
+      width:100%;
     }
 
     nav a:hover{
-      opacity:0.65;
+      opacity:0.75;
     }
+
+    /* =========================
+       HERO
+    ========================== */
 
     .hero{
 
@@ -113,22 +186,35 @@
     }
 
     .hero-content{
+
       max-width:980px;
       color:white;
+
     }
 
     .hero-content h1{
+
       font-size:78px;
       line-height:1.15;
-      margin-bottom:22px;
+
+      margin-bottom:24px;
+
       font-weight:700;
+
       letter-spacing:-2px;
+
     }
 
     .hero-content p{
+
       font-size:24px;
-      line-height:1.8;
+      line-height:1.9;
+
       opacity:0.96;
+
+      max-width:800px;
+      margin:auto;
+
     }
 
     .hero-buttons{
@@ -151,76 +237,124 @@
       border-radius:50px;
 
       font-weight:600;
+      font-size:15px;
 
-      transition:0.3s;
+      transition:var(--transition);
 
     }
 
     .btn-primary{
-      background:#3ca55c;
+
+      background:var(--green-light);
       color:white;
+
+      box-shadow:
+      0 10px 25px rgba(60,165,92,0.25);
+
     }
 
     .btn-primary:hover{
+
       background:#2d7a45;
-      transform:translateY(-2px);
+
+      transform:
+      translateY(-3px);
+
     }
 
     .btn-secondary{
+
       border:1px solid rgba(255,255,255,0.5);
+
       color:white;
+
       background:rgba(255,255,255,0.08);
+
       backdrop-filter:blur(8px);
+
     }
 
     .btn-secondary:hover{
+
       background:rgba(255,255,255,0.18);
+
+      transform:
+      translateY(-3px);
+
     }
+
+    /* =========================
+       EMOTION STRIP
+    ========================== */
 
     .emotion-strip{
 
-      background:#17351f;
+      background:var(--green);
+
       color:white;
 
       text-align:center;
 
-      padding:60px 20px;
+      padding:65px 20px;
 
     }
 
     .emotion-strip h2{
+
       font-size:42px;
       font-weight:600;
+
       line-height:1.7;
+
     }
+
+    /* =========================
+       GENERAL SECTION
+    ========================== */
 
     .section{
       padding:110px 8%;
     }
 
     .section-title{
+
       text-align:center;
       margin-bottom:70px;
+
     }
 
     .section-title h2{
+
       font-size:52px;
       margin-bottom:18px;
-      color:#17351f;
+
+      color:var(--green);
+
     }
 
     .section-title p{
-      max-width:720px;
+
+      max-width:760px;
+
       margin:auto;
+
       font-size:18px;
       line-height:1.9;
-      color:#5a665c;
+
+      color:var(--muted);
+
     }
+
+    /* =========================
+       PLANTS GRID
+    ========================== */
 
     .plants-grid{
 
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+
+      grid-template-columns:
+      repeat(auto-fit,minmax(280px,1fr));
 
       gap:35px;
 
@@ -230,23 +364,40 @@
 
       background:white;
 
-      border-radius:26px;
+      border-radius:var(--radius);
+
       overflow:hidden;
 
-      box-shadow:0 10px 35px rgba(0,0,0,0.08);
+      box-shadow:var(--shadow);
 
-      transition:0.4s;
+      transition:0.45s ease;
+
+      cursor:pointer;
 
     }
 
     .plant-card:hover{
-      transform:translateY(-8px);
+
+      transform:
+      translateY(-10px);
+
     }
 
     .plant-card img{
+
       width:100%;
       height:360px;
+
       object-fit:cover;
+
+      transition:0.6s ease;
+
+    }
+
+    .plant-card:hover img{
+
+      transform:scale(1.05);
+
     }
 
     .plant-content{
@@ -254,16 +405,27 @@
     }
 
     .plant-content h3{
+
       font-size:30px;
       margin-bottom:14px;
-      color:#17351f;
+
+      color:var(--green);
+
     }
 
     .plant-content p{
-      line-height:1.8;
+
+      line-height:1.9;
+
       color:#5d685e;
+
       font-size:16px;
+
     }
+
+    /* =========================
+       WHY SECTION
+    ========================== */
 
     .why-section{
 
@@ -278,46 +440,143 @@
     }
 
     .why-section h2{
+
       font-size:54px;
+
       margin-bottom:30px;
-      color:#17351f;
+
+      color:var(--green);
+
       line-height:1.3;
+
     }
 
     .why-section p{
+
       max-width:850px;
+
       margin:auto;
+
       font-size:20px;
+
       line-height:2;
+
       color:#4f5a50;
+
     }
+
+    /* =========================
+       CTA SECTION
+    ========================== */
+
+    .cta-box{
+
+      background:var(--green);
+
+      color:white;
+
+      border-radius:32px;
+
+      padding:90px 40px;
+
+      text-align:center;
+
+    }
+
+    .cta-box h2{
+
+      font-size:52px;
+      margin-bottom:20px;
+
+      line-height:1.3;
+
+    }
+
+    .cta-box p{
+
+      max-width:760px;
+
+      margin:auto;
+
+      line-height:2;
+      font-size:18px;
+
+      opacity:0.92;
+
+    }
+
+    .cta-box .hero-buttons{
+      margin-top:35px;
+    }
+
+    /* =========================
+       FOOTER
+    ========================== */
 
     footer{
 
-      background:#102517;
+      background:var(--green-dark);
+
       color:white;
 
       text-align:center;
 
-      padding:50px 20px;
+      padding:55px 20px;
 
     }
 
     footer h3{
+
       font-size:32px;
-      margin-bottom:10px;
+      margin-bottom:12px;
+
     }
 
     footer p{
+
       opacity:0.8;
+
       line-height:1.8;
+
+      font-size:15px;
+
     }
+
+    /* =========================
+       ANIMATIONS
+    ========================== */
+
+    .fade-in{
+
+      opacity:0;
+
+      transform:
+      translateY(40px);
+
+      transition:1s ease;
+
+    }
+
+    .fade-in.show{
+
+      opacity:1;
+
+      transform:
+      translateY(0);
+
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
 
     @media(max-width:900px){
 
       header{
+
         padding:10px 5%;
         height:80px;
+
       }
 
       .logo img{
@@ -325,19 +584,22 @@
       }
 
       nav{
-        gap:16px;
-      }
-
-      nav a{
-        font-size:13px;
+        display:none;
       }
 
       .hero-content h1{
+
         font-size:48px;
+
+        letter-spacing:-1px;
+
       }
 
       .hero-content p{
+
         font-size:18px;
+        line-height:1.8;
+
       }
 
       .emotion-strip h2{
@@ -348,16 +610,51 @@
         font-size:38px;
       }
 
+      .plant-content h3{
+        font-size:26px;
+      }
+
       .why-section{
+
         padding:50px 30px;
+
       }
 
       .why-section h2{
+
         font-size:36px;
+
       }
 
       .why-section p{
+
         font-size:17px;
+
+      }
+
+      .cta-box{
+
+        padding:60px 25px;
+
+      }
+
+      .cta-box h2{
+
+        font-size:38px;
+
+      }
+
+      .cta-box p{
+
+        font-size:17px;
+
+      }
+
+      .btn{
+
+        width:100%;
+        text-align:center;
+
       }
 
     }
@@ -368,10 +665,16 @@
 
 <body>
 
+  <!-- =========================
+       HEADER
+  ========================== -->
+
   <header>
 
     <div class="logo">
+
       <img src="logo.png" alt="Lagao Logo">
+
     </div>
 
     <nav>
@@ -385,27 +688,40 @@
 
   </header>
 
+  <!-- =========================
+       HERO
+  ========================== -->
+
   <section class="hero">
 
-    <div class="hero-content">
+    <div class="hero-content fade-in">
 
       <h1>
+
         As you know,<br>
         গাছ লাগাও, প্রাণ বাঁচাও ;)
+
       </h1>
 
       <p>
-        Stop scrolling, start planting.
+
+        Concrete e bhora duniya te,
+        ektu shobuj thaka dorkar.
+
       </p>
 
       <div class="hero-buttons">
 
         <a href="#plants" class="btn btn-primary">
+
           Explore Plants
+
         </a>
 
         <a href="https://instagram.com/gachlagao" class="btn btn-secondary">
+
           Instagram
+
         </a>
 
       </div>
@@ -414,76 +730,108 @@
 
   </section>
 
-  <section class="emotion-strip">
+  <!-- =========================
+       EMOTION STRIP
+  ========================== -->
+
+  <section class="emotion-strip fade-in">
 
     <h2>
-      For people tired of concrete everywhere.
+
+      For people secretly tired of concrete and notifications.
+
     </h2>
 
   </section>
 
-  <section class="section" id="plants">
+  <!-- =========================
+       PLANTS SECTION
+  ========================== -->
+
+  <section class="section fade-in" id="plants">
 
     <div class="section-title">
 
       <h2>
-        Popular Plants
+
+        Plants For Bengali Homes
+
       </h2>
 
       <p>
-        Beautiful greens for calmer rooms, softer mornings
-        and spaces that feel more alive.
+
+        Plants that survive Bengali summers,
+        busy schedules and forgotten watering.
+
       </p>
 
     </div>
 
     <div class="plants-grid">
 
+      <!-- CARD 1 -->
+
       <div class="plant-card">
 
-        <img src="https://images.unsplash.com/photo-1593691509543-c55fb32e8b8f?q=80&w=1200&auto=format&fit=crop" alt="Snake Plant">
+        <img
+        src="https://images.unsplash.com/photo-1593691509543-c55fb32e8b8f?q=80&w=1200&auto=format&fit=crop"
+        alt="Snake Plant">
 
         <div class="plant-content">
 
           <h3>Snake Plant</h3>
 
           <p>
+
             Survives neglect better than most friendships.
             Perfect for low-maintenance plant parents.
+
           </p>
 
         </div>
 
       </div>
 
+      <!-- CARD 2 -->
+
       <div class="plant-card">
 
-        <img src="https://images.unsplash.com/photo-1632207691143-643e2a8f7f4d?q=80&w=1200&auto=format&fit=crop" alt="Peace Lily">
+        <img
+        src="https://images.unsplash.com/photo-1632207691143-643e2a8f7f4d?q=80&w=1200&auto=format&fit=crop"
+        alt="Peace Lily">
 
         <div class="plant-content">
 
           <h3>Peace Lily</h3>
 
           <p>
+
             Elegant, calming and slightly dramatic.
             Like every Bengali living room ever.
+
           </p>
 
         </div>
 
       </div>
 
+      <!-- CARD 3 -->
+
       <div class="plant-card">
 
-        <img src="https://images.unsplash.com/photo-1602923668104-8f451b1e7f42?q=80&w=1200&auto=format&fit=crop" alt="Areca Palm">
+        <img
+        src="https://images.unsplash.com/photo-1602923668104-8f451b1e7f42?q=80&w=1200&auto=format&fit=crop"
+        alt="Areca Palm">
 
         <div class="plant-content">
 
           <h3>Areca Palm</h3>
 
           <p>
+
             Tropical energy for homes that deserve
             a little less stress and a little more green.
+
           </p>
 
         </div>
@@ -494,37 +842,140 @@
 
   </section>
 
-  <section class="section" id="about">
+  <!-- =========================
+       ABOUT
+  ========================== -->
+
+  <section class="section fade-in" id="about">
 
     <div class="why-section">
 
       <h2>
+
         Why Lagao Exists
+
       </h2>
 
       <p>
+
         Most people scroll nature all day,
         then live inside concrete boxes.
+
         <br><br>
+
         Lagao exists to bring greenery back into everyday Bengali spaces.
-        Through plants, calmness and a slower connection to nature.
+        Through plants, calmness and softer living.
+
       </p>
 
     </div>
 
   </section>
 
+  <!-- =========================
+       CTA
+  ========================== -->
+
+  <section class="section fade-in">
+
+    <div class="cta-box">
+
+      <h2>
+
+        Bring home a little less stress.
+
+      </h2>
+
+      <p>
+
+        Plants, calmness and softer corners
+        for rooms that deserve to feel alive again.
+
+      </p>
+
+      <div class="hero-buttons">
+
+        <a href="#plants" class="btn btn-primary">
+
+          Shop Plants
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
   <footer>
 
     <h3>
+
       Lagao.shop
+
     </h3>
 
     <p>
+
       © 2026 Lagao Nursery
+
     </p>
 
   </footer>
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
+
+  <script>
+
+    // HEADER SCROLL EFFECT
+
+    window.addEventListener("scroll",()=>{
+
+      const header=document.querySelector("header");
+
+      if(window.scrollY>40){
+
+        header.style.background="rgba(255,255,255,0.96)";
+        header.style.boxShadow="0 4px 20px rgba(0,0,0,0.06)";
+
+      }else{
+
+        header.style.background="rgba(255,255,255,0.90)";
+        header.style.boxShadow="none";
+
+      }
+
+    });
+
+    // FADE ANIMATION
+
+    const observer=new IntersectionObserver(entries=>{
+
+      entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+
+          entry.target.classList.add("show");
+
+        }
+
+      });
+
+    });
+
+    document.querySelectorAll(".fade-in").forEach(el=>{
+
+      observer.observe(el);
+
+    });
+
+  </script>
 
 </body>
 
