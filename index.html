@@ -342,8 +342,6 @@
 
       padding:90px 7% 120px;
 
-      position:relative;
-
       overflow:hidden;
 
     }
@@ -409,6 +407,10 @@
 
       min-height:250px;
 
+      width:100%;
+
+      min-width:0;
+
       box-shadow:var(--shadow);
 
       transition:0.45s ease;
@@ -428,6 +430,8 @@
 
       object-fit:cover;
 
+      flex-shrink:0;
+
     }
 
     .plant-content{
@@ -437,6 +441,8 @@
       display:flex;
       flex-direction:column;
       justify-content:center;
+
+      min-width:0;
 
     }
 
@@ -470,47 +476,37 @@
 
       background:var(--bg);
 
-      padding:110px 7%;
+      padding:110px 8%;
 
     }
 
-    .about-box{
+    .about-content{
 
-      background:#edf2eb;
-
-      border-radius:36px;
-
-      padding:90px 70px;
-
-      text-align:center;
-
-      max-width:1200px;
+      max-width:900px;
 
       margin:auto;
 
+      text-align:center;
+
     }
 
-    .about-box h2{
+    .about-content h2{
 
       color:var(--green);
 
-      font-size:62px;
+      font-size:56px;
 
-      margin-bottom:30px;
+      margin-bottom:24px;
 
       letter-spacing:-2px;
 
     }
 
-    .about-box p{
+    .about-content p{
 
-      max-width:860px;
+      color:#4f5c53;
 
-      margin:auto;
-
-      color:#4d5a52;
-
-      font-size:22px;
+      font-size:21px;
 
       line-height:2;
 
@@ -528,59 +524,45 @@
       #0b2312 60%,
       #07170c 100%);
 
-      padding:0 7% 120px;
-
-    }
-
-    .cta-box{
-
-      background:rgba(255,255,255,0.06);
-
-      border:1px solid rgba(255,255,255,0.08);
-
-      backdrop-filter:blur(14px);
-
-      border-radius:36px;
-
-      padding:90px 50px;
+      padding:100px 8% 120px;
 
       text-align:center;
 
-      color:white;
+    }
 
-      max-width:1200px;
+    .cta-content{
+
+      max-width:850px;
 
       margin:auto;
 
     }
 
-    .cta-box h2{
+    .cta-content h2{
 
-      font-size:62px;
+      color:white;
+
+      font-size:58px;
 
       margin-bottom:24px;
 
-      line-height:1.25;
+      line-height:1.2;
 
       letter-spacing:-2px;
 
     }
 
-    .cta-box p{
+    .cta-content p{
 
-      max-width:760px;
-
-      margin:auto;
+      color:rgba(255,255,255,0.84);
 
       font-size:22px;
 
       line-height:2;
 
-      opacity:0.9;
-
     }
 
-    .cta-box .hero-buttons{
+    .cta-content .hero-buttons{
 
       justify-content:center;
 
@@ -645,7 +627,7 @@
     }
 
     /* =========================
-       MOBILE
+       RESPONSIVE
     ========================== */
 
     @media(max-width:1100px){
@@ -674,14 +656,6 @@
         font-size:18px;
       }
 
-      .about-box h2{
-        font-size:48px;
-      }
-
-      .cta-box h2{
-        font-size:48px;
-      }
-
     }
 
     @media(max-width:900px){
@@ -702,7 +676,7 @@
 
       nav{
 
-        gap:20px;
+        gap:18px;
 
       }
 
@@ -750,9 +724,17 @@
 
       }
 
+      .plants-grid{
+        grid-template-columns:1fr;
+      }
+
       .plant-card{
 
         flex-direction:column;
+
+        width:100%;
+
+        min-width:0;
 
       }
 
@@ -766,49 +748,39 @@
 
       .plant-content h3{
 
-        font-size:30px;
+        font-size:28px;
 
       }
 
       .plant-content p{
 
-        font-size:17px;
+        font-size:16px;
+
+        line-height:1.8;
 
       }
 
-      .about-box{
+      .about-content h2{
 
-        padding:60px 30px;
-
-      }
-
-      .about-box h2{
-
-        font-size:38px;
+        font-size:42px;
 
       }
 
-      .about-box p{
+      .about-content p{
 
-        font-size:17px;
-
-      }
-
-      .cta-box{
-
-        padding:60px 30px;
+        font-size:18px;
 
       }
 
-      .cta-box h2{
+      .cta-content h2{
 
-        font-size:38px;
+        font-size:42px;
 
       }
 
-      .cta-box p{
+      .cta-content p{
 
-        font-size:17px;
+        font-size:18px;
 
       }
 
@@ -828,9 +800,15 @@
 
       }
 
+      .logo img{
+
+        height:56px;
+
+      }
+
       nav{
 
-        gap:14px;
+        gap:12px;
 
       }
 
@@ -840,15 +818,15 @@
 
       }
 
-      .logo img{
-
-        height:56px;
-
-      }
-
       .hero-content h1{
 
         font-size:40px;
+
+      }
+
+      .hero-content p{
+
+        font-size:17px;
 
       }
 
@@ -870,9 +848,15 @@
 
       }
 
-      .plant-content{
+      .about-content h2{
 
-        padding:26px;
+        font-size:34px;
+
+      }
+
+      .cta-content h2{
+
+        font-size:34px;
 
       }
 
@@ -883,6 +867,8 @@
 </head>
 
 <body>
+
+  <!-- HEADER -->
 
   <header>
 
@@ -1025,11 +1011,11 @@
 
   </section>
 
-  <!-- ABOUT SECTION -->
+  <!-- ABOUT -->
 
   <section class="about-section fade-in" id="about">
 
-    <div class="about-box">
+    <div class="about-content">
 
       <h2>
         Why Lagao Exists
@@ -1039,26 +1025,26 @@
         Most people scroll nature all day,
         then live inside concrete boxes.
         <br><br>
-        Lagao exists to bring greenery back into everyday Bengali spaces.
-        Through plants, calmness and a slower connection to nature.
+        Lagao exists to bring greenery back into everyday Bengali spaces —
+        through plants, calmness and slower living.
       </p>
 
     </div>
 
   </section>
 
-  <!-- CTA SECTION -->
+  <!-- CTA -->
 
   <section class="cta-section fade-in">
 
-    <div class="cta-box">
+    <div class="cta-content">
 
       <h2>
         Bring home a little less stress.
       </h2>
 
       <p>
-        Plants, calmness and softer corners
+        Plants and softer corners
         for rooms that deserve to feel alive again.
       </p>
 
