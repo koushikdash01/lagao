@@ -93,7 +93,9 @@
 
       z-index:1000;
 
-      transition:var(--transition);
+      transition:
+      background 0.35s ease,
+      box-shadow 0.35s ease;
 
     }
 
@@ -101,6 +103,8 @@
 
       display:flex;
       align-items:center;
+
+      flex-shrink:0;
 
     }
 
@@ -125,6 +129,8 @@
 
       gap:40px;
 
+      flex-shrink:0;
+
     }
 
     nav a{
@@ -135,6 +141,8 @@
       font-weight:600;
 
       position:relative;
+
+      white-space:nowrap;
 
       transition:var(--transition);
 
@@ -600,7 +608,15 @@
       }
 
       nav{
-        display:none;
+
+        gap:20px;
+
+      }
+
+      nav a{
+
+        font-size:14px;
+
       }
 
       .hero{
@@ -664,6 +680,34 @@
 
     }
 
+    @media(max-width:600px){
+
+      header{
+
+        padding:0 4%;
+
+      }
+
+      nav{
+
+        gap:12px;
+
+      }
+
+      nav a{
+
+        font-size:13px;
+
+      }
+
+      .logo img{
+
+        height:58px;
+
+      }
+
+    }
+
   </style>
 
 </head>
@@ -678,9 +722,8 @@
 
     <nav>
 
-      <a href="#plants">Plants</a>
-      <a href="#">Cart</a>
       <a href="#about">About</a>
+      <a href="#">Cart</a>
       <a href="#">Account</a>
 
     </nav>
