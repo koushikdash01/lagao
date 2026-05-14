@@ -85,7 +85,7 @@
 
       padding:10px 6%;
 
-      background:rgba(255,255,255,0.90);
+      background:rgba(255,255,255,0.92);
 
       backdrop-filter:blur(12px);
 
@@ -93,7 +93,7 @@
 
       z-index:1000;
 
-      height:88px;
+      height:120px;
 
       transition:var(--transition);
 
@@ -103,16 +103,19 @@
 
       display:flex;
       align-items:center;
-      height:100%;
+
+      flex-shrink:0;
 
     }
 
     .logo img{
 
-      height:54px;
+      height:120px;
       width:auto;
 
       object-fit:contain;
+
+      display:block;
 
     }
 
@@ -185,7 +188,7 @@
 
       text-align:center;
 
-      padding:170px 20px 120px;
+      padding:200px 20px 120px;
 
     }
 
@@ -587,16 +590,22 @@
 
         padding:10px 5%;
 
-        height:80px;
+        height:100px;
 
       }
 
       .logo img{
-        height:46px;
+        height:90px;
       }
 
       nav{
         display:none;
+      }
+
+      .hero{
+
+        padding-top:170px;
+
       }
 
       .hero-content h1{
@@ -660,9 +669,7 @@
 
 <body>
 
-  <!-- =========================
-       HEADER
-  ========================== -->
+  <!-- HEADER -->
 
   <header>
 
@@ -681,9 +688,7 @@
 
   </header>
 
-  <!-- =========================
-       HERO
-  ========================== -->
+  <!-- HERO -->
 
   <section class="hero">
 
@@ -714,9 +719,7 @@
 
   </section>
 
-  <!-- =========================
-       EMOTION STRIP
-  ========================== -->
+  <!-- EMOTION STRIP -->
 
   <section class="emotion-strip fade-in">
 
@@ -726,9 +729,7 @@
 
   </section>
 
-  <!-- =========================
-       PLANTS SECTION
-  ========================== -->
+  <!-- PLANTS -->
 
   <section class="section fade-in" id="plants">
 
@@ -747,8 +748,6 @@
 
     <div class="plants-grid">
 
-      <!-- CARD 1 -->
-
       <div class="plant-card">
 
         <img src="https://images.unsplash.com/photo-1593691509543-c55fb32e8b8f?q=80&w=1200&auto=format&fit=crop" alt="Snake Plant">
@@ -766,8 +765,6 @@
 
       </div>
 
-      <!-- CARD 2 -->
-
       <div class="plant-card">
 
         <img src="https://images.unsplash.com/photo-1632207691143-643e2a8f7f4d?q=80&w=1200&auto=format&fit=crop" alt="Peace Lily">
@@ -784,8 +781,6 @@
         </div>
 
       </div>
-
-      <!-- CARD 3 -->
 
       <div class="plant-card">
 
@@ -808,9 +803,7 @@
 
   </section>
 
-  <!-- =========================
-       ABOUT
-  ========================== -->
+  <!-- ABOUT -->
 
   <section class="section fade-in" id="about">
 
@@ -832,9 +825,7 @@
 
   </section>
 
-  <!-- =========================
-       CTA SECTION
-  ========================== -->
+  <!-- CTA -->
 
   <section class="section fade-in">
 
@@ -861,9 +852,7 @@
 
   </section>
 
-  <!-- =========================
-       FOOTER
-  ========================== -->
+  <!-- FOOTER -->
 
   <footer>
 
@@ -877,9 +866,7 @@
 
   </footer>
 
-  <!-- =========================
-       JAVASCRIPT
-  ========================== -->
+  <!-- JAVASCRIPT -->
 
   <script>
 
@@ -891,12 +878,12 @@
 
       if(window.scrollY>40){
 
-        header.style.background="rgba(255,255,255,0.96)";
+        header.style.background="rgba(255,255,255,0.97)";
         header.style.boxShadow="0 4px 20px rgba(0,0,0,0.06)";
 
       }else{
 
-        header.style.background="rgba(255,255,255,0.90)";
+        header.style.background="rgba(255,255,255,0.92)";
         header.style.boxShadow="none";
 
       }
