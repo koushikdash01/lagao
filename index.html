@@ -1,1 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lagao Nursery</title>
 
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#f4f7f2;
+      color:#1f2a1f;
+    }
+
+    header{
+      background:#1d4d2f;
+      color:white;
+      padding:20px 10%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    header h1{
+      font-size:32px;
+      letter-spacing:2px;
+    }
+
+    nav a{
+      color:white;
+      text-decoration:none;
+      margin-left:20px;
+      font-weight:bold;
+    }
+
+    .hero{
+      height:90vh;
+      background:
+      linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+      url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1400&auto=format&fit=crop');
+
+      background-size:cover;
+      background-position:center;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+
+      text-align:center;
+      color:white;
+      padding:20px;
+    }
+
+    .hero-content h2{
+      font-size:64px;
+      margin-bottom:20px;
+    }
+
+    .hero-content p{
+      font-size:22px;
+      margin-bottom:30px;
+      line-height:1.6;
+    }
+
+    .btn{
+      display:inline-block;
+      background:#3ca55c;
+      color:white;
+      text-decoration:none;
+      padding:16px 32px;
+      border-radius:50px;
+      font-size:18px;
+      transition:0.3s;
+    }
+
+    .btn:hover{
+      background:#2d7a45;
+    }
+
+    .section{
+      padding:80px 10%;
+    }
+
+    .section h3{
+      text-align:center;
+      font-size:42px;
+      margin-bottom:20px;
+    }
+
+    .section-text{
+      text-align:center;
+      max-width:800px;
+      margin:auto;
+      font-size:20px;
+      line-height:1.8;
+    }
+
+    .products{
+      margin-top:50px;
+
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:30px;
+    }
+
+    .card{
+      background:white;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 5px 20px rgba(0,0,0,0.1);
+      transition:0.3s;
+    }
+
+    .card:hover{
+      transform:translateY(-5px);
+    }
+
+    .card img{
+      width:100%;
+      height:260px;
+      object-fit:cover;
+    }
+
+    .card-content{
+      padding:20px;
+    }
+
+    .card-content h4{
+      margin-bottom:10px;
+      font-size:24px;
+    }
+
+    footer{
+      background:#1d4d2f;
+      color:white;
+      text-align:center;
+      padding:30px;
+      margin-top:40px;
+    }
+
+    @media(max-width:768px){
+
+      .hero-content h2{
+        font-size:42px;
+      }
+
+      .hero-content p{
+        font-size:18px;
+      }
+
+      nav{
+        display:none;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <header>
+
+    <h1>LAGAO</h1>
+
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Plants</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+
+  </header>
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <h2>Bring Nature Home</h2>
+
+      <p>
+        Beautiful plants grown with care at Lagao Nursery.
+        Fresh greenery for your home, balcony and garden.
+      </p>
+
+      <a class="btn" href="#">
+        Explore Plants
+      </a>
+
+    </div>
+
+  </section>
+
+  <section class="section">
+
+    <h3>Popular Plants</h3>
+
+    <div class="products">
+
+      <div class="card">
+
+        <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1000&auto=format&fit=crop">
+
+        <div class="card-content">
+          <h4>Snake Plant</h4>
+          <p>Low maintenance indoor plant.</p>
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <img src="https://images.unsplash.com/photo-1512428813834-c702c7702b78?q=80&w=1000&auto=format&fit=crop">
+
+        <div class="card-content">
+          <h4>Peace Lily</h4>
+          <p>Elegant flowering indoor plant.</p>
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <img src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=1000&auto=format&fit=crop">
+
+        <div class="card-content">
+          <h4>Areca Palm</h4>
+          <p>Perfect tropical green decor.</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="section">
+
+    <h3>About Lagao Nursery</h3>
+
+    <p class="section-text">
+
+      Lagao Nursery is a modern plant-growing and gardening brand focused on bringing greenery,
+      calmness and nature into everyday living spaces.
+
+      We grow and curate beautiful healthy plants for homes, offices, balconies and gardens.
+
+    </p>
+
+  </section>
+
+  <footer>
+
+    <p>
+      © 2026 Lagao Nursery • All Rights Reserved
+    </p>
+
+  </footer>
+
+</body>
+</html>
