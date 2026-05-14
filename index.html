@@ -3,8 +3,8 @@
 
 <head>
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Lagao.shop</title>
 
@@ -13,23 +13,26 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
   <style>
 
     :root{
 
-      --bg:#f6f5f1;
+      --bg:#f5f4f1;
 
-      --green:#17351f;
-      --green-light:#3ca55c;
-      --green-dark:#102517;
+      --green:#0f2f18;
+      --green-light:#2f9e44;
+      --green-dark:#081b0e;
 
-      --text:#1d2a1f;
-      --muted:#5a665c;
+      --text:#18311f;
+      --muted:#58655d;
 
-      --radius:26px;
+      --radius:28px;
 
       --shadow:
-      0 10px 35px rgba(0,0,0,0.08);
+      0 18px 40px rgba(0,0,0,0.12);
 
       --transition:0.35s ease;
 
@@ -50,6 +53,7 @@
       font-family:'Poppins', sans-serif;
 
       background:var(--bg);
+
       color:var(--text);
 
       overflow-x:hidden;
@@ -72,24 +76,25 @@
     header{
 
       position:fixed;
+
       top:0;
       left:0;
 
       width:100%;
 
+      height:100px;
+
       display:flex;
       justify-content:space-between;
       align-items:center;
 
-      padding:0 6%;
+      padding:0 5%;
 
-      height:108px;
+      background:rgba(255,255,255,0.94);
 
-      background:rgba(255,255,255,0.95);
+      backdrop-filter:blur(14px);
 
-      backdrop-filter:blur(12px);
-
-      border-bottom:1px solid rgba(0,0,0,0.05);
+      border-bottom:1px solid rgba(0,0,0,0.04);
 
       z-index:1000;
 
@@ -110,16 +115,14 @@
 
     .logo img{
 
-      height:92px;
+      height:82px;
 
       width:auto;
-
-      display:block;
 
     }
 
     /* =========================
-       NAVIGATION
+       NAV
     ========================== */
 
     nav{
@@ -127,9 +130,7 @@
       display:flex;
       align-items:center;
 
-      gap:40px;
-
-      flex-shrink:0;
+      gap:52px;
 
     }
 
@@ -137,12 +138,11 @@
 
       color:var(--green);
 
-      font-size:16px;
       font-weight:600;
 
-      position:relative;
+      font-size:17px;
 
-      white-space:nowrap;
+      position:relative;
 
       transition:var(--transition);
 
@@ -158,6 +158,7 @@
       bottom:-6px;
 
       width:0%;
+
       height:2px;
 
       background:var(--green-light);
@@ -171,7 +172,7 @@
     }
 
     nav a:hover{
-      opacity:0.7;
+      opacity:0.75;
     }
 
     /* =========================
@@ -183,48 +184,50 @@
       min-height:100vh;
 
       background:
-      linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+      linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.38)),
       url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1800&auto=format&fit=crop');
 
       background-size:cover;
       background-position:center;
 
       display:flex;
-      justify-content:center;
       align-items:center;
 
-      text-align:center;
-
-      padding:190px 20px 120px;
+      padding:
+      170px 6%
+      120px;
 
     }
 
     .hero-content{
 
-      max-width:980px;
+      max-width:700px;
+
       color:white;
 
     }
 
     .hero-content h1{
 
-      font-size:78px;
+      font-size:82px;
 
-      line-height:1.15;
+      line-height:1.08;
 
       margin-bottom:22px;
 
       font-weight:700;
 
-      letter-spacing:-2px;
+      letter-spacing:-3px;
 
     }
 
     .hero-content p{
 
-      font-size:24px;
+      font-size:26px;
 
-      line-height:1.8;
+      line-height:1.7;
+
+      margin-bottom:42px;
 
       opacity:0.96;
 
@@ -232,12 +235,9 @@
 
     .hero-buttons{
 
-      margin-top:45px;
-
       display:flex;
-      justify-content:center;
 
-      gap:20px;
+      gap:18px;
 
       flex-wrap:wrap;
 
@@ -245,15 +245,21 @@
 
     .btn{
 
-      display:inline-block;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
 
-      padding:17px 36px;
+      gap:12px;
 
-      border-radius:50px;
+      padding:18px 34px;
+
+      border-radius:999px;
 
       font-weight:600;
 
       transition:var(--transition);
+
+      font-size:17px;
 
     }
 
@@ -264,26 +270,25 @@
       color:white;
 
       box-shadow:
-      0 10px 25px rgba(60,165,92,0.25);
+      0 12px 30px rgba(47,158,68,0.35);
 
     }
 
     .btn-primary:hover{
 
-      background:#2d7a45;
+      transform:translateY(-3px);
 
-      transform:
-      translateY(-3px);
+      background:#24863a;
 
     }
 
     .btn-secondary{
 
-      border:1px solid rgba(255,255,255,0.5);
+      border:2px solid rgba(255,255,255,0.7);
 
       color:white;
 
-      background:rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.06);
 
       backdrop-filter:blur(8px);
 
@@ -291,10 +296,9 @@
 
     .btn-secondary:hover{
 
-      background:rgba(255,255,255,0.18);
+      transform:translateY(-3px);
 
-      transform:
-      translateY(-3px);
+      background:rgba(255,255,255,0.14);
 
     }
 
@@ -306,35 +310,41 @@
 
       background:var(--bg);
 
-      color:var(--green);
-
       text-align:center;
 
-      padding:60px 20px;
+      padding:58px 20px;
 
     }
 
     .emotion-strip h2{
 
-      font-size:42px;
+      color:var(--green);
+
+      font-size:56px;
+
+      line-height:1.4;
 
       font-weight:600;
-
-      line-height:1.7;
 
     }
 
     /* =========================
-       GENERAL SECTION
+       PLANTS SECTION
     ========================== */
 
-    .section{
+    .plants-section{
 
-      padding:110px 8%;
+      background:
+      radial-gradient(circle at top left,
+      #164223 0%,
+      #0e2f18 45%,
+      #07170c 100%);
 
-      background:var(--green);
+      padding:90px 7% 120px;
 
-      color:white;
+      position:relative;
+
+      overflow:hidden;
 
     }
 
@@ -342,65 +352,66 @@
 
       text-align:center;
 
-      margin-bottom:70px;
+      margin-bottom:65px;
 
     }
 
     .section-title h2{
 
-      font-size:52px;
-
-      margin-bottom:18px;
-
       color:white;
+
+      font-size:68px;
+
+      margin-bottom:16px;
+
+      letter-spacing:-2px;
 
     }
 
     .section-title p{
 
-      max-width:720px;
+      color:rgba(255,255,255,0.86);
+
+      font-size:24px;
+
+      line-height:1.8;
+
+      max-width:760px;
 
       margin:auto;
-
-      font-size:18px;
-
-      line-height:1.9;
-
-      color:rgba(255,255,255,0.82);
 
     }
 
     /* =========================
-       PLANTS GRID
+       PLANT CARDS
     ========================== */
 
     .plants-grid{
 
-      position:relative;
-      z-index:2;
-
       display:grid;
 
       grid-template-columns:
-      repeat(auto-fit,minmax(280px,1fr));
+      repeat(auto-fit,minmax(320px,1fr));
 
-      gap:35px;
+      gap:30px;
 
     }
 
     .plant-card{
 
-      background:white;
+      background:#f7f5f2;
 
-      border-radius:var(--radius);
+      border-radius:32px;
 
       overflow:hidden;
+
+      display:flex;
+
+      min-height:250px;
 
       box-shadow:var(--shadow);
 
       transition:0.45s ease;
-
-      cursor:pointer;
 
     }
 
@@ -413,84 +424,95 @@
 
     .plant-card img{
 
-      width:100%;
-      height:360px;
+      width:44%;
 
       object-fit:cover;
-
-      transition:0.6s ease;
-
-    }
-
-    .plant-card:hover img{
-
-      transform:scale(1.05);
 
     }
 
     .plant-content{
-      padding:28px;
+
+      padding:34px 30px;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+
     }
 
     .plant-content h3{
 
-      font-size:30px;
-
-      margin-bottom:14px;
-
       color:var(--green);
+
+      font-size:42px;
+
+      margin-bottom:18px;
+
+      line-height:1.1;
 
     }
 
     .plant-content p{
 
-      line-height:1.8;
+      color:#425247;
 
-      color:#5d685e;
+      font-size:20px;
 
-      font-size:16px;
+      line-height:1.9;
 
     }
 
     /* =========================
-       WHY SECTION
+       ABOUT SECTION
     ========================== */
 
-    .why-section{
+    .about-section{
+
+      background:var(--bg);
+
+      padding:110px 7%;
+
+    }
+
+    .about-box{
 
       background:#edf2eb;
 
-      border-radius:32px;
+      border-radius:36px;
 
-      padding:80px;
+      padding:90px 70px;
 
       text-align:center;
 
-    }
-
-    .why-section h2{
-
-      font-size:54px;
-
-      margin-bottom:30px;
-
-      color:var(--green);
-
-      line-height:1.3;
-
-    }
-
-    .why-section p{
-
-      max-width:850px;
+      max-width:1200px;
 
       margin:auto;
 
-      font-size:20px;
+    }
+
+    .about-box h2{
+
+      color:var(--green);
+
+      font-size:62px;
+
+      margin-bottom:30px;
+
+      letter-spacing:-2px;
+
+    }
+
+    .about-box p{
+
+      max-width:860px;
+
+      margin:auto;
+
+      color:#4d5a52;
+
+      font-size:22px;
 
       line-height:2;
-
-      color:#4f5a50;
 
     }
 
@@ -498,27 +520,49 @@
        CTA SECTION
     ========================== */
 
+    .cta-section{
+
+      background:
+      radial-gradient(circle at top left,
+      #14361d 0%,
+      #0b2312 60%,
+      #07170c 100%);
+
+      padding:0 7% 120px;
+
+    }
+
     .cta-box{
 
-      background:var(--green);
+      background:rgba(255,255,255,0.06);
+
+      border:1px solid rgba(255,255,255,0.08);
+
+      backdrop-filter:blur(14px);
+
+      border-radius:36px;
+
+      padding:90px 50px;
+
+      text-align:center;
 
       color:white;
 
-      border-radius:32px;
+      max-width:1200px;
 
-      padding:90px 40px;
-
-      text-align:center;
+      margin:auto;
 
     }
 
     .cta-box h2{
 
-      font-size:52px;
+      font-size:62px;
 
-      margin-bottom:20px;
+      margin-bottom:24px;
 
-      line-height:1.3;
+      line-height:1.25;
+
+      letter-spacing:-2px;
 
     }
 
@@ -528,16 +572,20 @@
 
       margin:auto;
 
+      font-size:22px;
+
       line-height:2;
 
-      font-size:18px;
-
-      opacity:0.92;
+      opacity:0.9;
 
     }
 
     .cta-box .hero-buttons{
-      margin-top:35px;
+
+      justify-content:center;
+
+      margin-top:42px;
+
     }
 
     /* =========================
@@ -546,19 +594,19 @@
 
     footer{
 
-      background:var(--green-dark);
+      background:#08170d;
 
       color:white;
 
       text-align:center;
 
-      padding:50px 20px;
+      padding:48px 20px;
 
     }
 
     footer h3{
 
-      font-size:32px;
+      font-size:42px;
 
       margin-bottom:10px;
 
@@ -566,14 +614,14 @@
 
     footer p{
 
-      opacity:0.8;
+      opacity:0.86;
 
-      line-height:1.8;
+      font-size:18px;
 
     }
 
     /* =========================
-       ANIMATIONS
+       ANIMATION
     ========================== */
 
     .fade-in{
@@ -600,11 +648,47 @@
        MOBILE
     ========================== */
 
+    @media(max-width:1100px){
+
+      .hero-content h1{
+        font-size:62px;
+      }
+
+      .emotion-strip h2{
+        font-size:42px;
+      }
+
+      .section-title h2{
+        font-size:54px;
+      }
+
+      .section-title p{
+        font-size:20px;
+      }
+
+      .plant-content h3{
+        font-size:34px;
+      }
+
+      .plant-content p{
+        font-size:18px;
+      }
+
+      .about-box h2{
+        font-size:48px;
+      }
+
+      .cta-box h2{
+        font-size:48px;
+      }
+
+    }
+
     @media(max-width:900px){
 
       header{
 
-        height:88px;
+        height:86px;
 
         padding:0 5%;
 
@@ -612,7 +696,7 @@
 
       .logo img{
 
-        height:72px;
+        height:68px;
 
       }
 
@@ -630,41 +714,89 @@
 
       .hero{
 
-        padding-top:170px;
+        padding:
+        150px 6%
+        90px;
 
       }
 
       .hero-content h1{
+
         font-size:48px;
+
       }
 
       .hero-content p{
-        font-size:18px;
+
+        font-size:19px;
+
       }
 
       .emotion-strip h2{
-        font-size:28px;
+
+        font-size:34px;
+
       }
 
       .section-title h2{
-        font-size:38px;
+
+        font-size:42px;
+
       }
 
-      .why-section{
-        padding:50px 30px;
+      .section-title p{
+
+        font-size:18px;
+
       }
 
-      .why-section h2{
-        font-size:36px;
+      .plant-card{
+
+        flex-direction:column;
+
       }
 
-      .why-section p{
+      .plant-card img{
+
+        width:100%;
+
+        height:280px;
+
+      }
+
+      .plant-content h3{
+
+        font-size:30px;
+
+      }
+
+      .plant-content p{
+
         font-size:17px;
+
+      }
+
+      .about-box{
+
+        padding:60px 30px;
+
+      }
+
+      .about-box h2{
+
+        font-size:38px;
+
+      }
+
+      .about-box p{
+
+        font-size:17px;
+
       }
 
       .cta-box{
 
-        padding:60px 25px;
+        padding:60px 30px;
 
       }
 
@@ -683,7 +815,6 @@
       .btn{
 
         width:100%;
-        text-align:center;
 
       }
 
@@ -699,7 +830,7 @@
 
       nav{
 
-        gap:12px;
+        gap:14px;
 
       }
 
@@ -711,7 +842,37 @@
 
       .logo img{
 
-        height:58px;
+        height:56px;
+
+      }
+
+      .hero-content h1{
+
+        font-size:40px;
+
+      }
+
+      .emotion-strip h2{
+
+        font-size:28px;
+
+      }
+
+      .section-title h2{
+
+        font-size:36px;
+
+      }
+
+      .section-title p{
+
+        font-size:16px;
+
+      }
+
+      .plant-content{
+
+        padding:26px;
 
       }
 
@@ -739,6 +900,8 @@
 
   </header>
 
+  <!-- HERO -->
+
   <section class="hero">
 
     <div class="hero-content fade-in">
@@ -759,7 +922,11 @@
         </a>
 
         <a href="https://instagram.com/gachlagao" class="btn btn-secondary">
+
+          <i class="fa-brands fa-instagram"></i>
+
           Instagram
+
         </a>
 
       </div>
@@ -767,6 +934,8 @@
     </div>
 
   </section>
+
+  <!-- EMOTION STRIP -->
 
   <section class="emotion-strip fade-in">
 
@@ -776,7 +945,9 @@
 
   </section>
 
-  <section class="section fade-in" id="plants">
+  <!-- PLANTS SECTION -->
+
+  <section class="plants-section fade-in" id="plants">
 
     <div class="section-title">
 
@@ -792,6 +963,8 @@
     </div>
 
     <div class="plants-grid">
+
+      <!-- CARD 1 -->
 
       <div class="plant-card">
 
@@ -810,6 +983,8 @@
 
       </div>
 
+      <!-- CARD 2 -->
+
       <div class="plant-card">
 
         <img src="https://images.unsplash.com/photo-1632207691143-643e2a8f7f4d?q=80&w=1200&auto=format&fit=crop" alt="Peace Lily">
@@ -826,6 +1001,8 @@
         </div>
 
       </div>
+
+      <!-- CARD 3 -->
 
       <div class="plant-card">
 
@@ -848,9 +1025,11 @@
 
   </section>
 
-  <section class="section fade-in" id="about">
+  <!-- ABOUT SECTION -->
 
-    <div class="why-section">
+  <section class="about-section fade-in" id="about">
+
+    <div class="about-box">
 
       <h2>
         Why Lagao Exists
@@ -868,7 +1047,9 @@
 
   </section>
 
-  <section class="section fade-in">
+  <!-- CTA SECTION -->
+
+  <section class="cta-section fade-in">
 
     <div class="cta-box">
 
@@ -893,6 +1074,8 @@
 
   </section>
 
+  <!-- FOOTER -->
+
   <footer>
 
     <h3>
@@ -914,11 +1097,11 @@
       if(window.scrollY>40){
 
         header.style.background="rgba(255,255,255,0.98)";
-        header.style.boxShadow="0 4px 20px rgba(0,0,0,0.06)";
+        header.style.boxShadow="0 6px 24px rgba(0,0,0,0.06)";
 
       }else{
 
-        header.style.background="rgba(255,255,255,0.95)";
+        header.style.background="rgba(255,255,255,0.94)";
         header.style.boxShadow="none";
 
       }
