@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Plants - Lagao.shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ========== HEADER / NAVBAR ========== -->
+  <header>
+    <div class="logo">
+      <a href="index.html">
+        <img src="logo.png" alt="Lagao.shop Logo">
+      </a>
+    </div>
+
+    <nav>
+      <a href="plants.html">Plants</a>
+      <a href="index.html#categories">Categories</a>
+      <a href="index.html#about">About</a>
+    </nav>
+
+    <div class="search-box">
+      <input type="text" id="navbar-search" placeholder="Search plants..." data-search-context="page">
+    </div>
+
+    <nav>
+      <a href="cart.html">Cart</a>
+      <a href="login.html">Account</a>
+    </nav>
+  </header>
+
+  <!-- ========== PLANTS PAGE HEADER ========== -->
+  <section style="padding: 140px 8% 80px; background: white;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <h1 style="font-size: 48px; color: var(--green); margin-bottom: 20px; font-weight: 700;">Our Plant Collection</h1>
+      <p style="font-size: 18px; color: var(--muted); line-height: 1.8;">
+        Explore our carefully curated selection of plants. Each one is chosen for its beauty, resilience, and ability to transform your space.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== SEARCH & FILTER SECTION ========== -->
+  <section style="padding: 40px 8%; background: #f9f8f5; border-bottom: 1px solid #e8e5df;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <h3 style="font-size: 18px; color: var(--text); margin-bottom: 20px; font-weight: 600;">Filter by Category</h3>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="category-btn" data-category="all" style="padding: 10px 20px; border: 2px solid var(--green-light); background: var(--green-light); color: white; border-radius: 25px; font-weight: 600; cursor: pointer; transition: var(--transition);" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          All Plants
+        </button>
+        <button class="category-btn" data-category="indoor" style="padding: 10px 20px; border: 2px solid var(--green-light); background: transparent; color: var(--green-light); border-radius: 25px; font-weight: 600; cursor: pointer; transition: var(--transition);" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          🌿 Indoor Plants
+        </button>
+        <button class="category-btn" data-category="lowmaint" style="padding: 10px 20px; border: 2px solid var(--green-light); background: transparent; color: var(--green-light); border-radius: 25px; font-weight: 600; cursor: pointer; transition: var(--transition);" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          💚 Low Maintenance
+        </button>
+        <button class="category-btn" data-category="airpurify" style="padding: 10px 20px; border: 2px solid var(--green-light); background: transparent; color: var(--green-light); border-radius: 25px; font-weight: 600; cursor: pointer; transition: var(--transition);" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          ☁️ Air Purifying
+        </button>
+        <button class="category-btn" data-category="succulents" style="padding: 10px 20px; border: 2px solid var(--green-light); background: transparent; color: var(--green-light); border-radius: 25px; font-weight: 600; cursor: pointer; transition: var(--transition);" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          ✨ Succulents
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PLANTS GRID ========== -->
+  <section style="padding: 80px 8%; background: white;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <div class="plants-grid">
+        <!-- Snake Plant -->
+        <div class="plant-card" data-category="lowmaint" data-name="Snake Plant">
+          <img src="images/snake.jpg" alt="Snake Plant">
+          <div class="plant-content">
+            <h3>Snake Plant</h3>
+            <div class="price">₹299</div>
+            <p>
+              Survives neglect better than most friendships.
+              Perfect for low-maintenance plant parents.
+            </p>
+            <a href="plants/snake-plant.html" class="btn btn-primary btn-small">View Plant</a>
+          </div>
+        </div>
+
+        <!-- Peace Lily -->
+        <div class="plant-card" data-category="airpurify" data-name="Peace Lily">
+          <img src="images/peace.jpg" alt="Peace Lily">
+          <div class="plant-content">
+            <h3>Peace Lily</h3>
+            <div class="price">₹349</div>
+            <p>
+              Brings instant calm to any corner.
+              Remarkably forgiving in low light.
+            </p>
+            <a href="plants/peace-lily.html" class="btn btn-primary btn-small">View Plant</a>
+          </div>
+        </div>
+
+        <!-- Jade Plant -->
+        <div class="plant-card" data-category="succulents" data-name="Jade Plant">
+          <img src="images/jade.jpeg" alt="Jade Plant">
+          <div class="plant-content">
+            <h3>Jade Plant</h3>
+            <div class="price">₹399</div>
+            <p>
+              Plump, glossy leaves that store water.
+              Built to last for generations.
+            </p>
+            <a href="plants/jade-plant.html" class="btn btn-primary btn-small">View Plant</a>
+          </div>
+        </div>
+
+        <!-- Areca Palm -->
+        <div class="plant-card" data-category="indoor" data-name="Areca Palm">
+          <img src="images/areca.jpeg" alt="Areca Palm">
+          <div class="plant-content">
+            <h3>Areca Palm</h3>
+            <div class="price">₹499</div>
+            <p>
+              Tropical elegance that filters the air.
+              Perfect for bright corners.
+            </p>
+            <a href="plants/areca-palm.html" class="btn btn-primary btn-small">View Plant</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA SECTION ========== -->
+  <section class="section fade-in">
+    <div class="cta-box">
+      <h2>
+        Not sure which plant is right for you?
+      </h2>
+      <p>
+        Each plant has a detailed care guide and story.
+        Click on any plant to learn more about its needs and benefits.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <h3>Lagao.shop</h3>
+    <p>© 2026 Lagao Nursery</p>
+  </footer>
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
