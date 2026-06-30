@@ -1,0 +1,9 @@
+{
+  "name": "Lagao.shop",
+  "short_name": "Lagao",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#17351f",
+  "background_color": "#f6f5f1",
+  "icons": []
+}

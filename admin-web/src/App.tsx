@@ -1,0 +1,48 @@
+import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { Layout } from "./components/Layout";
+import { Login } from "./pages/Login";
+import { Dashboard } from "./pages/Dashboard";
+import {
+  AnalyticsPage,
+  BannersPage,
+  CategoriesPage,
+  CouponsPage,
+  CustomersPage,
+  InventoryPage,
+  OrdersPage,
+  PlantsPage,
+  ReviewsPage,
+} from "./pages/ManagementPages";
+
+export default function App() {
+  const [authenticated, setAuthenticated] = useState(() => Boolean(localStorage.getItem("lagao_admin_token")));
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  if (!authenticated) {
+    return <Login onLogin={() => setAuthenticated(true)} />;
+  }
+
+  return (
+    <Layout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} darkMode={darkMode} setDarkMode={setDarkMode}>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/plants" element={<PlantsPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/inventory" element={<InventoryPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/customers" element={<CustomersPage />} />
+        <Route path="/coupons" element={<CouponsPage />} />
+        <Route path="/reviews" element={<ReviewsPage />} />
+        <Route path="/banners" element={<BannersPage />} />
+        <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Layout>
+  );
+}
