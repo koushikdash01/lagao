@@ -13,14 +13,20 @@ export function PageHeader({ title, description, action }: { title: string; desc
   );
 }
 
-export function Button({ children, variant = "primary" }: { children: ReactNode; variant?: "primary" | "secondary" | "danger" }) {
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "secondary" | "danger";
+};
+
+export function Button({ children, variant = "primary", className = "", ...props }: ButtonProps) {
   return (
     <button
+      {...props}
       className={clsx(
         "rounded-lg px-4 py-2 text-sm font-bold transition",
         variant === "primary" && "bg-leaf-500 text-white hover:bg-leaf-700",
         variant === "secondary" && "bg-white text-slate-700 shadow-sm hover:bg-slate-50 dark:bg-white/10 dark:text-white",
         variant === "danger" && "bg-red-500 text-white hover:bg-red-600",
+        className
       )}
     >
       {children}

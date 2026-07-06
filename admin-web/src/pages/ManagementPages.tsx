@@ -1,54 +1,395 @@
-import { Download, Plus, Trash2 } from "lucide-react";
-import { analytics, plants, recentOrders } from "../data/mockData";
+import { useEffect, useState } from "react";
+import { Download, Plus, Trash2, X, RefreshCw } from "lucide-react";
 import { Button, Card, DataTable, PageHeader, StatusPill } from "../components/ui";
-
-const categories = ["Indoor Plants", "Outdoor Plants", "Flowering Plants", "Succulents", "Air Purifying Plants", "Pots & Accessories"];
+import { apiRequest } from "../lib/api";
 
 export function PlantsPage() {
+  const [plants, setPlants] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // Form states
+  const [name, setName] = useState("");
+  const [scientificName, setScientificName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState(299);
+  const [discountPrice, setDiscountPrice] = useState<number | "">("");
+  const [stockQuantity, setStockQuantity] = useState(10);
+  const [type, setType] = useState<"indoor" | "outdoor">("indoor");
+  const [sunlight, setSunlight] = useState("Bright indirect");
+  const [watering, setWatering] = useState("Water weekly");
+  const [potSize, setPotSize] = useState("6 inch");
+  const [imageUrl, setImageUrl] = useState("");
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [plantsRes, catsRes] = await Promise.all([
+        apiRequest<{ data: any[] }>("/demo/plants"),
+        apiRequest<{ data: any[] }>("/demo/categories"),
+      ]);
+      setPlants(plantsRes.data);
+      setCategories(catsRes.data);
+      if (catsRes.data.length > 0 && !categoryId) {
+        setCategoryId(catsRes.data[0].id);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleAddPlant = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await apiRequest("/demo/plants", {
+        method: "POST",
+        body: JSON.stringify({
+          name,
+          scientificName: scientificName || null,
+          categoryId,
+          description,
+          price,
+          discountPrice: discountPrice === "" ? null : Number(discountPrice),
+          stockQuantity,
+          type,
+          sunlightRequirement: sunlight,
+          wateringFrequency: watering,
+          potSize,
+          imageUrl: imageUrl || null,
+        }),
+      });
+      setShowAddModal(false);
+      // Reset form
+      setName("");
+      setScientificName("");
+      setDescription("");
+      setImageUrl("");
+      loadData();
+    } catch (e) {
+      alert("Failed to add plant");
+    }
+  };
+
   return (
     <>
-      <PageHeader title="Plant Management" description="Create, edit, search, filter, sort, bulk update, and bulk delete plant products." action={<Button><Plus className="mr-2 inline h-4 w-4" />Add Plant</Button>} />
-      <Toolbar />
-      <DataTable
-        columns={["Select", "Plant", "Category", "Price", "Stock", "Status", "Actions"]}
-        rows={plants.map((plant) => [
-          <input type="checkbox" className="h-4 w-4 rounded" />,
-          <strong>{plant.name}</strong>,
-          plant.category,
-          `Rs. ${plant.price}`,
-          plant.stock,
-          <StatusPill value={plant.status} />,
-          <div className="flex gap-2"><Button variant="secondary">Edit</Button><Button variant="danger"><Trash2 className="h-4 w-4" /></Button></div>,
-        ])}
+      <PageHeader
+        title="Plant Management"
+        description="Create, edit, search, and manage live plant inventory in the PostgreSQL database."
+        action={
+          <Button onClick={() => setShowAddModal(true)}>
+            <Plus className="mr-2 inline h-4 w-4" />Add Plant
+          </Button>
+        }
       />
+      {loading ? (
+        <div className="py-10 text-center"><RefreshCw className="animate-spin inline mr-2" />Loading plants...</div>
+      ) : (
+        <DataTable
+          columns={["Plant", "Category", "Price", "Stock", "Status", "Actions"]}
+          rows={plants.map((plant) => [
+            <div className="flex items-center gap-3">
+              {plant.image_url && <img src={plant.image_url} alt="" className="h-10 w-10 rounded object-cover" />}
+              <div>
+                <strong>{plant.name}</strong>
+                {plant.scientific_name && <p className="text-xs italic text-slate-400">{plant.scientific_name}</p>}
+              </div>
+            </div>,
+            plant.category_name,
+            `Rs. ${plant.discount_price ?? plant.price}`,
+            plant.stock_quantity,
+            <StatusPill value={plant.stock_quantity > 0 ? "Available" : "Out of Stock"} />,
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => alert(`Details:\nDescription: ${plant.description}\nSunlight: ${plant.sunlight_requirement}\nWatering: ${plant.watering_frequency}`)}>Details</Button>
+            </div>,
+          ])}
+        />
+      )}
+
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900 overflow-y-auto max-h-[90vh]">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-xl font-bold dark:text-white">Add New Plant</h3>
+              <button onClick={() => setShowAddModal(false)}><X className="h-6 w-6 dark:text-white" /></button>
+            </div>
+            <form onSubmit={handleAddPlant} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Plant Name</label>
+                <input required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Fiddle Leaf Fig" className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Scientific Name</label>
+                <input value={scientificName} onChange={e => setScientificName(e.target.value)} placeholder="e.g. Ficus lyrata" className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Category</label>
+                <select required value={categoryId} onChange={e => setCategoryId(e.target.value)} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white">
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Description</label>
+                <textarea required value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe the plant..." className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white h-24" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Price (Rs.)</label>
+                  <input required type="number" min={0} value={price} onChange={e => setPrice(Number(e.target.value))} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Discount Price (Rs.)</label>
+                  <input type="number" min={0} value={discountPrice} onChange={e => setDiscountPrice(e.target.value === "" ? "" : Number(e.target.value))} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Stock Quantity</label>
+                  <input required type="number" min={0} value={stockQuantity} onChange={e => setStockQuantity(Number(e.target.value))} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Environment</label>
+                  <select value={type} onChange={e => setType(e.target.value as any)} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white">
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block text-xs font-bold mb-1 dark:text-slate-200">Sunlight</label>
+                  <input required value={sunlight} onChange={e => setSunlight(e.target.value)} className="w-full rounded-lg border p-2 text-sm dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1 dark:text-slate-200">Watering</label>
+                  <input required value={watering} onChange={e => setWatering(e.target.value)} className="w-full rounded-lg border p-2 text-sm dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1 dark:text-slate-200">Pot Size</label>
+                  <input required value={potSize} onChange={e => setPotSize(e.target.value)} className="w-full rounded-lg border p-2 text-sm dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Image URL</label>
+                <input type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://unsplash.com/..." className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+              </div>
+              <Button type="submit" className="w-full">Save Plant</Button>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 export function CategoriesPage() {
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
+  const loadCategories = async () => {
+    setLoading(true);
+    try {
+      const res = await apiRequest<{ data: any[] }>("/demo/categories");
+      setCategories(res.data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await apiRequest("/demo/categories", {
+        method: "POST",
+        body: JSON.stringify({ name, description }),
+      });
+      setShowAddModal(false);
+      setName("");
+      setDescription("");
+      loadCategories();
+    } catch (e) {
+      alert("Failed to add category");
+    }
+  };
+
   return (
     <>
-      <PageHeader title="Category Management" description="Manage category names, descriptions, images, and active status." action={<Button><Plus className="mr-2 inline h-4 w-4" />Add Category</Button>} />
-      <DataTable columns={["Category", "Description", "Status", "Actions"]} rows={categories.map((category) => [<strong>{category}</strong>, "Curated storefront collection", <StatusPill value="Active" />, <Button variant="secondary">Edit</Button>])} />
+      <PageHeader
+        title="Category Management"
+        description="Manage plant categories in the database."
+        action={
+          <Button onClick={() => setShowAddModal(true)}>
+            <Plus className="mr-2 inline h-4 w-4" />Add Category
+          </Button>
+        }
+      />
+      {loading ? (
+        <div className="py-10 text-center"><RefreshCw className="animate-spin inline" /></div>
+      ) : (
+        <DataTable
+          columns={["Category", "Description", "Status"]}
+          rows={categories.map((c) => [
+            <strong>{c.name}</strong>,
+            c.description || "Curated storefront collection",
+            <StatusPill value="Active" />
+          ])}
+        />
+      )}
+
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-xl font-bold dark:text-white">Add New Category</h3>
+              <button onClick={() => setShowAddModal(false)}><X className="h-6 w-6 dark:text-white" /></button>
+            </div>
+            <form onSubmit={handleAddCategory} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Category Name</label>
+                <input required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Ferns" className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Description</label>
+                <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Category description..." className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white h-24" />
+              </div>
+              <Button type="submit" className="w-full">Save Category</Button>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 export function InventoryPage() {
+  const [plants, setPlants] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadPlants = async () => {
+    try {
+      const res = await apiRequest<{ data: any[] }>("/demo/plants");
+      setPlants(res.data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPlants();
+  }, []);
+
   return (
     <>
-      <PageHeader title="Inventory" description="Monitor current stock, low stock alerts, out-of-stock plants, stock history, and restocks." action={<Button>Restock</Button>} />
-      <DataTable columns={["Plant", "Current Stock", "Alert", "Last Update", "Actions"]} rows={plants.map((plant) => [plant.name, plant.stock, <StatusPill value={plant.stock === 0 ? "Out of Stock" : plant.stock <= 5 ? "Pending" : "Available"} />, "Today", <Button variant="secondary">History</Button>])} />
+      <PageHeader title="Inventory Monitor" description="Monitor real stock counts, low stock alerts, and catalog availability." />
+      {loading ? (
+        <div className="py-10 text-center"><RefreshCw className="animate-spin inline" /></div>
+      ) : (
+        <DataTable
+          columns={["Plant", "Current Stock", "Alert Status", "Last Update"]}
+          rows={plants.map((plant) => [
+            plant.name,
+            plant.stock_quantity,
+            <StatusPill value={plant.stock_quantity === 0 ? "Out of Stock" : plant.stock_quantity <= 5 ? "Pending" : "Available"} />,
+            new Date(plant.updated_at).toLocaleTimeString()
+          ])}
+        />
+      )}
     </>
   );
 }
 
 export function OrdersPage() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadOrders = async () => {
+    setLoading(true);
+    try {
+      const res = await apiRequest<{ data: any[] }>("/demo/orders");
+      setOrders(res.data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  const handleConfirm = async (id: string) => {
+    try {
+      await apiRequest(`/demo/orders/${id}/confirm`, { method: "POST" });
+      loadOrders();
+    } catch (e) {
+      alert("Failed to confirm order");
+    }
+  };
+
+  const handleCancel = async (id: string) => {
+    try {
+      await apiRequest(`/demo/orders/${id}/cancel`, { method: "POST" });
+      loadOrders();
+    } catch (e) {
+      alert("Failed to cancel order");
+    }
+  };
+
   return (
     <>
-      <PageHeader title="Order Management" description="Track order flow from placed to delivered, update statuses, cancel orders, invoice, search, filter, and export CSV." action={<Button variant="secondary"><Download className="mr-2 inline h-4 w-4" />Export CSV</Button>} />
-      <Toolbar />
-      <DataTable columns={["Order ID", "Customer", "Plants", "Quantity", "Total", "Payment", "Status", "Actions"]} rows={recentOrders.map((order) => [<strong>{order.id}</strong>, order.customer, "Mixed plants", order.items, order.total, <StatusPill value="Paid" />, <StatusPill value={order.status} />, <Button variant="secondary">Update</Button>])} />
+      <PageHeader title="Order Management" description="Manage database customer purchases, confirm orders, or cancel them to restore inventory." />
+      {loading ? (
+        <div className="py-10 text-center"><RefreshCw className="animate-spin inline" /></div>
+      ) : (
+        <DataTable
+          columns={["Order No.", "Plants Ordered", "Total", "Payment Method", "Status", "Date", "Actions"]}
+          rows={orders.map((o) => [
+            <strong>{o.order_number}</strong>,
+            <div className="space-y-1">
+              {o.items && o.items.map((item: any, idx: number) => (
+                <p key={idx} className="text-xs">{item.plant_name} (x{item.quantity})</p>
+              ))}
+            </div>,
+            `Rs. ${o.total_amount}`,
+            o.payment_method.toUpperCase(),
+            <StatusPill value={o.status === "placed" ? "Pending" : o.status === "confirmed" ? "Active" : o.status === "cancelled" ? "Out of Stock" : o.status} />,
+            new Date(o.created_at).toLocaleDateString(),
+            <div className="flex gap-2">
+              {o.status === "placed" && (
+                <>
+                  <Button variant="primary" className="py-1 text-xs" onClick={() => handleConfirm(o.id)}>Confirm</Button>
+                  <Button variant="danger" className="py-1 text-xs" onClick={() => handleCancel(o.id)}>Cancel</Button>
+                </>
+              )}
+              {o.status === "confirmed" && (
+                <Button variant="danger" className="py-1 text-xs" onClick={() => handleCancel(o.id)}>Cancel Order</Button>
+              )}
+              {o.status === "cancelled" && (
+                <span className="text-xs text-slate-400 italic">No actions available</span>
+              )}
+            </div>
+          ])}
+        />
+      )}
     </>
   );
 }
@@ -57,8 +398,7 @@ export function CustomersPage() {
   return (
     <>
       <PageHeader title="Customer Management" description="Search customers, view contact details, purchase history, addresses, and total spending." />
-      <Toolbar />
-      <DataTable columns={["Customer", "Email", "Phone", "Address", "Orders", "Total Spending", "Actions"]} rows={["Ananya Sen", "Ritwik Das", "Maya Roy", "Soham Dey"].map((name, index) => [<strong>{name}</strong>, `${name.toLowerCase().replace(" ", ".")}@email.com`, "+91 98765 43210", "Kolkata, WB", index + 2, `Rs. ${(index + 1) * 1240}`, <Button variant="secondary">View</Button>])} />
+      <DataTable columns={["Customer", "Email", "Phone", "Address", "Orders", "Total Spending"]} rows={[["Koushik Dash", "koushik@email.com", "+91 98765 43210", "Kolkata, WB", 1, "Rs. 899"]]} />
     </>
   );
 }
@@ -68,7 +408,7 @@ export function CouponsPage() {
 }
 
 export function ReviewsPage() {
-  return <ResourcePage title="Reviews Management" description="Approve, hide, delete, and reply to product reviews from customers." columns={["Plant", "Customer", "Rating", "Review", "Status", "Actions"]} rows={[["Snake Plant", "Ananya Sen", "5/5", "Healthy plant and fast delivery", <StatusPill value="Pending" />, <Button variant="secondary">Reply</Button>]]} />;
+  return <ResourcePage title="Reviews Management" description="Approve, hide, delete, and reply to product reviews from customers." columns={["Plant", "Customer", "Rating", "Review", "Status"]} rows={[["Snake Plant", "Koushik Dash", "5/5", "Healthy plant and fast delivery", <StatusPill value="Pending" />]]} />;
 }
 
 export function BannersPage() {
@@ -80,23 +420,14 @@ export function AnalyticsPage() {
     <>
       <PageHeader title="Analytics" description="Monthly revenue, orders by month, best-selling plants, customer growth, revenue by category, and top customers." />
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {analytics.map((item) => <Card key={item.label}><p className="text-sm text-slate-500 dark:text-slate-400">{item.label}</p><strong className="mt-2 block text-xl">{item.value}</strong></Card>)}
+        {[
+          { label: "Best-selling plant", value: "Snake Plant" },
+          { label: "Top category", value: "Indoor Plants" },
+          { label: "Customer growth", value: "+16.2%" },
+          { label: "Top customer", value: "Koushik Dash" },
+        ].map((item) => <Card key={item.label}><p className="text-sm text-slate-500 dark:text-slate-400">{item.label}</p><strong className="mt-2 block text-xl">{item.value}</strong></Card>)}
       </section>
     </>
-  );
-}
-
-function Toolbar() {
-  return (
-    <Card className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <input className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-sm outline-none dark:border-white/10" placeholder="Search..." />
-      <div className="flex flex-wrap gap-2">
-        <select className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-white/10"><option>All Categories</option></select>
-        <select className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-white/10"><option>Sort by date</option><option>Sort by price</option><option>Sort by stock</option></select>
-        <Button variant="secondary">Bulk Update</Button>
-        <Button variant="danger">Bulk Delete</Button>
-      </div>
-    </Card>
   );
 }
 

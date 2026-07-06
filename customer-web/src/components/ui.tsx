@@ -28,7 +28,8 @@ export function SectionHeader({ title, subtitle }: { title: string; subtitle?: s
 }
 
 export function PlantCard({ plant }: { plant: Plant }) {
-  const { addToCart, toggleWishlist, wishlist } = useStore();
+  const { cart, addToCart, removeFromCart, updateQuantity, toggleWishlist, wishlist } = useStore();
+  const cartItem = cart.find((item) => item.id === plant.id);
   const wished = wishlist.some((item) => item.id === plant.id);
 
   return (
@@ -51,8 +52,36 @@ export function PlantCard({ plant }: { plant: Plant }) {
           <span className={clsx("text-xs font-bold", plant.stock > 0 ? "text-leaf-500" : "text-red-500")}>{plant.stock > 0 ? "In stock" : "Out of stock"}</span>
         </div>
         <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
-          <Button className="w-full" onClick={() => addToCart(plant)}><ShoppingCart className="mr-2 inline h-4 w-4" />Add</Button>
-          <button aria-label="Add to wishlist" onClick={() => toggleWishlist(plant)} className={clsx("rounded-lg border px-3", wished ? "border-red-200 bg-red-50 text-red-500" : "border-slate-200 text-slate-500 dark:border-white/10")}>
+          {cartItem ? (
+            <div className="flex items-center justify-between rounded-lg bg-leaf-500 text-white font-bold h-10 w-full overflow-hidden shadow-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  if (cartItem.quantity === 1) {
+                    removeFromCart(plant.id);
+                  } else {
+                    updateQuantity(plant.id, cartItem.quantity - 1);
+                  }
+                }}
+                className="px-4 h-full hover:bg-leaf-600 active:bg-leaf-700 transition flex items-center justify-center text-lg select-none"
+              >
+                -
+              </button>
+              <span className="text-sm select-none">{cartItem.quantity}</span>
+              <button
+                type="button"
+                onClick={() => updateQuantity(plant.id, cartItem.quantity + 1)}
+                className="px-4 h-full hover:bg-leaf-600 active:bg-leaf-700 transition flex items-center justify-center text-lg select-none"
+              >
+                +
+              </button>
+            </div>
+          ) : (
+            <Button className="w-full h-10 flex items-center justify-center gap-2" onClick={() => addToCart(plant)}>
+              <ShoppingCart className="h-4 w-4" />Add
+            </Button>
+          )}
+          <button aria-label="Add to wishlist" onClick={() => toggleWishlist(plant)} className={clsx("rounded-lg border px-3 h-10 flex items-center justify-center transition", wished ? "border-red-200 bg-red-50 text-red-500" : "border-slate-200 text-slate-500 dark:border-white/10")}>
             <Heart className={clsx("h-5 w-5", wished && "fill-current")} />
           </button>
         </div>

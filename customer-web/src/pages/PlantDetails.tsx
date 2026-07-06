@@ -1,15 +1,22 @@
 import { Heart, Minus, Plus, Star } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { plants } from "../data/catalog";
+import clsx from "clsx";
 import { Button, PlantCard, SectionHeader } from "../components/ui";
 import { useStore } from "../lib/store";
 
 export function PlantDetails() {
   const { id } = useParams();
+  const { plants, cart, addToCart, removeFromCart, updateQuantity, toggleWishlist, wishlist } = useStore();
+
+  if (plants.length === 0) {
+    return <main className="mx-auto max-w-7xl px-4 py-20 text-center text-slate-500">Loading plant details...</main>;
+  }
+
   const plant = plants.find((item) => item.id === id) ?? plants[0];
   const [quantity, setQuantity] = useState(1);
-  const { addToCart, toggleWishlist } = useStore();
+  const cartItem = cart.find((item) => item.id === plant.id);
+  const wished = wishlist.some((item) => item.id === plant.id);
   const similar = plants.filter((item) => item.id !== plant.id).slice(0, 3);
 
   return (
@@ -28,16 +35,79 @@ export function PlantDetails() {
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {["Water every 7-10 days", plant.sunlight, "18-30 C", "Beginner friendly", plant.type].map((item) => <span key={item} className="rounded-lg bg-white p-3 text-sm font-semibold shadow-sm dark:bg-white/10">{item}</span>)}
           </div>
-          <div className="mt-6 flex items-center gap-3">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="rounded-lg bg-white p-3 shadow-sm dark:bg-white/10"><Minus /></button>
-            <strong>{quantity}</strong>
-            <button onClick={() => setQuantity(quantity + 1)} className="rounded-lg bg-white p-3 shadow-sm dark:bg-white/10"><Plus /></button>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button onClick={() => addToCart(plant, quantity)}>Add to Cart</Button>
-            <Link to="/checkout" className="rounded-lg bg-leaf-900 px-4 py-2.5 text-sm font-bold text-white">Buy Now</Link>
-            <Button variant="secondary" onClick={() => toggleWishlist(plant)}><Heart className="mr-2 inline h-4 w-4" />Wishlist</Button>
-          </div>
+          {cartItem ? (
+            <>
+              <div className="mt-6 flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    if (cartItem.quantity === 1) {
+                      removeFromCart(plant.id);
+                    } else {
+                      updateQuantity(plant.id, cartItem.quantity - 1);
+                    }
+                  }}
+                  className="rounded-lg bg-white p-3 shadow-sm dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 transition"
+                >
+                  <Minus className="h-5 w-5" />
+                </button>
+                <strong className="text-lg w-6 text-center select-none">{cartItem.quantity}</strong>
+                <button
+                  onClick={() => updateQuantity(plant.id, cartItem.quantity + 1)}
+                  className="rounded-lg bg-white p-3 shadow-sm dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 transition"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+                <span className="text-sm font-bold text-leaf-500 ml-2">Added to Cart</span>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link to="/checkout" className="rounded-lg bg-leaf-900 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-leaf-950 flex items-center">
+                  Buy Now
+                </Link>
+                <Button
+                  variant="secondary"
+                  onClick={() => toggleWishlist(plant)}
+                  className={clsx("px-5 py-3 transition", wished ? "border-red-200 bg-red-50 text-red-500" : "")}
+                >
+                  <Heart className={clsx("mr-2 inline h-4 w-4", wished && "fill-current")} />
+                  {wished ? "Wished" : "Wishlist"}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mt-6 flex items-center gap-3">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="rounded-lg bg-white p-3 shadow-sm dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 transition"
+                >
+                  <Minus className="h-5 w-5" />
+                </button>
+                <strong className="text-lg w-6 text-center select-none">{quantity}</strong>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="rounded-lg bg-white p-3 shadow-sm dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 transition"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button className="px-5 py-3" onClick={() => addToCart(plant, quantity)}>
+                  Add to Cart
+                </Button>
+                <Link to="/checkout" className="rounded-lg bg-leaf-900 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-leaf-950 flex items-center">
+                  Buy Now
+                </Link>
+                <Button
+                  variant="secondary"
+                  onClick={() => toggleWishlist(plant)}
+                  className={clsx("px-5 py-3 transition", wished ? "border-red-200 bg-red-50 text-red-500" : "")}
+                >
+                  <Heart className={clsx("mr-2 inline h-4 w-4", wished && "fill-current")} />
+                  {wished ? "Wished" : "Wishlist"}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </section>
       <section className="mt-14">

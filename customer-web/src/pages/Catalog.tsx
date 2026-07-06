@@ -1,9 +1,11 @@
 import { SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
-import { categories, plants } from "../data/catalog";
+import { categories } from "../data/catalog";
 import { PlantCard, SectionHeader } from "../components/ui";
+import { useStore } from "../lib/store";
 
 export function Catalog() {
+  const { plants } = useStore();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("newest");

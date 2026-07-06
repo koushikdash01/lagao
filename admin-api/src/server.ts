@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.js";
 import customerAuthRoutes from "./routes/customerAuth.js";
 import storefrontRoutes from "./routes/storefront.js";
 import shopRoutes from "./routes/shop.js";
+import demoRoutes from "./routes/demo.js";
 import dashboardRoutes from "./routes/dashboard.js";
 import plantRoutes from "./routes/plants.js";
 import categoryRoutes from "./routes/categories.js";
@@ -34,6 +35,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/customer/auth", customerAuthRoutes);
 app.use("/api/storefront", storefrontRoutes);
 app.use("/api/shop", shopRoutes);
+app.use("/api/demo", demoRoutes);
 
 app.use("/api/dashboard", requireAdmin, dashboardRoutes);
 app.use("/api/plants", requireAdmin, plantRoutes);

@@ -1,9 +1,11 @@
 import { ArrowRight, Bell, Leaf, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
-import { categories, plants, testimonials } from "../data/catalog";
+import { categories, testimonials, type Plant } from "../data/catalog";
 import { PlantCard, SectionHeader } from "../components/ui";
+import { useStore } from "../lib/store";
 
 export function Home() {
+  const { plants } = useStore();
   return (
     <main>
       <section className="relative min-h-[calc(100vh-80px)] overflow-hidden">
@@ -53,6 +55,6 @@ export function Home() {
   );
 }
 
-function ContentBand({ title, subtitle, plants: items }: { title: string; subtitle: string; plants: typeof plants }) {
+function ContentBand({ title, subtitle, plants: items }: { title: string; subtitle: string; plants: Plant[] }) {
   return <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"><SectionHeader title={title} subtitle={subtitle} /><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{items.map((plant) => <PlantCard key={`${title}-${plant.id}`} plant={plant} />)}</div></section>;
 }
