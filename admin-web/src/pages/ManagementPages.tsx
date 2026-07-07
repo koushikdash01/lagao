@@ -78,6 +78,40 @@ export function PlantsPage() {
     }
   };
 
+  const handleAdjustStock = async (id: string, change: number) => {
+    try {
+      await apiRequest(`/demo/plants/${id}/stock`, {
+        method: "PATCH",
+        body: JSON.stringify({ change }),
+      });
+      setPlants(prev =>
+        prev.map(p => {
+          if (p.id === id) {
+            const newStock = Math.max(0, p.stock_quantity + change);
+            return {
+              ...p,
+              stock_quantity: newStock,
+              status: newStock > 0 ? "available" : "out_of_stock",
+            };
+          }
+          return p;
+        })
+      );
+    } catch (e) {
+      alert("Failed to update stock");
+    }
+  };
+
+  const handleDeletePlant = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this plant?")) return;
+    try {
+      await apiRequest(`/demo/plants/${id}`, { method: "DELETE" });
+      setPlants(prev => prev.filter(p => p.id !== id));
+    } catch (e) {
+      alert("Failed to delete plant");
+    }
+  };
+
   return (
     <>
       <PageHeader
@@ -104,10 +138,27 @@ export function PlantsPage() {
             </div>,
             plant.category_name,
             `Rs. ${plant.discount_price ?? plant.price}`,
-            plant.stock_quantity,
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleAdjustStock(plant.id, -1)}
+                className="h-7 w-7 rounded bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 flex items-center justify-center font-bold text-sm select-none dark:text-white"
+              >
+                -
+              </button>
+              <span className="w-8 text-center font-semibold">{plant.stock_quantity}</span>
+              <button
+                type="button"
+                onClick={() => handleAdjustStock(plant.id, 1)}
+                className="h-7 w-7 rounded bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 flex items-center justify-center font-bold text-sm select-none dark:text-white"
+              >
+                +
+              </button>
+            </div>,
             <StatusPill value={plant.stock_quantity > 0 ? "Available" : "Out of Stock"} />,
             <div className="flex gap-2">
               <Button variant="secondary" onClick={() => alert(`Details:\nDescription: ${plant.description}\nSunlight: ${plant.sunlight_requirement}\nWatering: ${plant.watering_frequency}`)}>Details</Button>
+              <Button variant="danger" onClick={() => handleDeletePlant(plant.id)}><Trash2 className="h-4 w-4" /></Button>
             </div>,
           ])}
         />

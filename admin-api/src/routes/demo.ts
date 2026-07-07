@@ -407,4 +407,38 @@ router.post("/orders/:id/cancel", asyncHandler(async (req, res) => {
   }
 }));
 
+// 9. PATCH /api/demo/plants/:id/stock (Adjust Plant Stock Level)
+router.patch("/plants/:id/stock", asyncHandler(async (req, res) => {
+  const input = z.object({ change: z.number().int() }).parse(req.body);
+
+  // 1. Get current stock
+  const plantRes = await query<{ stock_quantity: number }>("select stock_quantity from plants where id = $1", [req.params.id]);
+  if (plantRes.rows.length === 0) {
+    return res.status(404).json({ message: "Plant not found" });
+  }
+
+  const newStock = Math.max(0, plantRes.rows[0].stock_quantity + input.change);
+  const status = newStock > 0 ? "available" : "out_of_stock";
+
+  // 2. Update stock
+  await query(
+    "update plants set stock_quantity = $2, status = $3::plant_status, updated_at = now() where id = $1",
+    [req.params.id, newStock, status]
+  );
+
+  // 3. Log in inventory
+  await query(
+    "insert into inventory (plant_id, change_type, quantity, note) values ($1, 'adjustment', $2, 'Manual admin adjustment')",
+    [req.params.id, input.change]
+  );
+
+  res.json({ success: true, stockQuantity: newStock });
+}));
+
+// 10. DELETE /api/demo/plants/:id (Delete plant product)
+router.delete("/plants/:id", asyncHandler(async (req, res) => {
+  await query("delete from plants where id = $1", [req.params.id]);
+  res.json({ success: true });
+}));
+
 export default router;
