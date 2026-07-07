@@ -178,7 +178,14 @@ export function PlantsPage() {
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Image URL</label>
-                <input type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://unsplash.com/..." className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                <div className="flex gap-3">
+                  <input type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://unsplash.com/..." className="flex-1 rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                  {imageUrl && (
+                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded border border-slate-200 dark:border-white/10 bg-slate-100">
+                      <img src={imageUrl} alt="Preview" className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    </div>
+                  )}
+                </div>
               </div>
               <Button type="submit" className="w-full">Save Plant</Button>
             </form>
