@@ -441,4 +441,10 @@ router.delete("/plants/:id", asyncHandler(async (req, res) => {
   res.json({ success: true });
 }));
 
+// 11. DELETE /api/demo/categories/:id (Delete category)
+router.delete("/categories/:id", asyncHandler(async (req, res) => {
+  await query("delete from categories where id = $1", [req.params.id]);
+  res.json({ success: true });
+}));
+
 export default router;

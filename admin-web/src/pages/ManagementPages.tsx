@@ -136,7 +136,7 @@ export function PlantsPage() {
                 {plant.scientific_name && <p className="text-xs italic text-slate-400">{plant.scientific_name}</p>}
               </div>
             </div>,
-            plant.category_name,
+            plant.category_name || "Other Greens",
             `Rs. ${plant.discount_price ?? plant.price}`,
             <div className="flex items-center gap-2">
               <button
@@ -286,6 +286,16 @@ export function CategoriesPage() {
     }
   };
 
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this category? All plants in this category will be shifted to 'Other Greens'.")) return;
+    try {
+      await apiRequest(`/demo/categories/${id}`, { method: "DELETE" });
+      setCategories(prev => prev.filter(c => c.id !== id));
+    } catch (e) {
+      alert("Failed to delete category");
+    }
+  };
+
   return (
     <>
       <PageHeader
@@ -301,11 +311,14 @@ export function CategoriesPage() {
         <div className="py-10 text-center"><RefreshCw className="animate-spin inline" /></div>
       ) : (
         <DataTable
-          columns={["Category", "Description", "Status"]}
+          columns={["Category", "Description", "Status", "Actions"]}
           rows={categories.map((c) => [
             <strong>{c.name}</strong>,
             c.description || "Curated storefront collection",
-            <StatusPill value="Active" />
+            <StatusPill value="Active" />,
+            <div className="flex gap-2">
+              <Button variant="danger" onClick={() => handleDeleteCategory(c.id)}><Trash2 className="h-4 w-4" /></Button>
+            </div>
           ])}
         />
       )}

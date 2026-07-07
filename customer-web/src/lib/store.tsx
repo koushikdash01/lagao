@@ -31,7 +31,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const mapped: Plant[] = res.data.map(p => ({
           id: p.id,
           name: p.name,
-          category: p.category_name || "Indoor Plants",
+          category: p.category_name || "Other Greens",
           price: Number(p.price),
           discountPrice: p.discount_price ? Number(p.discount_price) : undefined,
           rating: 4.8,
