@@ -6,6 +6,16 @@ import { useStore } from "../lib/store";
 
 export function Home() {
   const { plants } = useStore();
+
+  if (plants.length === 0) {
+    return (
+      <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center p-8">
+        <Leaf className="h-12 w-12 animate-bounce text-leaf-500" />
+        <p className="mt-4 text-lg font-medium text-slate-600 dark:text-slate-400">Loading plants...</p>
+      </div>
+    );
+  }
+
   return (
     <main>
       <section className="relative min-h-[calc(100vh-80px)] overflow-hidden">
@@ -26,7 +36,7 @@ export function Home() {
 
       <ContentBand title="Featured Plants" subtitle="Hand-picked greens for homes, offices, balconies, and mindful gifting." plants={plants} />
       <ContentBand title="Best Sellers" subtitle="Customer-loved plants with strong survival instincts and good looks." plants={[...plants].reverse()} />
-      <ContentBand title="New Arrivals" subtitle="Fresh drops from nurseries and seasonal collections." plants={plants.slice(1).concat(plants[0])} />
+      <ContentBand title="New Arrivals" subtitle="Fresh drops from nurseries and seasonal collections." plants={plants.length > 0 ? plants.slice(1).concat(plants[0]) : []} />
       <ContentBand title="Trending Plants" subtitle="The greens people keep adding to wishlists." plants={plants.slice(0, 3)} />
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
