@@ -16,7 +16,7 @@ export function Catalog() {
     if (sort === "price-high") result.sort((a, b) => (b.discountPrice ?? b.price) - (a.discountPrice ?? a.price));
     if (sort === "rating") result.sort((a, b) => b.rating - a.rating);
     return result;
-  }, [search, category, sort]);
+  }, [plants, search, category, sort]);
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -27,7 +27,7 @@ export function Catalog() {
         <select value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 dark:border-white/10"><option value="newest">Newest</option><option value="price-low">Price Low to High</option><option value="price-high">Price High to Low</option><option value="rating">Best Rated</option><option value="popularity">Popularity</option></select>
       </div>
       <aside className="mb-6 flex flex-wrap gap-2 text-sm text-slate-600 dark:text-slate-300"><SlidersHorizontal className="h-5 w-5" /> Filters supported by API: category, price range, indoor/outdoor, sunlight, availability.</aside>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{filtered.map((plant) => <PlantCard key={plant.id} plant={plant} />)}</div>
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">{filtered.map((plant) => <PlantCard key={plant.id} plant={plant} />)}</div>
       <div className="mt-8 flex justify-center gap-2"><button className="rounded-lg bg-white px-4 py-2 shadow-sm dark:bg-white/10">1</button><button className="rounded-lg bg-white px-4 py-2 shadow-sm dark:bg-white/10">2</button></div>
     </main>
   );

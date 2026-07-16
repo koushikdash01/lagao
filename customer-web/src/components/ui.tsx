@@ -33,57 +33,113 @@ export function PlantCard({ plant }: { plant: Plant }) {
   const wished = wishlist.some((item) => item.id === plant.id);
 
   return (
-    <article className="overflow-hidden rounded-lg bg-white shadow-soft transition hover:-translate-y-1 dark:bg-white/10">
-      <Link to={`/plants/${plant.id}`}>
-        <img src={plant.image} alt={plant.name} loading="lazy" className="h-56 w-full object-cover" />
-      </Link>
-      <div className="p-4">
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <p className="text-xs font-bold uppercase tracking-wide text-leaf-500">{plant.category}</p>
-          <span className="flex items-center gap-1 text-sm font-bold text-amber-500"><Star className="h-4 w-4 fill-current" />{plant.rating}</span>
-        </div>
-        <Link to={`/plants/${plant.id}`} className="text-lg font-bold text-leaf-900 hover:text-leaf-500 dark:text-white">{plant.name}</Link>
-        <p className="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">{plant.description}</p>
-        <div className="mt-4 flex items-center justify-between">
-          <div>
-            <strong className="text-lg text-leaf-900 dark:text-white">Rs. {plant.discountPrice ?? plant.price}</strong>
-            {plant.discountPrice ? <span className="ml-2 text-sm text-slate-400 line-through">Rs. {plant.price}</span> : null}
-          </div>
-          <span className={clsx("text-xs font-bold", plant.stock > 0 ? "text-leaf-500" : "text-red-500")}>{plant.stock > 0 ? "In stock" : "Out of stock"}</span>
-        </div>
-        <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
-          {cartItem ? (
-            <div className="flex items-center justify-between rounded-lg bg-leaf-500 text-white font-bold h-10 w-full overflow-hidden shadow-sm">
-              <button
-                type="button"
-                onClick={() => {
-                  if (cartItem.quantity === 1) {
-                    removeFromCart(plant.id);
-                  } else {
-                    updateQuantity(plant.id, cartItem.quantity - 1);
-                  }
-                }}
-                className="px-4 h-full hover:bg-leaf-600 active:bg-leaf-700 transition flex items-center justify-center text-lg select-none"
-              >
-                -
-              </button>
-              <span className="text-sm select-none">{cartItem.quantity}</span>
-              <button
-                type="button"
-                onClick={() => updateQuantity(plant.id, cartItem.quantity + 1)}
-                className="px-4 h-full hover:bg-leaf-600 active:bg-leaf-700 transition flex items-center justify-center text-lg select-none"
-              >
-                +
-              </button>
-            </div>
-          ) : (
-            <Button className="w-full h-10 flex items-center justify-center gap-2" onClick={() => addToCart(plant)}>
-              <ShoppingCart className="h-4 w-4" />Add
-            </Button>
+    <article className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-100 bg-white p-2.5 shadow-soft transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/5 dark:bg-white/10">
+      <div className="relative overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-900/50">
+        <Link to={`/plants/${plant.id}`}>
+          <img src={plant.image} alt={plant.name} loading="lazy" className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+        </Link>
+        <button
+          type="button"
+          aria-label="Add to wishlist"
+          onClick={() => toggleWishlist(plant)}
+          className={clsx(
+            "absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 dark:bg-black/60 shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-110 active:scale-90",
+            wished ? "text-red-500" : "text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-white"
           )}
-          <button aria-label="Add to wishlist" onClick={() => toggleWishlist(plant)} className={clsx("rounded-lg border px-3 h-10 flex items-center justify-center transition", wished ? "border-red-200 bg-red-50 text-red-500" : "border-slate-200 text-slate-500 dark:border-white/10")}>
-            <Heart className={clsx("h-5 w-5", wished && "fill-current")} />
-          </button>
+        >
+          <Heart className={clsx("h-4 w-4", wished && "fill-current")} />
+        </button>
+      </div>
+
+      <div className="mt-2 flex flex-1 flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-leaf-500 truncate max-w-[70%]">
+              {plant.category}
+            </span>
+            <span className="flex items-center gap-0.5 text-xs font-bold text-amber-500">
+              <Star className="h-3 w-3 fill-current" />
+              {plant.rating}
+            </span>
+          </div>
+
+          <Link
+            to={`/plants/${plant.id}`}
+            className="mt-1 block text-xs sm:text-sm font-semibold text-slate-800 hover:text-leaf-500 dark:text-slate-100 dark:hover:text-leaf-400 line-clamp-2 leading-tight min-h-[2rem]"
+          >
+            {plant.name}
+          </Link>
+
+          <p className="mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+            {plant.description}
+          </p>
+
+          <div className="mt-1 flex items-center">
+            <span
+              className={clsx(
+                "inline-block rounded px-1.5 py-0.5 text-[9px] font-semibold",
+                plant.stock > 0
+                  ? "bg-leaf-50 text-leaf-700 dark:bg-leaf-950/30 dark:text-leaf-300"
+                  : "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300"
+              )}
+            >
+              {plant.stock > 0 ? "In stock" : "Out of stock"}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-center justify-between gap-1.5 border-t border-slate-50 pt-2 dark:border-white/5">
+          <div className="flex flex-col">
+            <span className="text-xs sm:text-sm md:text-base font-extrabold text-slate-900 dark:text-white">
+              Rs. {plant.discountPrice ?? plant.price}
+            </span>
+            {plant.discountPrice ? (
+              <span className="text-[9px] sm:text-[11px] text-slate-400 line-through">
+                Rs. {plant.price}
+              </span>
+            ) : null}
+          </div>
+
+          <div className="w-16 sm:w-20 md:w-24">
+            {cartItem ? (
+              <div className="flex items-center justify-between rounded-lg border border-leaf-500 bg-leaf-500 text-white font-bold h-7 sm:h-8 md:h-9 w-full overflow-hidden shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (cartItem.quantity === 1) {
+                      removeFromCart(plant.id);
+                    } else {
+                      updateQuantity(plant.id, cartItem.quantity - 1);
+                    }
+                  }}
+                  className="flex-1 h-full hover:bg-leaf-600 active:bg-leaf-700 transition flex items-center justify-center text-xs sm:text-sm select-none"
+                >
+                  -
+                </button>
+                <span className="text-[11px] sm:text-xs select-none px-1">{cartItem.quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => updateQuantity(plant.id, cartItem.quantity + 1)}
+                  className="flex-1 h-full hover:bg-leaf-600 active:bg-leaf-700 transition flex items-center justify-center text-xs sm:text-sm select-none"
+                >
+                  +
+                </button>
+              </div>
+            ) : (
+              <button
+                disabled={plant.stock <= 0}
+                onClick={() => addToCart(plant)}
+                className={clsx(
+                  "flex h-7 sm:h-8 md:h-9 w-full items-center justify-center rounded-lg border text-xs sm:text-sm font-extrabold uppercase transition shadow-sm",
+                  plant.stock <= 0
+                    ? "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed dark:border-white/10 dark:bg-white/5"
+                    : "border-leaf-500 bg-white text-leaf-500 hover:bg-leaf-50 dark:bg-slate-900 dark:hover:bg-leaf-950/20"
+                )}
+              >
+                Add
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </article>

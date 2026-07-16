@@ -116,7 +116,7 @@ export function PlantDetails() {
       </section>
       <section className="mt-14">
         <SectionHeader title="Similar Plants" />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{similar.map((item) => <PlantCard key={item.id} plant={item} />)}</div>
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">{similar.map((item) => <PlantCard key={item.id} plant={item} />)}</div>
       </section>
     </main>
   );

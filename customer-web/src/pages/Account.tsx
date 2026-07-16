@@ -6,7 +6,7 @@ import { useStore } from "../lib/store";
 
 export function Wishlist() {
   const { wishlist, addToCart, toggleWishlist } = useStore();
-  return <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"><SectionHeader title="Wishlist" subtitle="Persisted wishlist items can be moved to cart after login." /><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{wishlist.map((plant) => <div key={plant.id}><PlantCard plant={plant} /><button onClick={() => { addToCart(plant); toggleWishlist(plant); }} className="mt-2 w-full rounded-lg bg-leaf-900 py-2 font-bold text-white">Move to Cart</button></div>)}</div></main>;
+  return <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"><SectionHeader title="Wishlist" subtitle="Persisted wishlist items can be moved to cart after login." /><div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">{wishlist.map((plant) => <div key={plant.id} className="flex flex-col justify-between"><PlantCard plant={plant} /><button onClick={() => { addToCart(plant); toggleWishlist(plant); }} className="mt-2 w-full rounded-lg bg-leaf-900 py-2 text-xs sm:text-sm font-bold text-white transition hover:bg-leaf-950">Move to Cart</button></div>)}</div></main>;
 }
 
 export function Orders() {
@@ -33,5 +33,5 @@ export function Notifications() {
 }
 
 export function Recommendations() {
-  return <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"><SectionHeader title="AI Plant Recommendations" subtitle="A future recommendation layer can use care preferences, room light, purchase history, and recently viewed plants." /><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{plants.map((plant) => <PlantCard key={plant.id} plant={plant} />)}</div></main>;
+  return <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"><SectionHeader title="AI Plant Recommendations" subtitle="A future recommendation layer can use care preferences, room light, purchase history, and recently viewed plants." /><div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">{plants.map((plant) => <PlantCard key={plant.id} plant={plant} />)}</div></main>;
 }

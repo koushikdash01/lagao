@@ -66,5 +66,5 @@ export function Home() {
 }
 
 function ContentBand({ title, subtitle, plants: items }: { title: string; subtitle: string; plants: Plant[] }) {
-  return <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"><SectionHeader title={title} subtitle={subtitle} /><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{items.map((plant) => <PlantCard key={`${title}-${plant.id}`} plant={plant} />)}</div></section>;
+  return <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"><SectionHeader title={title} subtitle={subtitle} /><div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">{items.map((plant) => <PlantCard key={`${title}-${plant.id}`} plant={plant} />)}</div></section>;
 }
