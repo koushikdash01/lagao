@@ -7,6 +7,7 @@ export function notFound(req: Request, res: Response) {
 
 export function errorHandler(error: unknown, _req: Request, res: Response, _next: NextFunction) {
   if (error instanceof ZodError) {
+    console.error("❌ Zod Validation Error:", JSON.stringify(error.flatten(), null, 2));
     return res.status(422).json({ message: "Validation failed", errors: error.flatten() });
   }
 

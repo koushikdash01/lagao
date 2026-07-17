@@ -435,7 +435,76 @@ router.patch("/plants/:id/stock", asyncHandler(async (req, res) => {
   res.json({ success: true, stockQuantity: newStock });
 }));
 
-// 10. DELETE /api/demo/plants/:id (Delete plant product)
+// 10. PUT /api/demo/plants/:id (Update plant details)
+router.put("/plants/:id", asyncHandler(async (req, res) => {
+  const input = z.object({
+    name: z.string().min(2),
+    scientificName: z.string().optional().nullable(),
+    categoryId: z.string().uuid(),
+    description: z.string().min(5),
+    price: z.number().nonnegative(),
+    discountPrice: z.number().nonnegative().optional().nullable(),
+    stockQuantity: z.number().int().nonnegative(),
+    type: z.enum(["indoor", "outdoor"]),
+    sunlightRequirement: z.string().min(2),
+    wateringFrequency: z.string().min(2),
+    potSize: z.string().min(1),
+    imageUrl: z.string().url().optional().nullable(),
+  }).parse(req.body);
+
+  const status = input.stockQuantity > 0 ? "available" : "out_of_stock";
+
+  const result = await query(
+    `update plants
+     set name = $1, scientific_name = $2, category_id = $3, description = $4, price = $5,
+         discount_price = $6, stock_quantity = $7, type = $8, sunlight_requirement = $9,
+         watering_frequency = $10, pot_size = $11, status = $12, updated_at = now()
+     where id = $13
+     returning id`,
+    [
+      input.name,
+      input.scientificName || "",
+      input.categoryId,
+      input.description,
+      input.price,
+      input.discountPrice || null,
+      input.stockQuantity,
+      input.type,
+      input.sunlightRequirement,
+      input.wateringFrequency,
+      input.potSize,
+      status,
+      req.params.id,
+    ]
+  );
+
+  if (result.rows.length === 0) {
+    return res.status(404).json({ message: "Plant not found" });
+  }
+
+  if (input.imageUrl) {
+    // Check if an image already exists for this plant
+    const imgRes = await query("select id from plant_images where plant_id = $1 limit 1", [req.params.id]);
+    if (imgRes.rows.length > 0) {
+      await query("update plant_images set image_url = $1 where id = $2", [input.imageUrl, imgRes.rows[0].id]);
+    } else {
+      await query("insert into plant_images (plant_id, image_url, sort_order) values ($1,$2,0)", [req.params.id, input.imageUrl]);
+    }
+  }
+
+  // Retrieve the full record
+  const fullResult = await query(
+    `select p.*, c.name as category_name, (select image_url from plant_images where plant_id = p.id order by sort_order asc limit 1) as image_url
+     from plants p
+     left join categories c on c.id = p.category_id
+     where p.id = $1`,
+    [req.params.id]
+  );
+
+  res.json({ data: fullResult.rows[0] });
+}));
+
+// 11. DELETE /api/demo/plants/:id (Delete plant product)
 router.delete("/plants/:id", asyncHandler(async (req, res) => {
   await query("delete from plants where id = $1", [req.params.id]);
   res.json({ success: true });

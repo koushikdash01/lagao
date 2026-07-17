@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, Plus, Trash2, X, RefreshCw } from "lucide-react";
+import { Download, Plus, Trash2, X, RefreshCw, Edit } from "lucide-react";
 import { Button, Card, DataTable, PageHeader, StatusPill } from "../components/ui";
 import { apiRequest } from "../lib/api";
 
@@ -8,6 +8,7 @@ export function PlantsPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingPlant, setEditingPlant] = useState<any | null>(null);
 
   // Form states
   const [name, setName] = useState("");
@@ -22,6 +23,65 @@ export function PlantsPage() {
   const [watering, setWatering] = useState("Water weekly");
   const [potSize, setPotSize] = useState("6 inch");
   const [imageUrl, setImageUrl] = useState("");
+
+  const resetForm = () => {
+    setName("");
+    setScientificName("");
+    setCategoryId(categories[0]?.id || "");
+    setDescription("");
+    setPrice(299);
+    setDiscountPrice("");
+    setStockQuantity(10);
+    setType("indoor");
+    setSunlight("Bright indirect");
+    setWatering("Water weekly");
+    setPotSize("6 inch");
+    setImageUrl("");
+  };
+
+  const handleOpenEdit = (plant: any) => {
+    setEditingPlant(plant);
+    setName(plant.name);
+    setScientificName(plant.scientific_name || "");
+    setCategoryId(plant.category_id || "");
+    setDescription(plant.description || "");
+    setPrice(Number(plant.price));
+    setDiscountPrice(plant.discount_price ? Number(plant.discount_price) : "");
+    setStockQuantity(plant.stock_quantity);
+    setType(plant.type || "indoor");
+    setSunlight(plant.sunlight_requirement || "Bright indirect");
+    setWatering(plant.watering_frequency || "Water weekly");
+    setPotSize(plant.pot_size || "6 inch");
+    setImageUrl(plant.image_url || "");
+  };
+
+  const handleEditPlant = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await apiRequest(`/demo/plants/${editingPlant.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          name,
+          scientificName: scientificName || null,
+          categoryId,
+          description,
+          price,
+          discountPrice: discountPrice === "" ? null : Number(discountPrice),
+          stockQuantity,
+          type,
+          sunlightRequirement: sunlight,
+          wateringFrequency: watering,
+          potSize,
+          imageUrl: imageUrl || null,
+        }),
+      });
+      setEditingPlant(null);
+      resetForm();
+      loadData();
+    } catch (e) {
+      alert("Failed to update plant");
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -118,7 +178,7 @@ export function PlantsPage() {
         title="Plant Management"
         description="Create, edit, search, and manage live plant inventory in the PostgreSQL database."
         action={
-          <Button onClick={() => setShowAddModal(true)}>
+          <Button onClick={() => { resetForm(); setShowAddModal(true); }}>
             <Plus className="mr-2 inline h-4 w-4" />Add Plant
           </Button>
         }
@@ -158,20 +218,21 @@ export function PlantsPage() {
             <StatusPill value={plant.stock_quantity > 0 ? "Available" : "Out of Stock"} />,
             <div className="flex gap-2">
               <Button variant="secondary" onClick={() => alert(`Details:\nDescription: ${plant.description}\nSunlight: ${plant.sunlight_requirement}\nWatering: ${plant.watering_frequency}`)}>Details</Button>
+              <Button variant="secondary" onClick={() => handleOpenEdit(plant)}><Edit className="h-4 w-4" /></Button>
               <Button variant="danger" onClick={() => handleDeletePlant(plant.id)}><Trash2 className="h-4 w-4" /></Button>
             </div>,
           ])}
         />
       )}
 
-      {showAddModal && (
+      {(showAddModal || editingPlant) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900 overflow-y-auto max-h-[90vh]">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold dark:text-white">Add New Plant</h3>
-              <button onClick={() => setShowAddModal(false)}><X className="h-6 w-6 dark:text-white" /></button>
+              <h3 className="text-xl font-bold dark:text-white">{editingPlant ? "Edit Plant" : "Add New Plant"}</h3>
+              <button onClick={() => { setShowAddModal(false); setEditingPlant(null); resetForm(); }}><X className="h-6 w-6 dark:text-white" /></button>
             </div>
-            <form onSubmit={handleAddPlant} className="space-y-4">
+            <form onSubmit={editingPlant ? handleEditPlant : handleAddPlant} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Plant Name</label>
                 <input required value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Fiddle Leaf Fig" className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
