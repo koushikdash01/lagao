@@ -23,9 +23,9 @@ export function Dashboard() {
         <Card className="min-h-[360px]">
           <div className="mb-5 flex items-center justify-between">
             <h3 className="text-lg font-bold">Revenue Trend</h3>
-            <select className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-white/10">
-              <option>Monthly</option>
-              <option>Daily</option>
+            <select className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-white">
+              <option className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">Monthly</option>
+              <option className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">Daily</option>
             </select>
           </div>
           <div className="h-72">

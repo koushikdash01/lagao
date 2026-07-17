@@ -23,8 +23,21 @@ export function Catalog() {
       <SectionHeader title="Plant Catalog" subtitle="Search, filter, sort, quick view, wishlist, and cart-ready plant cards." />
       <div className="mb-6 grid gap-3 rounded-lg bg-white p-4 shadow-soft dark:bg-white/10 md:grid-cols-[1fr_auto_auto]">
         <input value={search} onChange={(event) => setSearch(event.target.value)} className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 outline-none dark:border-white/10" placeholder="Search by plant name..." />
-        <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 dark:border-white/10"><option>All</option>{categories.map((item) => <option key={item}>{item}</option>)}</select>
-        <select value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 dark:border-white/10"><option value="newest">Newest</option><option value="price-low">Price Low to High</option><option value="price-high">Price High to Low</option><option value="rating">Best Rated</option><option value="popularity">Popularity</option></select>
+        <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-white">
+          <option className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">All</option>
+          {categories.map((item) => (
+            <option key={item} className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">
+              {item}
+            </option>
+          ))}
+        </select>
+        <select value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-white">
+          <option value="newest" className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">Newest</option>
+          <option value="price-low" className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">Price Low to High</option>
+          <option value="price-high" className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">Price High to Low</option>
+          <option value="rating" className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">Best Rated</option>
+          <option value="popularity" className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">Popularity</option>
+        </select>
       </div>
       <aside className="mb-6 flex flex-wrap gap-2 text-sm text-slate-600 dark:text-slate-300"><SlidersHorizontal className="h-5 w-5" /> Filters supported by API: category, price range, indoor/outdoor, sunlight, availability.</aside>
       <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">{filtered.map((plant) => <PlantCard key={plant.id} plant={plant} />)}</div>
