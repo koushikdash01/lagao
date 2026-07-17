@@ -4,6 +4,9 @@ import { env } from "./env.js";
 
 export const pool = new pg.Pool({
   connectionString: env.databaseUrl,
+  ssl: env.databaseUrl.includes("supabase.co") || env.databaseUrl.includes("supabase.com")
+    ? { rejectUnauthorized: false }
+    : undefined
 });
 
 export async function query<T extends QueryResultRow = QueryResultRow>(text: string, params: unknown[] = []) {
