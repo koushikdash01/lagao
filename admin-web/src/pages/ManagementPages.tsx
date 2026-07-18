@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, Plus, Trash2, X, RefreshCw, Edit } from "lucide-react";
+import { Download, Plus, Trash2, X, RefreshCw, Edit, Leaf } from "lucide-react";
 import { Button, Card, DataTable, PageHeader, StatusPill } from "../components/ui";
 import { apiRequest } from "../lib/api";
 
@@ -184,7 +184,10 @@ export function PlantsPage() {
         }
       />
       {loading ? (
-        <div className="py-10 text-center"><RefreshCw className="animate-spin inline mr-2" />Loading plants...</div>
+        <div className="py-10 flex flex-col items-center justify-center gap-3">
+          <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading plants...</span>
+        </div>
       ) : (
         <DataTable
           columns={["Plant", "Category", "Price", "Stock", "Status", "Actions"]}
@@ -369,7 +372,10 @@ export function CategoriesPage() {
         }
       />
       {loading ? (
-        <div className="py-10 text-center"><RefreshCw className="animate-spin inline" /></div>
+        <div className="py-10 flex flex-col items-center justify-center gap-3">
+          <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading categories...</span>
+        </div>
       ) : (
         <DataTable
           columns={["Category", "Description", "Status", "Actions"]}
@@ -432,7 +438,10 @@ export function InventoryPage() {
     <>
       <PageHeader title="Inventory Monitor" description="Monitor real stock counts, low stock alerts, and catalog availability." />
       {loading ? (
-        <div className="py-10 text-center"><RefreshCw className="animate-spin inline" /></div>
+        <div className="py-10 flex flex-col items-center justify-center gap-3">
+          <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading inventory...</span>
+        </div>
       ) : (
         <DataTable
           columns={["Plant", "Current Stock", "Alert Status", "Last Update"]}
@@ -490,7 +499,10 @@ export function OrdersPage() {
     <>
       <PageHeader title="Order Management" description="Manage database customer purchases, confirm orders, or cancel them to restore inventory." />
       {loading ? (
-        <div className="py-10 text-center"><RefreshCw className="animate-spin inline" /></div>
+        <div className="py-10 flex flex-col items-center justify-center gap-3">
+          <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading orders...</span>
+        </div>
       ) : (
         <DataTable
           columns={["Order No.", "Plants Ordered", "Total", "Payment Method", "Status", "Date", "Actions"]}
