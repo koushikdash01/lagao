@@ -548,7 +548,195 @@ export function CustomersPage() {
 }
 
 export function CouponsPage() {
-  return <ResourcePage title="Coupon Management" description="Create flat or percentage coupons with expiry date, minimum order amount, and active status." columns={["Code", "Type", "Value", "Expiry", "Minimum", "Status"]} rows={[["LAGAO10", "Percentage", "10%", "2026-08-31", "Rs. 499", <StatusPill value="Active" />]]} />;
+  const [coupons, setCoupons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<any | null>(null);
+
+  // Form states
+  const [code, setCode] = useState("");
+  const [discountType, setDiscountType] = useState<"flat" | "percentage">("percentage");
+  const [discountValue, setDiscountValue] = useState(10);
+  const [expiryDate, setExpiryDate] = useState("");
+  const [minimumOrderAmount, setMinimumOrderAmount] = useState(0);
+  const [isActive, setIsActive] = useState(true);
+
+  const loadCoupons = async () => {
+    setLoading(true);
+    try {
+      const res = await apiRequest<{ data: any[] }>("/coupons");
+      setCoupons(res.data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCoupons();
+  }, []);
+
+  const resetForm = () => {
+    setCode("");
+    setDiscountType("percentage");
+    setDiscountValue(10);
+    const nextMonth = new Date();
+    nextMonth.setDate(nextMonth.getDate() + 30);
+    setExpiryDate(nextMonth.toISOString().split("T")[0]);
+    setMinimumOrderAmount(0);
+    setIsActive(true);
+  };
+
+  const handleOpenAdd = () => {
+    resetForm();
+    setShowAddModal(true);
+  };
+
+  const handleOpenEdit = (coupon: any) => {
+    setEditingCoupon(coupon);
+    setCode(coupon.code);
+    setDiscountType(coupon.discount_type || "percentage");
+    setDiscountValue(Number(coupon.discount_value));
+    setExpiryDate(coupon.expiry_date.split("T")[0]);
+    setMinimumOrderAmount(Number(coupon.minimum_order_amount || 0));
+    setIsActive(coupon.is_active);
+  };
+
+  const handleAddCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await apiRequest("/coupons", {
+        method: "POST",
+        body: JSON.stringify({
+          code,
+          discountType,
+          discountValue,
+          expiryDate,
+          minimumOrderAmount,
+          isActive,
+        }),
+      });
+      setShowAddModal(false);
+      resetForm();
+      loadCoupons();
+    } catch (e) {
+      alert("Failed to add coupon");
+    }
+  };
+
+  const handleEditCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await apiRequest(`/coupons/${editingCoupon.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          code,
+          discountType,
+          discountValue,
+          expiryDate,
+          minimumOrderAmount,
+          isActive,
+        }),
+      });
+      setEditingCoupon(null);
+      resetForm();
+      loadCoupons();
+    } catch (e) {
+      alert("Failed to update coupon");
+    }
+  };
+
+  const handleDeleteCoupon = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this coupon?")) return;
+    try {
+      await apiRequest(`/coupons/${id}`, { method: "DELETE" });
+      setCoupons(prev => prev.filter(c => c.id !== id));
+    } catch (e) {
+      alert("Failed to delete coupon");
+    }
+  };
+
+  return (
+    <>
+      <PageHeader
+        title="Coupon Management"
+        description="Create, edit, and manage flat or percentage coupons with expiry date, minimum order amount, and active status."
+        action={
+          <Button onClick={handleOpenAdd}>
+            <Plus className="mr-2 inline h-4 w-4" />Add Coupon
+          </Button>
+        }
+      />
+      {loading ? (
+        <div className="py-10 flex flex-col items-center justify-center gap-3">
+          <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading coupons...</span>
+        </div>
+      ) : (
+        <DataTable
+          columns={["Code", "Type", "Value", "Expiry", "Minimum Order", "Status", "Actions"]}
+          rows={coupons.map((c) => [
+            <strong>{c.code}</strong>,
+            c.discount_type === "percentage" ? "Percentage" : "Flat Amount",
+            c.discount_type === "percentage" ? `${c.discount_value}%` : `Rs. ${c.discount_value}`,
+            new Date(c.expiry_date).toLocaleDateString(),
+            `Rs. ${c.minimum_order_amount || 0}`,
+            <StatusPill value={c.is_active ? "Active" : "Out of Stock"} />,
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => handleOpenEdit(c)}><Edit className="h-4 w-4" /></Button>
+              <Button variant="danger" onClick={() => handleDeleteCoupon(c.id)}><Trash2 className="h-4 w-4" /></Button>
+            </div>
+          ])}
+        />
+      )}
+
+      {(showAddModal || editingCoupon) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900 overflow-y-auto max-h-[90vh]">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-xl font-bold dark:text-white">{editingCoupon ? "Edit Coupon" : "Add New Coupon"}</h3>
+              <button onClick={() => { setShowAddModal(false); setEditingCoupon(null); resetForm(); }}><X className="h-6 w-6 dark:text-white" /></button>
+            </div>
+            <form onSubmit={editingCoupon ? handleEditCoupon : handleAddCoupon} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Coupon Code</label>
+                <input required value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder="e.g. MONSOON20" className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Discount Type</label>
+                  <select value={discountType} onChange={e => setDiscountType(e.target.value as any)} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white">
+                    <option value="percentage">Percentage</option>
+                    <option value="flat">Flat Amount</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Discount Value</label>
+                  <input required type="number" min={1} value={discountValue} onChange={e => setDiscountValue(Number(e.target.value))} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Min Order Amount (Rs.)</label>
+                  <input required type="number" min={0} value={minimumOrderAmount} onChange={e => setMinimumOrderAmount(Number(e.target.value))} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Expiry Date</label>
+                  <input required type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="isActive" checked={isActive} onChange={e => setIsActive(e.target.checked)} className="h-4 w-4 rounded accent-leaf-500" />
+                <label htmlFor="isActive" className="text-sm font-semibold dark:text-slate-200">Active Coupon</label>
+              </div>
+              <Button type="submit" className="w-full">Save Coupon</Button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 export function ReviewsPage() {
