@@ -213,6 +213,7 @@ router.post("/orders", asyncHandler(async (req, res) => {
       plantId: z.string().uuid(),
       quantity: z.number().int().positive(),
     })).min(1),
+    couponCode: z.string().optional().nullable(),
   }).parse(req.body);
 
   // Begin transaction
@@ -220,12 +221,12 @@ router.post("/orders", asyncHandler(async (req, res) => {
 
   try {
     let subtotal = 0;
-    const itemsToInsert: { plantId: string; name: string; quantity: number; price: number }[] = [];
+    const itemsToInsert: { plantId: string; name: string; quantity: number; price: number; categoryId: string }[] = [];
 
     // 1. Validate stock and calculate prices
     for (const item of input.items) {
-      const plantRes = await query<{ name: string; price: number; discount_price: number | null; stock_quantity: number }>(
-        "select name, price, discount_price, stock_quantity from plants where id = $1 for update",
+      const plantRes = await query<{ name: string; price: number; discount_price: number | null; stock_quantity: number; category_id: string }>(
+        "select name, price, discount_price, stock_quantity, category_id from plants where id = $1 for update",
         [item.plantId]
       );
 
@@ -246,25 +247,58 @@ router.post("/orders", asyncHandler(async (req, res) => {
         name: plant.name,
         quantity: item.quantity,
         price: activePrice,
+        categoryId: plant.category_id,
       });
     }
 
+    // 1.5 Calculate Coupon Discount if applicable
+    let discount = 0;
+    if (input.couponCode) {
+      const couponRes = await query(
+        "select * from coupons where upper(code) = upper($1) and is_active = true and expiry_date >= current_date",
+        [input.couponCode]
+      );
+      const coupon = couponRes.rows[0];
+      if (coupon && subtotal >= Number(coupon.minimum_order_amount)) {
+        let eligibleSubtotal = subtotal;
+        if (coupon.category_id) {
+          eligibleSubtotal = itemsToInsert
+            .filter(item => item.categoryId === coupon.category_id)
+            .reduce((sum, item) => sum + item.price * item.quantity, 0);
+        } else if (coupon.plant_id) {
+          eligibleSubtotal = itemsToInsert
+            .filter(item => item.plantId === coupon.plant_id)
+            .reduce((sum, item) => sum + item.price * item.quantity, 0);
+        }
+
+        if (eligibleSubtotal > 0) {
+          if (coupon.discount_type === "percentage") {
+            discount = Number((eligibleSubtotal * (Number(coupon.discount_value) / 100)).toFixed(2));
+          } else {
+            discount = Math.min(Number(coupon.discount_value), eligibleSubtotal);
+          }
+        }
+      }
+    }
+
     const orderNumber = "LG-" + Math.floor(100000 + Math.random() * 900000);
-    const tax = Number((subtotal * 0.05).toFixed(2)); // 5% GST
+    const taxableAmount = Math.max(0, subtotal - discount);
+    const tax = Number((taxableAmount * 0.05).toFixed(2)); // 5% GST
     const delivery = subtotal > 499 ? 0 : 49;
-    const total = subtotal + tax + delivery;
+    const total = taxableAmount + tax + delivery;
 
     // 2. Insert order
     const orderRes = await query<{ id: string }>(
       `insert into customer_orders
-       (order_number, subtotal, tax_amount, delivery_charge, total_amount, payment_method, payment_status, status)
-       values ($1, $2, $3, $4, $5, $6, $7, 'placed')
+       (order_number, subtotal, tax_amount, delivery_charge, discount_amount, total_amount, payment_method, payment_status, status)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, 'placed')
        returning id`,
       [
         orderNumber,
         subtotal,
         tax,
         delivery,
+        discount,
         total,
         input.paymentMethod,
         input.paymentMethod === "cod" ? "pending" : "paid",
@@ -514,6 +548,19 @@ router.delete("/plants/:id", asyncHandler(async (req, res) => {
 router.delete("/categories/:id", asyncHandler(async (req, res) => {
   await query("delete from categories where id = $1", [req.params.id]);
   res.json({ success: true });
+}));
+
+// 12. GET /api/demo/coupons/validate/:code (Validate and return coupon details)
+router.get("/coupons/validate/:code", asyncHandler(async (req, res) => {
+  const { code } = req.params;
+  const result = await query(
+    "select id, code, discount_type, discount_value, expiry_date, minimum_order_amount, is_active, category_id, plant_id from coupons where upper(code) = upper($1) and is_active = true and expiry_date >= current_date",
+    [code]
+  );
+  if (result.rows.length === 0) {
+    return res.status(404).json({ message: "Invalid or expired coupon" });
+  }
+  res.json({ data: result.rows[0] });
 }));
 
 export default router;

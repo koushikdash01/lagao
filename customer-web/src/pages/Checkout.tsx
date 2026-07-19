@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button, SectionHeader } from "../components/ui";
 import { useStore } from "../lib/store";
 import { apiRequest } from "../lib/api";
 
 export function Checkout() {
   const { cart, cartTotal, clearCart, loadPlants } = useStore();
+  const location = useLocation();
+  const appliedCoupon = location.state?.coupon || null;
+
   const [recipientName, setRecipientName] = useState("Koushik Dash");
   const [email, setEmail] = useState("koushik@email.com");
   const [phone, setPhone] = useState("+91 98765 43210");
@@ -18,9 +21,33 @@ export function Checkout() {
   const [error, setError] = useState<string | null>(null);
   const [successOrder, setSuccessOrder] = useState<any | null>(null);
 
-  const gst = Number((cartTotal * 0.05).toFixed(2));
+  const getDiscountAmount = () => {
+    if (!appliedCoupon) return 0;
+    
+    let eligibleSubtotal = cartTotal;
+
+    if (appliedCoupon.category_id) {
+      eligibleSubtotal = cart
+        .filter(item => item.categoryId === appliedCoupon.category_id)
+        .reduce((sum, item) => sum + (item.discountPrice ?? item.price) * item.quantity, 0);
+    } else if (appliedCoupon.plant_id) {
+      eligibleSubtotal = cart
+        .filter(item => item.id === appliedCoupon.plant_id)
+        .reduce((sum, item) => sum + (item.discountPrice ?? item.price) * item.quantity, 0);
+    }
+
+    if (appliedCoupon.discount_type === "percentage") {
+      return Number((eligibleSubtotal * (Number(appliedCoupon.discount_value) / 100)).toFixed(2));
+    } else {
+      return Math.min(Number(appliedCoupon.discount_value), eligibleSubtotal);
+    }
+  };
+
+  const discount = getDiscountAmount();
+  const taxableAmount = Math.max(0, cartTotal - discount);
+  const gst = Number((taxableAmount * 0.05).toFixed(2));
   const delivery = cartTotal > 499 || cartTotal === 0 ? 0 : 49;
-  const grandTotal = cartTotal + gst + delivery;
+  const grandTotal = taxableAmount + gst + delivery;
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +64,7 @@ export function Checkout() {
         customerName: recipientName,
         customerEmail: email,
         paymentMethod,
+        couponCode: appliedCoupon?.code || null,
         items: cart.map(item => ({
           plantId: item.id,
           quantity: item.quantity
@@ -176,6 +204,12 @@ export function Checkout() {
                   <span>Subtotal</span>
                   <span>Rs. {cartTotal}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-leaf-600 font-semibold">
+                    <span>Discount ({appliedCoupon?.code})</span>
+                    <span>- Rs. {discount}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-slate-500">
                   <span>GST (5%)</span>
                   <span>Rs. {gst}</span>

@@ -50,6 +50,8 @@ export const couponSchema = z.object({
   expiryDate: z.string(),
   minimumOrderAmount: z.number().nonnegative().default(0),
   isActive: z.boolean().default(true),
+  categoryId: z.string().uuid().optional().nullable(),
+  plantId: z.string().uuid().optional().nullable(),
 });
 
 export const reviewSchema = z.object({

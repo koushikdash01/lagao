@@ -39,7 +39,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           type: p.type === "outdoor" ? "Outdoor" : "Indoor",
           sunlight: p.sunlight_requirement || "Low to bright indirect",
           image: p.image_url || "https://images.unsplash.com/photo-1593482892290-f54927ae2b7f?q=80&w=900&auto=format&fit=crop",
-          description: p.description
+          description: p.description,
+          categoryId: p.category_id
         }));
         setPlantsState(mapped);
       } else {

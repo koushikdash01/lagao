@@ -10,6 +10,7 @@ export type Plant = {
   sunlight: string;
   image: string;
   description: string;
+  categoryId?: string;
 };
 
 export const categories = ["Indoor Plants", "Outdoor Plants", "Flowering Plants", "Succulents", "Air Purifying Plants", "Pots & Accessories"];

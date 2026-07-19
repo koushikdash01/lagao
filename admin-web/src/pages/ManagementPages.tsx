@@ -549,6 +549,8 @@ export function CustomersPage() {
 
 export function CouponsPage() {
   const [coupons, setCoupons] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [plants, setPlants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<any | null>(null);
@@ -560,12 +562,23 @@ export function CouponsPage() {
   const [expiryDate, setExpiryDate] = useState("");
   const [minimumOrderAmount, setMinimumOrderAmount] = useState(0);
   const [isActive, setIsActive] = useState(true);
+  
+  // Selective Coupon states
+  const [appliesTo, setAppliesTo] = useState<"all" | "category" | "plant">("all");
+  const [categoryId, setCategoryId] = useState("");
+  const [plantId, setPlantId] = useState("");
 
-  const loadCoupons = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
-      const res = await apiRequest<{ data: any[] }>("/coupons");
-      setCoupons(res.data);
+      const [couponsRes, catsRes, plantsRes] = await Promise.all([
+        apiRequest<{ data: any[] }>("/coupons"),
+        apiRequest<{ data: any[] }>("/demo/categories"),
+        apiRequest<{ data: any[] }>("/demo/plants")
+      ]);
+      setCoupons(couponsRes.data);
+      setCategories(catsRes.data);
+      setPlants(plantsRes.data);
     } catch (e) {
       console.error(e);
     } finally {
@@ -574,7 +587,7 @@ export function CouponsPage() {
   };
 
   useEffect(() => {
-    loadCoupons();
+    loadData();
   }, []);
 
   const resetForm = () => {
@@ -586,6 +599,9 @@ export function CouponsPage() {
     setExpiryDate(nextMonth.toISOString().split("T")[0]);
     setMinimumOrderAmount(0);
     setIsActive(true);
+    setAppliesTo("all");
+    setCategoryId(categories[0]?.id || "");
+    setPlantId(plants[0]?.id || "");
   };
 
   const handleOpenAdd = () => {
@@ -601,6 +617,20 @@ export function CouponsPage() {
     setExpiryDate(coupon.expiry_date.split("T")[0]);
     setMinimumOrderAmount(Number(coupon.minimum_order_amount || 0));
     setIsActive(coupon.is_active);
+    
+    if (coupon.category_id) {
+      setAppliesTo("category");
+      setCategoryId(coupon.category_id);
+      setPlantId(plants[0]?.id || "");
+    } else if (coupon.plant_id) {
+      setAppliesTo("plant");
+      setPlantId(coupon.plant_id);
+      setCategoryId(categories[0]?.id || "");
+    } else {
+      setAppliesTo("all");
+      setCategoryId(categories[0]?.id || "");
+      setPlantId(plants[0]?.id || "");
+    }
   };
 
   const handleAddCoupon = async (e: React.FormEvent) => {
@@ -615,11 +645,13 @@ export function CouponsPage() {
           expiryDate,
           minimumOrderAmount,
           isActive,
+          categoryId: appliesTo === "category" ? categoryId : null,
+          plantId: appliesTo === "plant" ? plantId : null,
         }),
       });
       setShowAddModal(false);
       resetForm();
-      loadCoupons();
+      loadData();
     } catch (e) {
       alert("Failed to add coupon");
     }
@@ -637,11 +669,13 @@ export function CouponsPage() {
           expiryDate,
           minimumOrderAmount,
           isActive,
+          categoryId: appliesTo === "category" ? categoryId : null,
+          plantId: appliesTo === "plant" ? plantId : null,
         }),
       });
       setEditingCoupon(null);
       resetForm();
-      loadCoupons();
+      loadData();
     } catch (e) {
       alert("Failed to update coupon");
     }
@@ -657,11 +691,23 @@ export function CouponsPage() {
     }
   };
 
+  const getAppliesToText = (c: any) => {
+    if (c.category_id) {
+      const cat = categories.find(cat => cat.id === c.category_id);
+      return `Category: ${cat ? cat.name : "Unknown Category"}`;
+    }
+    if (c.plant_id) {
+      const plant = plants.find(p => p.id === c.plant_id);
+      return `Plant: ${plant ? plant.name : "Unknown Plant"}`;
+    }
+    return "All Items (Global)";
+  };
+
   return (
     <>
       <PageHeader
         title="Coupon Management"
-        description="Create, edit, and manage flat or percentage coupons with expiry date, minimum order amount, and active status."
+        description="Create, edit, and manage flat or percentage coupons with selective plant/category applicability, expiry, min order, and active status."
         action={
           <Button onClick={handleOpenAdd}>
             <Plus className="mr-2 inline h-4 w-4" />Add Coupon
@@ -675,12 +721,13 @@ export function CouponsPage() {
         </div>
       ) : (
         <DataTable
-          columns={["Code", "Type", "Value", "Expiry", "Minimum Order", "Status", "Actions"]}
+          columns={["Code", "Type", "Value", "Expiry", "Applies To", "Minimum Order", "Status", "Actions"]}
           rows={coupons.map((c) => [
             <strong>{c.code}</strong>,
             c.discount_type === "percentage" ? "Percentage" : "Flat Amount",
             c.discount_type === "percentage" ? `${c.discount_value}%` : `Rs. ${c.discount_value}`,
             new Date(c.expiry_date).toLocaleDateString(),
+            <span className="text-xs font-bold text-slate-500">{getAppliesToText(c)}</span>,
             `Rs. ${c.minimum_order_amount || 0}`,
             <StatusPill value={c.is_active ? "Active" : "Out of Stock"} />,
             <div className="flex gap-2">
@@ -716,6 +763,38 @@ export function CouponsPage() {
                   <input required type="number" min={1} value={discountValue} onChange={e => setDiscountValue(Number(e.target.value))} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white" />
                 </div>
               </div>
+              
+              <div>
+                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Applies To</label>
+                <select value={appliesTo} onChange={e => setAppliesTo(e.target.value as any)} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white">
+                  <option value="all">All Items (Global)</option>
+                  <option value="category">Specific Category</option>
+                  <option value="plant">Specific Plant</option>
+                </select>
+              </div>
+
+              {appliesTo === "category" && (
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Select Category</label>
+                  <select value={categoryId} onChange={e => setCategoryId(e.target.value)} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white">
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {appliesTo === "plant" && (
+                <div>
+                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Select Plant</label>
+                  <select value={plantId} onChange={e => setPlantId(e.target.value)} className="w-full rounded-lg border p-2 dark:bg-slate-800 dark:border-white/10 dark:text-white">
+                    {plants.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Min Order Amount (Rs.)</label>
