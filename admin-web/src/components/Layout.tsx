@@ -41,9 +41,10 @@ type LayoutProps = {
   setSidebarOpen: (open: boolean) => void;
   darkMode: boolean;
   setDarkMode: (enabled: boolean) => void;
+  onLogout?: () => void;
 };
 
-export function Layout({ children, sidebarOpen, setSidebarOpen, darkMode, setDarkMode }: LayoutProps) {
+export function Layout({ children, sidebarOpen, setSidebarOpen, darkMode, setDarkMode, onLogout }: LayoutProps) {
   return (
     <div className="min-h-screen bg-[#f5f7f3] text-slate-900 dark:bg-[#08120c] dark:text-slate-100">
       <aside
@@ -111,7 +112,7 @@ export function Layout({ children, sidebarOpen, setSidebarOpen, darkMode, setDar
                 <p className="text-xs text-slate-500 dark:text-slate-400">Owner</p>
               </div>
             </div>
-            <button className="rounded-full bg-white p-2 shadow-sm dark:bg-white/10">
+            <button className="rounded-full bg-white p-2 shadow-sm dark:bg-white/10" onClick={onLogout}>
               <LogOut className="h-5 w-5" />
             </button>
           </div>

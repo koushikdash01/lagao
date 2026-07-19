@@ -24,12 +24,17 @@ export default function App() {
     document.documentElement.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("lagao_admin_token");
+    setAuthenticated(false);
+  };
+
   if (!authenticated) {
     return <Login onLogin={() => setAuthenticated(true)} />;
   }
 
   return (
-    <Layout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} darkMode={darkMode} setDarkMode={setDarkMode}>
+    <Layout sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} darkMode={darkMode} setDarkMode={setDarkMode} onLogout={handleLogout}>
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/plants" element={<PlantsPage />} />
