@@ -1,16 +1,28 @@
 import { FormEvent, useState } from "react";
+import { apiRequest } from "../lib/api";
 
 export function Login({ onLogin }: { onLogin: () => void }) {
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("admin@lagao.shop");
+  const [password, setPassword] = useState("Password123");
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      localStorage.setItem("lagao_admin_token", "demo-token");
-      setLoading(false);
+    setError(null);
+    try {
+      const res = await apiRequest<{ token: string }>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      localStorage.setItem("lagao_admin_token", res.token);
       onLogin();
-    }, 450);
+    } catch (err: any) {
+      setError(err.message || "Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -24,11 +36,32 @@ export function Login({ onLogin }: { onLogin: () => void }) {
           </div>
         </div>
 
+        {error && (
+          <div className="mb-4 rounded-lg bg-red-50 p-4 text-sm font-semibold text-red-700">
+            ⚠️ {error}
+          </div>
+        )}
+
         <label className="mb-2 block text-sm font-bold">Email</label>
-        <input className="mb-4 w-full rounded-lg border border-slate-200 px-3 py-3 outline-none focus:border-leaf-500" type="email" required placeholder="admin@lagao.shop" />
+        <input 
+          className="mb-4 w-full rounded-lg border border-slate-200 px-3 py-3 outline-none focus:border-leaf-500" 
+          type="email" 
+          required 
+          placeholder="admin@lagao.shop" 
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
 
         <label className="mb-2 block text-sm font-bold">Password</label>
-        <input className="mb-6 w-full rounded-lg border border-slate-200 px-3 py-3 outline-none focus:border-leaf-500" type="password" required minLength={8} placeholder="At least 8 characters" />
+        <input 
+          className="mb-6 w-full rounded-lg border border-slate-200 px-3 py-3 outline-none focus:border-leaf-500" 
+          type="password" 
+          required 
+          minLength={8} 
+          placeholder="At least 8 characters" 
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
 
         <button className="w-full rounded-lg bg-leaf-500 px-4 py-3 font-bold text-white hover:bg-leaf-700" disabled={loading}>
           {loading ? "Signing in..." : "Sign In"}
