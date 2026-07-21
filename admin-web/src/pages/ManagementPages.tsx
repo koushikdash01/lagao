@@ -55,6 +55,16 @@ export function PlantsPage() {
     setImageUrl(plant.image_url || "");
   };
 
+function formatImageUrl(url: string): string {
+  if (!url) return url;
+  const trimmed = url.trim();
+  const match = trimmed.match(/\/file\/d\/([^\/\?]+)/) || trimmed.match(/[?&]id=([^&]+)/) || trimmed.match(/\/d\/([^\/\?]+)/);
+  if (match && match[1]) {
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+  }
+  return trimmed;
+}
+
   const handleEditPlant = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -72,7 +82,7 @@ export function PlantsPage() {
           sunlightRequirement: sunlight,
           wateringFrequency: watering,
           potSize,
-          imageUrl: imageUrl || null,
+          imageUrl: formatImageUrl(imageUrl) || null,
         }),
       });
       setEditingPlant(null);
@@ -123,7 +133,7 @@ export function PlantsPage() {
           sunlightRequirement: sunlight,
           wateringFrequency: watering,
           potSize,
-          imageUrl: imageUrl || null,
+          imageUrl: formatImageUrl(imageUrl) || null,
         }),
       });
       setShowAddModal(false);
@@ -301,7 +311,7 @@ export function PlantsPage() {
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Image URL</label>
-                <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="https://..." />
+                <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="https://... or Google Drive link" />
               </div>
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="secondary" onClick={() => { setShowAddModal(false); setEditingPlant(null); resetForm(); }}>Cancel</Button>
