@@ -88,3 +88,5 @@ if (fs.existsSync(customerDistPath)) {
 app.listen(env.port, () => {
   console.log(`Lagao admin API running on http://localhost:${env.port}`);
 });
+
+export default app;
