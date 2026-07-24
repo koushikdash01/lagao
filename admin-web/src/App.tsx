@@ -18,10 +18,18 @@ import {
 export default function App() {
   const [authenticated, setAuthenticated] = useState(() => Boolean(localStorage.getItem("lagao_admin_token")));
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("admin_theme") || localStorage.getItem("theme");
+      if (saved !== null) return saved === "dark";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem("admin_theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
   const handleLogout = () => {

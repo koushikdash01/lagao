@@ -6,11 +6,18 @@ import { useStore } from "../lib/store";
 
 export function Layout() {
   const [open, setOpen] = useState(false);
-  const [dark, setDark] = useState(false);
-  const { cartCount, wishlist } = useStore();
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("theme");
+      if (saved !== null) return saved === "dark";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
   }, [dark]);
 
   const nav = (
