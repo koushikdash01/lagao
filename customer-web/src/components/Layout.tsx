@@ -6,6 +6,7 @@ import { useStore } from "../lib/store";
 
 export function Layout() {
   const [open, setOpen] = useState(false);
+  const { cartCount, wishlist } = useStore();
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("theme");
