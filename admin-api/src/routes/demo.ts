@@ -2,8 +2,17 @@ import { Router } from "express";
 import { z } from "zod";
 import { query } from "../config/db.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { calculateDistanceInMeters } from "../utils/distance.js";
 
 const router = Router();
+
+// Ensure customer_orders has location & distance columns
+query(`
+  ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS shipping_address text;
+  ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS latitude numeric(10,7);
+  ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS longitude numeric(10,7);
+  ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS distance_meters integer;
+`).catch(err => console.error("Location columns migration notice:", err.message));
 
 // 1. GET /api/demo/categories
 router.get("/categories", asyncHandler(async (_req, res) => {
@@ -209,12 +218,21 @@ router.post("/orders", asyncHandler(async (req, res) => {
     customerName: z.string().min(2),
     customerEmail: z.string().email(),
     paymentMethod: z.enum(["upi", "card", "net_banking", "cod"]),
+    addressLine: z.string().optional().nullable(),
+    city: z.string().optional().nullable(),
+    postalCode: z.string().optional().nullable(),
+    latitude: z.number().optional().nullable(),
+    longitude: z.number().optional().nullable(),
     items: z.array(z.object({
       plantId: z.string().uuid(),
       quantity: z.number().int().positive(),
     })).min(1),
     couponCode: z.string().optional().nullable(),
   }).parse(req.body);
+
+  // Calculate distance in meters from admin store/house if coordinates exist
+  const distanceMeters = calculateDistanceInMeters(input.latitude, input.longitude);
+  const formattedAddress = [input.addressLine, input.city, input.postalCode].filter(Boolean).join(", ");
 
   // Begin transaction
   await query("BEGIN");
@@ -287,11 +305,11 @@ router.post("/orders", asyncHandler(async (req, res) => {
     const delivery = subtotal > 499 ? 0 : 49;
     const total = taxableAmount + tax + delivery;
 
-    // 2. Insert order
+    // 2. Insert order with location and calculated distance in meters
     const orderRes = await query<{ id: string }>(
       `insert into customer_orders
-       (order_number, subtotal, tax_amount, delivery_charge, discount_amount, total_amount, payment_method, payment_status, status)
-       values ($1, $2, $3, $4, $5, $6, $7, $8, 'placed')
+       (order_number, subtotal, tax_amount, delivery_charge, discount_amount, total_amount, payment_method, payment_status, status, shipping_address, latitude, longitude, distance_meters)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, 'placed', $9, $10, $11, $12)
        returning id`,
       [
         orderNumber,
@@ -302,6 +320,10 @@ router.post("/orders", asyncHandler(async (req, res) => {
         total,
         input.paymentMethod,
         input.paymentMethod === "cod" ? "pending" : "paid",
+        formattedAddress || null,
+        input.latitude ?? null,
+        input.longitude ?? null,
+        distanceMeters,
       ]
     );
 

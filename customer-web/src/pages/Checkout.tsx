@@ -17,9 +17,36 @@ export function Checkout() {
   const [postalCode, setPostalCode] = useState("700091");
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "net_banking" | "cod">("cod");
 
+  const [latitude, setLatitude] = useState<number | null>(22.5726);
+  const [longitude, setLongitude] = useState<number | null>(88.3639);
+  const [locating, setLocating] = useState(false);
+  const [locationMsg, setLocationMsg] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successOrder, setSuccessOrder] = useState<any | null>(null);
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationMsg("Geolocation is not supported by your browser.");
+      return;
+    }
+    setLocating(true);
+    setLocationMsg("Detecting your location...");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLatitude(Number(pos.coords.latitude.toFixed(6)));
+        setLongitude(Number(pos.coords.longitude.toFixed(6)));
+        setLocating(false);
+        setLocationMsg(`Location detected: ${pos.coords.latitude.toFixed(4)}°N, ${pos.coords.longitude.toFixed(4)}°E`);
+      },
+      (err) => {
+        setLocating(false);
+        setLocationMsg(`Location access denied (${err.message}). Using manual coordinates.`);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
 
   const getDiscountAmount = () => {
     if (!appliedCoupon) return 0;
@@ -64,6 +91,11 @@ export function Checkout() {
         customerName: recipientName,
         customerEmail: email,
         paymentMethod,
+        addressLine,
+        city,
+        postalCode,
+        latitude: latitude !== null ? Number(latitude) : null,
+        longitude: longitude !== null ? Number(longitude) : null,
         couponCode: appliedCoupon?.code || null,
         items: cart.map(item => ({
           plantId: item.id,
@@ -108,6 +140,9 @@ export function Checkout() {
               <p><span className="font-semibold">Total Amount:</span> Rs. {successOrder.total_amount}</p>
               <p><span className="font-semibold">Payment Status:</span> {successOrder.payment_status}</p>
               <p><span className="font-semibold">Deliver To:</span> {addressLine}, {city} - {postalCode}</p>
+              {successOrder.distance_meters != null && (
+                <p><span className="font-semibold">Calculated Distance:</span> {successOrder.distance_meters < 1000 ? `${successOrder.distance_meters} meters` : `${(successOrder.distance_meters / 1000).toFixed(1)} km`}</p>
+              )}
             </div>
           </div>
           <div className="mt-8 flex flex-col gap-3">
@@ -132,7 +167,7 @@ export function Checkout() {
 
       <form onSubmit={handlePlaceOrder} className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <section className="space-y-5">
-          <Panel title="Delivery Address">
+          <Panel title="Delivery Address & Geolocation">
             <div className="grid gap-3 md:grid-cols-2">
               <div>
                 <label className="mb-1 block text-xs font-bold text-slate-500">Recipient Name</label>
@@ -146,6 +181,56 @@ export function Checkout() {
                 <label className="mb-1 block text-xs font-bold text-slate-500">Email Address</label>
                 <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address" className="w-full" />
               </div>
+
+              {/* Geolocation Card */}
+              <div className="md:col-span-2 rounded-lg bg-leaf-50/60 p-4 border border-leaf-200 dark:bg-white/5 dark:border-white/10 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-bold text-leaf-900 dark:text-white flex items-center gap-1.5">
+                      <span>📍</span> Location Service
+                    </p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Enable GPS location to calculate precise delivery distance to admin house.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleDetectLocation}
+                    disabled={locating}
+                    className="rounded-lg bg-leaf-500 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-leaf-600 disabled:opacity-50 transition"
+                  >
+                    {locating ? "Detecting..." : "📍 Detect My Location"}
+                  </button>
+                </div>
+                {locationMsg && (
+                  <p className="text-xs font-semibold text-leaf-700 dark:text-leaf-300">{locationMsg}</p>
+                )}
+                <div className="grid gap-2 grid-cols-2 pt-1">
+                  <div>
+                    <label className="mb-0.5 block text-[11px] font-bold text-slate-500">Latitude (°N)</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={latitude ?? ""}
+                      onChange={e => setLatitude(e.target.value ? Number(e.target.value) : null)}
+                      placeholder="e.g. 22.5726"
+                      className="w-full text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-0.5 block text-[11px] font-bold text-slate-500">Longitude (°E)</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={longitude ?? ""}
+                      onChange={e => setLongitude(e.target.value ? Number(e.target.value) : null)}
+                      placeholder="e.g. 88.3639"
+                      className="w-full text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="md:col-span-2">
                 <label className="mb-1 block text-xs font-bold text-slate-500">Street Address</label>
                 <input required value={addressLine} onChange={e => setAddressLine(e.target.value)} placeholder="Address line" className="w-full" />

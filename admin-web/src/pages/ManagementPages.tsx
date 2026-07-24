@@ -509,6 +509,46 @@ export function InventoryPage() {
   );
 }
 
+function DistanceBadge({ meters, lat, lng }: { meters?: number | null; lat?: number | null; lng?: number | null }) {
+  if (meters == null || meters === undefined) {
+    return <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600 dark:bg-white/10 dark:text-slate-300">📍 N/A</span>;
+  }
+
+  let colorClass = "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300";
+  let icon = "⚡";
+  let tag = "Nearby";
+
+  if (meters > 15000) {
+    colorClass = "bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300";
+    icon = "⚠️";
+    tag = "Far";
+  } else if (meters > 5000) {
+    colorClass = "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300";
+    icon = "🚗";
+    tag = "Medium";
+  }
+
+  const distanceStr = meters < 1000 ? `${meters} m` : `${(meters / 1000).toFixed(1)} km (${meters.toLocaleString()} m)`;
+
+  return (
+    <div className="space-y-1">
+      <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold ${colorClass}`}>
+        <span>{icon}</span> {distanceStr} ({tag})
+      </span>
+      {lat != null && lng != null && (
+        <a
+          href={`https://www.google.com/maps?q=${lat},${lng}`}
+          target="_blank"
+          rel="noreferrer"
+          className="block text-[11px] font-semibold text-leaf-600 hover:underline dark:text-leaf-400"
+        >
+          🗺️ Open Map ({Number(lat).toFixed(3)}, {Number(lng).toFixed(3)})
+        </a>
+      )}
+    </div>
+  );
+}
+
 export function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -534,7 +574,7 @@ export function OrdersPage() {
       await apiRequest(`/demo/orders/${id}/confirm`, { method: "POST" });
       loadOrders();
     } catch (e) {
-      alert("Failed to confirm order");
+      alert("Failed to accept order");
     }
   };
 
@@ -543,13 +583,13 @@ export function OrdersPage() {
       await apiRequest(`/demo/orders/${id}/cancel`, { method: "POST" });
       loadOrders();
     } catch (e) {
-      alert("Failed to cancel order");
+      alert("Failed to reject order");
     }
   };
 
   return (
     <>
-      <PageHeader title="Order Management" description="Manage database customer purchases, confirm orders, or cancel them to restore inventory." />
+      <PageHeader title="Order Management" description="Review customer locations, calculated delivery distances from admin house, and accept or reject orders." />
       {loading ? (
         <div className="py-10 flex flex-col items-center justify-center gap-3">
           <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
@@ -557,7 +597,7 @@ export function OrdersPage() {
         </div>
       ) : (
         <DataTable
-          columns={["Order No.", "Plants Ordered", "Total", "Payment Method", "Status", "Date", "Actions"]}
+          columns={["Order No.", "Plants Ordered", "Delivery Location", "Distance from Admin", "Total", "Payment Method", "Status", "Date", "Accept / Reject Delivery"]}
           rows={orders.map((o) => [
             <strong>{o.order_number}</strong>,
             <div className="space-y-1">
@@ -565,6 +605,10 @@ export function OrdersPage() {
                 <p key={idx} className="text-xs">{item.plant_name} (x{item.quantity})</p>
               ))}
             </div>,
+            <div className="max-w-[200px] text-xs space-y-0.5">
+              <p className="font-semibold text-slate-800 dark:text-slate-200">{o.shipping_address || "Salt Lake, Sector V, Kolkata"}</p>
+            </div>,
+            <DistanceBadge meters={o.distance_meters} lat={o.latitude} lng={o.longitude} />,
             `Rs. ${o.total_amount}`,
             o.payment_method.toUpperCase(),
             <StatusPill value={o.status === "placed" ? "Pending" : o.status === "confirmed" ? "Active" : o.status === "cancelled" ? "Out of Stock" : o.status} />,
@@ -572,8 +616,8 @@ export function OrdersPage() {
             <div className="flex gap-2">
               {o.status === "placed" && (
                 <>
-                  <Button variant="primary" className="py-1 text-xs" onClick={() => handleConfirm(o.id)}>Confirm</Button>
-                  <Button variant="danger" className="py-1 text-xs" onClick={() => handleCancel(o.id)}>Cancel</Button>
+                  <Button variant="primary" className="py-1 text-xs" onClick={() => handleConfirm(o.id)}>Accept Delivery</Button>
+                  <Button variant="danger" className="py-1 text-xs" onClick={() => handleCancel(o.id)}>Reject Delivery</Button>
                 </>
               )}
               {o.status === "confirmed" && (
