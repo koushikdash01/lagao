@@ -635,10 +635,48 @@ export function OrdersPage() {
 }
 
 export function CustomersPage() {
+  const [customers, setCustomers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCustomers() {
+      setLoading(true);
+      try {
+        const res = await apiRequest<{ data: any[] }>("/demo/customers");
+        setCustomers(res.data);
+      } catch (e) {
+        console.error("Customers fetch error:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadCustomers();
+  }, []);
+
   return (
     <>
-      <PageHeader title="Customer Management" description="Search customers, view contact details, purchase history, addresses, and total spending." />
-      <DataTable columns={["Customer", "Email", "Phone", "Address", "Orders", "Total Spending"]} rows={[["Koushik Dash", "koushik@email.com", "+91 98765 43210", "Kolkata, WB", 1, "Rs. 899"]]} />
+      <PageHeader title="Customer Management" description="Real-time view of customer profiles, order history, addresses, and total spending." />
+      {loading ? (
+        <div className="py-10 flex flex-col items-center justify-center gap-3">
+          <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading customers...</span>
+        </div>
+      ) : customers.length === 0 ? (
+        <div className="rounded-lg bg-white p-8 text-center shadow-soft dark:bg-white/10 text-slate-500 text-sm">
+          🌱 No registered customers yet. Customer profiles will appear here when orders are placed.
+        </div>
+      ) : (
+        <DataTable
+          columns={["Customer", "Email", "Delivery Address", "Orders Placed", "Total Spending"]}
+          rows={customers.map((c) => [
+            <strong>{c.name}</strong>,
+            c.email,
+            c.address || "Address N/A",
+            c.order_count,
+            `Rs. ${Number(c.total_spent).toLocaleString()}`,
+          ])}
+        />
+      )}
     </>
   );
 }
@@ -945,17 +983,49 @@ export function BannersPage() {
 }
 
 export function AnalyticsPage() {
+  const [analytics, setAnalytics] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadAnalytics() {
+      setLoading(true);
+      try {
+        const res = await apiRequest<{ data: any }>("/demo/analytics");
+        setAnalytics(res.data);
+      } catch (e) {
+        console.error("Analytics fetch error:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadAnalytics();
+  }, []);
+
+  const items = [
+    { label: "Best-selling plant", value: analytics?.bestSellingPlant ?? "No sales yet" },
+    { label: "Top category", value: analytics?.topCategory ?? "No sales yet" },
+    { label: "Customer activity", value: analytics?.topCustomer !== "No sales yet" ? "Active" : "Fresh start" },
+    { label: "Top customer", value: analytics?.topCustomer ?? "No sales yet" },
+  ];
+
   return (
     <>
-      <PageHeader title="Analytics" description="Monthly revenue, orders by month, best-selling plants, customer growth, revenue by category, and top customers." />
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          { label: "Best-selling plant", value: "Snake Plant" },
-          { label: "Top category", value: "Indoor Plants" },
-          { label: "Customer growth", value: "+16.2%" },
-          { label: "Top customer", value: "Koushik Dash" },
-        ].map((item) => <Card key={item.label}><p className="text-sm text-slate-500 dark:text-slate-400">{item.label}</p><strong className="mt-2 block text-xl">{item.value}</strong></Card>)}
-      </section>
+      <PageHeader title="Analytics" description="Live insights on best-selling products, top categories, customer growth, and top buyers." />
+      {loading ? (
+        <div className="py-10 flex flex-col items-center justify-center gap-3">
+          <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading analytics...</span>
+        </div>
+      ) : (
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {items.map((item) => (
+            <Card key={item.label}>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{item.label}</p>
+              <strong className="mt-2 block text-xl text-leaf-900 dark:text-white">{item.value}</strong>
+            </Card>
+          ))}
+        </section>
+      )}
     </>
   );
 }

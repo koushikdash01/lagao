@@ -6,13 +6,15 @@ import { calculateDistanceInMeters } from "../utils/distance.js";
 
 const router = Router();
 
-// Ensure customer_orders has location & distance columns
+// Ensure customer_orders has location, customer, & distance columns
 query(`
+  ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS customer_name text;
+  ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS customer_email text;
   ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS shipping_address text;
   ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS latitude numeric(10,7);
   ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS longitude numeric(10,7);
   ALTER TABLE customer_orders ADD COLUMN IF NOT EXISTS distance_meters integer;
-`).catch(err => console.error("Location columns migration notice:", err.message));
+`).catch(err => console.error("Location & Customer columns migration notice:", err.message));
 
 // 1. GET /api/demo/categories
 router.get("/categories", asyncHandler(async (_req, res) => {
@@ -305,14 +307,16 @@ router.post("/orders", asyncHandler(async (req, res) => {
     const delivery = subtotal > 499 ? 0 : 49;
     const total = taxableAmount + tax + delivery;
 
-    // 2. Insert order with location and calculated distance in meters
+    // 2. Insert order with customer info, location and calculated distance in meters
     const orderRes = await query<{ id: string }>(
       `insert into customer_orders
-       (order_number, subtotal, tax_amount, delivery_charge, discount_amount, total_amount, payment_method, payment_status, status, shipping_address, latitude, longitude, distance_meters)
-       values ($1, $2, $3, $4, $5, $6, $7, $8, 'placed', $9, $10, $11, $12)
+       (order_number, customer_name, customer_email, subtotal, tax_amount, delivery_charge, discount_amount, total_amount, payment_method, payment_status, status, shipping_address, latitude, longitude, distance_meters)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'placed', $11, $12, $13, $14)
        returning id`,
       [
         orderNumber,
+        input.customerName,
+        input.customerEmail,
         subtotal,
         tax,
         delivery,
@@ -572,17 +576,103 @@ router.delete("/categories/:id", asyncHandler(async (req, res) => {
   res.json({ success: true });
 }));
 
-// 12. GET /api/demo/coupons/validate/:code (Validate and return coupon details)
-router.get("/coupons/validate/:code", asyncHandler(async (req, res) => {
-  const { code } = req.params;
-  const result = await query(
-    "select id, code, discount_type, discount_value, expiry_date, minimum_order_amount, is_active, category_id, plant_id from coupons where upper(code) = upper($1) and is_active = true and expiry_date >= current_date",
-    [code]
-  );
-  if (result.rows.length === 0) {
-    return res.status(404).json({ message: "Invalid or expired coupon" });
-  }
-  res.json({ data: result.rows[0] });
+// 13. GET /api/demo/dashboard (Real live overview stats)
+router.get("/dashboard", asyncHandler(async (_req, res) => {
+  const [stats, recentOrders, revenueTrend] = await Promise.all([
+    query(`
+      select
+        (select count(*) from customer_orders) as total_orders,
+        (select coalesce(sum(total_amount), 0) from customer_orders where status != 'cancelled') as total_revenue,
+        (select count(distinct coalesce(customer_email, user_id::text)) from customer_orders) as total_customers,
+        (select count(*) from plants) as total_plants,
+        (select count(*) from customer_orders where status in ('placed','confirmed','packed','shipped')) as pending_orders,
+        (select count(*) from customer_orders where status = 'delivered') as delivered_orders,
+        (select count(*) from plants where stock_quantity <= 5) as low_stock_plants
+    `),
+    query(`
+      select o.*,
+        (select json_agg(
+          json_build_object(
+            'id', oi.id,
+            'plant_name', oi.plant_name,
+            'quantity', oi.quantity
+          )
+        ) from customer_order_items oi where oi.order_id = o.id) as items
+      from customer_orders o
+      order by o.created_at desc
+      limit 5
+    `),
+    query(`
+      select to_char(created_at, 'Mon') as name, coalesce(sum(total_amount), 0) as revenue, count(id) as orders
+      from customer_orders
+      where status != 'cancelled'
+      group by to_char(created_at, 'Mon'), date_trunc('month', created_at)
+      order by date_trunc('month', created_at) asc
+      limit 6
+    `),
+  ]);
+
+  res.json({
+    data: {
+      stats: stats.rows[0],
+      recentOrders: recentOrders.rows,
+      revenue: revenueTrend.rows,
+    }
+  });
+}));
+
+// 14. GET /api/demo/customers (Real customer data aggregated from database)
+router.get("/customers", asyncHandler(async (_req, res) => {
+  const result = await query(`
+    select 
+      coalesce(customer_name, 'Guest Customer') as name,
+      coalesce(customer_email, 'N/A') as email,
+      count(id) as order_count,
+      coalesce(sum(total_amount), 0) as total_spent,
+      max(shipping_address) as address
+    from customer_orders
+    group by customer_name, customer_email
+    order by total_spent desc
+  `);
+  res.json({ data: result.rows });
+}));
+
+// 15. GET /api/demo/analytics (Real analytics stats)
+router.get("/analytics", asyncHandler(async (_req, res) => {
+  const [topPlant, topCategory, topCustomer] = await Promise.all([
+    query(`
+      select plant_name, sum(quantity) as total_sold
+      from customer_order_items
+      group by plant_name
+      order by total_sold desc
+      limit 1
+    `),
+    query(`
+      select c.name as category_name, count(oi.id) as item_count
+      from customer_order_items oi
+      join plants p on p.id = oi.plant_id
+      join categories c on c.id = p.category_id
+      group by c.name
+      order by item_count desc
+      limit 1
+    `),
+    query(`
+      select customer_name, sum(total_amount) as total_spent
+      from customer_orders
+      where customer_name is not null
+      group by customer_name
+      order by total_spent desc
+      limit 1
+    `),
+  ]);
+
+  res.json({
+    data: {
+      bestSellingPlant: topPlant.rows[0]?.plant_name || "No sales yet",
+      topCategory: topCategory.rows[0]?.category_name || "No sales yet",
+      topCustomer: topCustomer.rows[0]?.customer_name || "No sales yet",
+    }
+  });
 }));
 
 export default router;
