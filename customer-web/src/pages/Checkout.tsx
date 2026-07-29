@@ -3,12 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Button, SectionHeader } from "../components/ui";
 import { useStore } from "../lib/store";
 import { apiRequest } from "../lib/api";
+import { LocationPickerModal } from "../components/LocationPickerModal";
 
 export function Checkout() {
   const { cart, cartTotal, clearCart, loadPlants } = useStore();
   const location = useLocation();
   const appliedCoupon = location.state?.coupon || null;
 
+  const [deliveryTarget, setDeliveryTarget] = useState<"self" | "gift">("self");
   const [recipientName, setRecipientName] = useState("Koushik Dash");
   const [email, setEmail] = useState("koushik@email.com");
   const [phone, setPhone] = useState("+91 98765 43210");
@@ -21,6 +23,7 @@ export function Checkout() {
   const [longitude, setLongitude] = useState<number | null>(88.3639);
   const [locating, setLocating] = useState(false);
   const [locationMsg, setLocationMsg] = useState<string | null>(null);
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -167,81 +170,115 @@ export function Checkout() {
 
       <form onSubmit={handlePlaceOrder} className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <section className="space-y-5">
-          <Panel title="Delivery Address & Geolocation">
-            <div className="grid gap-3 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-xs font-bold text-slate-500">Recipient Name</label>
-                <input required value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder="Recipient name" className="w-full" />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-bold text-slate-500">Phone Number</label>
-                <input required value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" className="w-full" />
-              </div>
-              <div className="md:col-span-2">
-                <label className="mb-1 block text-xs font-bold text-slate-500">Email Address</label>
-                <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address" className="w-full" />
-              </div>
-
-              {/* Geolocation Card */}
-              <div className="md:col-span-2 rounded-lg bg-leaf-50/60 p-4 border border-leaf-200 dark:bg-white/5 dark:border-white/10 space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <p className="text-sm font-bold text-leaf-900 dark:text-white flex items-center gap-1.5">
-                      <span>📍</span> Location Service
-                    </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
-                      Enable GPS location to calculate precise delivery distance to admin house.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleDetectLocation}
-                    disabled={locating}
-                    className="rounded-lg bg-leaf-500 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-leaf-600 disabled:opacity-50 transition"
-                  >
-                    {locating ? "Detecting..." : "📍 Detect My Location"}
-                  </button>
-                </div>
-                {locationMsg && (
-                  <p className="text-xs font-semibold text-leaf-700 dark:text-leaf-300">{locationMsg}</p>
-                )}
-                <div className="grid gap-2 grid-cols-2 pt-1">
-                  <div>
-                    <label className="mb-0.5 block text-[11px] font-bold text-slate-500">Latitude (°N)</label>
+          <Panel title="Delivery Address & Location">
+            <div className="space-y-4">
+              {/* Delivery Target Selector */}
+              <div className="rounded-lg bg-slate-100/70 p-3 dark:bg-white/5 border border-slate-200/80 dark:border-white/10">
+                <p className="mb-2 text-xs font-bold text-slate-700 dark:text-slate-200">Who is this order for?</p>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 text-xs font-bold cursor-pointer text-slate-800 dark:text-white">
                     <input
-                      type="number"
-                      step="any"
-                      value={latitude ?? ""}
-                      onChange={e => setLatitude(e.target.value ? Number(e.target.value) : null)}
-                      placeholder="e.g. 22.5726"
-                      className="w-full text-xs"
+                      type="radio"
+                      name="deliveryTarget"
+                      checked={deliveryTarget === "self"}
+                      onChange={() => setDeliveryTarget("self")}
+                      className="accent-leaf-500"
                     />
-                  </div>
-                  <div>
-                    <label className="mb-0.5 block text-[11px] font-bold text-slate-500">Longitude (°E)</label>
+                    <span>Deliver to Myself</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-xs font-bold cursor-pointer text-slate-800 dark:text-white">
                     <input
-                      type="number"
-                      step="any"
-                      value={longitude ?? ""}
-                      onChange={e => setLongitude(e.target.value ? Number(e.target.value) : null)}
-                      placeholder="e.g. 88.3639"
-                      className="w-full text-xs"
+                      type="radio"
+                      name="deliveryTarget"
+                      checked={deliveryTarget === "gift"}
+                      onChange={() => setDeliveryTarget("gift")}
+                      className="accent-leaf-500"
                     />
-                  </div>
+                    <span>Send as a Gift / Someone Else 🎁</span>
+                  </label>
                 </div>
               </div>
 
-              <div className="md:col-span-2">
-                <label className="mb-1 block text-xs font-bold text-slate-500">Street Address</label>
-                <input required value={addressLine} onChange={e => setAddressLine(e.target.value)} placeholder="Address line" className="w-full" />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-bold text-slate-500">City</label>
-                <input required value={city} onChange={e => setCity(e.target.value)} placeholder="City" className="w-full" />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-bold text-slate-500">Postal Code</label>
-                <input required value={postalCode} onChange={e => setPostalCode(e.target.value)} placeholder="Postal code" className="w-full" />
+              <div className="grid gap-3 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-slate-500">
+                    {deliveryTarget === "gift" ? "Recipient Name" : "Your Name"}
+                  </label>
+                  <input required value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder="Recipient name" className="w-full" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-slate-500">
+                    {deliveryTarget === "gift" ? "Recipient Phone Number" : "Phone Number"}
+                  </label>
+                  <input required value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" className="w-full" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-xs font-bold text-slate-500">Email Address (for Order Updates)</label>
+                  <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address" className="w-full" />
+                </div>
+
+                {/* Geolocation & Interactive Map Card */}
+                <div className="md:col-span-2 rounded-lg bg-leaf-50/70 p-4 border border-leaf-200 dark:bg-white/5 dark:border-white/10 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-bold text-leaf-900 dark:text-white flex items-center gap-1.5">
+                        <span>🗺️</span> Delivery Spot & Distance
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                        {deliveryTarget === "gift"
+                          ? "Pin recipient's house or delivery location on the map so admin can calculate exact delivery distance."
+                          : "Pin your delivery spot or use GPS to calculate precise delivery distance."}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsMapOpen(true)}
+                        className="rounded-lg bg-leaf-600 px-3.5 py-1.5 text-xs font-bold text-white shadow hover:bg-leaf-700 transition flex items-center gap-1"
+                      >
+                        <span>🗺️</span> Pin on Map (Search/Drag)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDetectLocation}
+                        disabled={locating}
+                        className="rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-white/10 dark:bg-white/10 dark:text-white disabled:opacity-50 transition"
+                      >
+                        {locating ? "Detecting..." : "📍 Use My GPS"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {locationMsg && (
+                    <p className="text-xs font-semibold text-leaf-700 dark:text-leaf-300">{locationMsg}</p>
+                  )}
+
+                  <div className="flex items-center justify-between rounded-md bg-white p-2.5 dark:bg-black/30 border border-leaf-100 dark:border-white/5 text-xs">
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">
+                      📍 Pinned Coordinates: <span className="font-bold text-leaf-800 dark:text-leaf-400">{latitude ?? 22.5726}° N, {longitude ?? 88.3639}° E</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsMapOpen(true)}
+                      className="text-xs font-bold text-leaf-600 hover:underline dark:text-leaf-400"
+                    >
+                      Change Pin
+                    </button>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-xs font-bold text-slate-500">Street Address / Landmark</label>
+                  <input required value={addressLine} onChange={e => setAddressLine(e.target.value)} placeholder="House/Flat No., Street, Landmark" className="w-full" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-slate-500">City</label>
+                  <input required value={city} onChange={e => setCity(e.target.value)} placeholder="City" className="w-full" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-slate-500">Postal Code</label>
+                  <input required value={postalCode} onChange={e => setPostalCode(e.target.value)} placeholder="Postal code" className="w-full" />
+                </div>
               </div>
             </div>
           </Panel>
@@ -320,6 +357,22 @@ export function Checkout() {
           </button>
         </aside>
       </form>
+
+      {/* Interactive Leaflet Map Location Picker Modal (Flipkart / Zomato style) */}
+      <LocationPickerModal
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        initialLat={latitude ?? 22.5726}
+        initialLng={longitude ?? 88.3639}
+        onConfirm={(data) => {
+          setLatitude(data.latitude);
+          setLongitude(data.longitude);
+          if (data.addressLine) setAddressLine(data.addressLine);
+          if (data.city) setCity(data.city);
+          if (data.postalCode) setPostalCode(data.postalCode);
+          setLocationMsg(`Location pinned via Map: ${data.latitude}°N, ${data.longitude}°E`);
+        }}
+      />
     </main>
   );
 }
