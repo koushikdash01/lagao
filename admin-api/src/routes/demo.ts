@@ -1,5 +1,7 @@
+import crypto from "crypto";
 import { Router } from "express";
 import { z } from "zod";
+import { env } from "../config/env.js";
 import { query } from "../config/db.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { calculateDistanceInMeters } from "../utils/distance.js";
@@ -214,6 +216,108 @@ router.get("/orders", asyncHandler(async (_req, res) => {
   res.json({ data: result.rows });
 }));
 
+// 5.5 POST /api/demo/orders/initiate-payment (Create Razorpay Order for Online Payment)
+router.post("/orders/initiate-payment", asyncHandler(async (req, res) => {
+  const input = z.object({
+    customerName: z.string().min(2),
+    customerEmail: z.string().email(),
+    items: z.array(z.object({
+      plantId: z.string().uuid(),
+      quantity: z.number().int().positive(),
+    })).min(1),
+    couponCode: z.string().optional().nullable(),
+  }).parse(req.body);
+
+  let subtotal = 0;
+  const itemsList: { plantId: string; price: number; quantity: number; categoryId: string }[] = [];
+
+  for (const item of input.items) {
+    const plantRes = await query<{ name: string; price: number; discount_price: number | null; stock_quantity: number; category_id: string }>(
+      "select name, price, discount_price, stock_quantity, category_id from plants where id = $1",
+      [item.plantId]
+    );
+    const plant = plantRes.rows[0];
+    if (!plant) throw new Error(`Plant not found: ${item.plantId}`);
+    if (plant.stock_quantity < item.quantity) {
+      throw new Error(`Insufficient stock for ${plant.name}. Available: ${plant.stock_quantity}, Requested: ${item.quantity}`);
+    }
+    const activePrice = Number(plant.discount_price ?? plant.price);
+    subtotal += activePrice * item.quantity;
+    itemsList.push({ plantId: item.plantId, price: activePrice, quantity: item.quantity, categoryId: plant.category_id });
+  }
+
+  let discount = 0;
+  if (input.couponCode) {
+    const couponRes = await query(
+      "select * from coupons where upper(code) = upper($1) and is_active = true and expiry_date >= current_date",
+      [input.couponCode]
+    );
+    const coupon = couponRes.rows[0];
+    if (coupon && subtotal >= Number(coupon.minimum_order_amount)) {
+      let eligibleSubtotal = subtotal;
+      if (coupon.category_id) {
+        eligibleSubtotal = itemsList
+          .filter(item => item.categoryId === coupon.category_id)
+          .reduce((sum, item) => sum + item.price * item.quantity, 0);
+      } else if (coupon.plant_id) {
+        eligibleSubtotal = itemsList
+          .filter(item => item.plantId === coupon.plant_id)
+          .reduce((sum, item) => sum + item.price * item.quantity, 0);
+      }
+      if (eligibleSubtotal > 0) {
+        if (coupon.discount_type === "percentage") {
+          discount = Number((eligibleSubtotal * (Number(coupon.discount_value) / 100)).toFixed(2));
+        } else {
+          discount = Math.min(Number(coupon.discount_value), eligibleSubtotal);
+        }
+      }
+    }
+  }
+
+  const orderNumber = "LG-" + Math.floor(100000 + Math.random() * 900000);
+  const taxableAmount = Math.max(0, subtotal - discount);
+  const tax = Number((taxableAmount * 0.05).toFixed(2));
+  const delivery = subtotal > 499 ? 0 : 49;
+  const total = Number((taxableAmount + tax + delivery).toFixed(2));
+  const amountInPaise = Math.round(total * 100);
+
+  // Call Razorpay Order Creation API
+  const authHeader = "Basic " + Buffer.from(`${env.razorpayKeyId}:${env.razorpayKeySecret}`).toString("base64");
+  const rzpRes = await fetch("https://api.razorpay.com/v1/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": authHeader,
+    },
+    body: JSON.stringify({
+      amount: amountInPaise,
+      currency: "INR",
+      receipt: orderNumber,
+      notes: {
+        customerName: input.customerName,
+        customerEmail: input.customerEmail,
+        orderNumber,
+      },
+    }),
+  });
+
+  if (!rzpRes.ok) {
+    const errorData = await rzpRes.json().catch(() => ({}));
+    throw new Error((errorData as any)?.error?.description || "Failed to initialize Razorpay payment order");
+  }
+
+  const rzpData = (await rzpRes.json()) as { id: string; amount: number; currency: string };
+
+  res.json({
+    orderNumber,
+    razorpayOrderId: rzpData.id,
+    amount: rzpData.amount,
+    currency: rzpData.currency,
+    keyId: env.razorpayKeyId,
+    grandTotal: total,
+  });
+}));
+
 // 6. POST /api/demo/orders (Place Order & Reduce Stock)
 router.post("/orders", asyncHandler(async (req, res) => {
   const input = z.object({
@@ -230,7 +334,25 @@ router.post("/orders", asyncHandler(async (req, res) => {
       quantity: z.number().int().positive(),
     })).min(1),
     couponCode: z.string().optional().nullable(),
+    razorpayPaymentId: z.string().optional().nullable(),
+    razorpayOrderId: z.string().optional().nullable(),
+    razorpaySignature: z.string().optional().nullable(),
   }).parse(req.body);
+
+  // Verify Razorpay HMAC signature for online payment methods
+  if (input.paymentMethod !== "cod") {
+    if (!input.razorpayPaymentId || !input.razorpayOrderId || !input.razorpaySignature) {
+      throw new Error("Missing Razorpay payment verification credentials.");
+    }
+    const expectedSignature = crypto
+      .createHmac("sha256", env.razorpayKeySecret)
+      .update(`${input.razorpayOrderId}|${input.razorpayPaymentId}`)
+      .digest("hex");
+
+    if (expectedSignature !== input.razorpaySignature) {
+      throw new Error("Razorpay payment signature verification failed.");
+    }
+  }
 
   // Calculate distance in meters from admin store/house if coordinates exist
   const distanceMeters = calculateDistanceInMeters(input.latitude, input.longitude);
@@ -365,6 +487,20 @@ router.post("/orders", asyncHandler(async (req, res) => {
         [item.plantId, -item.quantity, `Sale order ${orderNumber}`]
       );
     }
+
+    // 4. Record payment in payments table
+    await query(
+      `insert into payments (order_id, provider, method, amount, status, transaction_reference)
+       values ($1, $2, $3, $4, $5, $6)`,
+      [
+        orderId,
+        input.paymentMethod === "cod" ? "cod" : "razorpay",
+        input.paymentMethod,
+        total,
+        input.paymentMethod === "cod" ? "pending" : "paid",
+        input.razorpayPaymentId || (input.paymentMethod === "cod" ? "COD-" + orderNumber : null),
+      ]
+    );
 
     await query("COMMIT");
 

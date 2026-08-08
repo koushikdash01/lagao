@@ -89,35 +89,118 @@ export function Checkout() {
     setLoading(true);
     setError(null);
 
-    try {
-      const orderPayload = {
-        customerName: recipientName,
-        customerEmail: email,
-        paymentMethod,
-        addressLine,
-        city,
-        postalCode,
-        latitude: latitude !== null ? Number(latitude) : null,
-        longitude: longitude !== null ? Number(longitude) : null,
-        couponCode: appliedCoupon?.code || null,
-        items: cart.map(item => ({
-          plantId: item.id,
-          quantity: item.quantity
-        }))
-      };
+    const orderPayload = {
+      customerName: recipientName,
+      customerEmail: email,
+      paymentMethod,
+      addressLine,
+      city,
+      postalCode,
+      latitude: latitude !== null ? Number(latitude) : null,
+      longitude: longitude !== null ? Number(longitude) : null,
+      couponCode: appliedCoupon?.code || null,
+      items: cart.map(item => ({
+        plantId: item.id,
+        quantity: item.quantity
+      }))
+    };
 
-      const res = await apiRequest<{ data: any }>("/demo/orders", {
+    try {
+      // 1. CASH ON DELIVERY (COD): Place order directly
+      if (paymentMethod === "cod") {
+        const res = await apiRequest<{ data: any }>("/demo/orders", {
+          method: "POST",
+          body: JSON.stringify(orderPayload)
+        });
+
+        setSuccessOrder(res.data);
+        clearCart();
+        await loadPlants();
+        setLoading(false);
+        return;
+      }
+
+      // 2. ONLINE PAYMENTS (UPI / Card / Net Banking via Razorpay)
+      const paymentInit = await apiRequest<{
+        orderNumber: string;
+        razorpayOrderId: string;
+        amount: number;
+        currency: string;
+        keyId: string;
+        grandTotal: number;
+      }>("/demo/orders/initiate-payment", {
         method: "POST",
-        body: JSON.stringify(orderPayload)
+        body: JSON.stringify({
+          customerName: recipientName,
+          customerEmail: email,
+          items: orderPayload.items,
+          couponCode: orderPayload.couponCode,
+        }),
       });
 
-      setSuccessOrder(res.data);
-      clearCart();
-      // Reload plants from database to sync updated stock counts across the UI
-      await loadPlants();
+      if (typeof window === "undefined" || !(window as any).Razorpay) {
+        throw new Error("Razorpay payment gateway SDK failed to load. Please refresh and try again.");
+      }
+
+      const options = {
+        key: paymentInit.keyId || (import.meta as any).env?.VITE_RAZORPAY_KEY_ID || "rzp_test_TNIkLmGdzO9Bei",
+        amount: paymentInit.amount,
+        currency: paymentInit.currency || "INR",
+        name: "Lagao.shop",
+        description: `Order ${paymentInit.orderNumber} - Fresh Plants`,
+        image: "/favicon.png",
+        order_id: paymentInit.razorpayOrderId,
+        prefill: {
+          name: recipientName,
+          email: email,
+          contact: phone.replace(/[^\d+]/g, "") || "9876543210",
+        },
+        theme: {
+          color: "#2d6a4f",
+        },
+        modal: {
+          ondismiss: () => {
+            setLoading(false);
+            setError("Payment popup was closed. You can retry anytime.");
+          },
+        },
+        handler: async (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) => {
+          try {
+            setLoading(true);
+            const res = await apiRequest<{ data: any }>("/demo/orders", {
+              method: "POST",
+              body: JSON.stringify({
+                ...orderPayload,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
+
+            setSuccessOrder(res.data);
+            clearCart();
+            await loadPlants();
+          } catch (err: any) {
+            setError(err.message || "Payment verification failed. Please contact support.");
+          } finally {
+            setLoading(false);
+          }
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on("payment.failed", (response: any) => {
+        setError(`Payment failed: ${response.error?.description || "Transaction declined"}`);
+        setLoading(false);
+      });
+      rzp.open();
+
     } catch (err: any) {
-      setError(err.message || "Failed to place order. Please try again.");
-    } finally {
+      setError(err.message || "Failed to process checkout. Please try again.");
       setLoading(false);
     }
   };
@@ -286,22 +369,79 @@ export function Checkout() {
           <Panel title="Payment Methods">
             <div className="grid gap-3 sm:grid-cols-2">
               {[
-                { key: "cod", label: "Cash on Delivery" },
-                { key: "upi", label: "UPI (GPay / PhonePe / Paytm)" },
-                { key: "card", label: "Debit/Credit Card" },
-                { key: "net_banking", label: "Net Banking" },
+                {
+                  key: "upi",
+                  label: "UPI (Google Pay / PhonePe / Paytm)",
+                  badge: "Instant & Fast",
+                  icon: "📱",
+                  desc: "Scan QR or enter UPI VPA ID",
+                },
+                {
+                  key: "card",
+                  label: "Credit / Debit Card",
+                  badge: "Visa, MC, RuPay",
+                  icon: "💳",
+                  desc: "All Indian & International cards",
+                },
+                {
+                  key: "net_banking",
+                  label: "Net Banking / Wallets",
+                  badge: "50+ Banks",
+                  icon: "🏦",
+                  desc: "SBI, HDFC, ICICI, Axis & more",
+                },
+                {
+                  key: "cod",
+                  label: "Cash on Delivery",
+                  badge: "Pay at Doorstep",
+                  icon: "💵",
+                  desc: "Pay cash/UPI when plants arrive",
+                },
               ].map((item) => (
-                <label key={item.key} className={`flex items-center cursor-pointer rounded-lg border p-4 transition ${paymentMethod === item.key ? "border-leaf-500 bg-leaf-50/30 dark:bg-white/5 text-leaf-900 dark:text-white" : "border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"}`}>
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked={paymentMethod === item.key}
-                    onChange={() => setPaymentMethod(item.key as any)}
-                    className="mr-3 h-4 w-4 accent-leaf-500"
-                  />
-                  <span className="font-bold text-sm">{item.label}</span>
+                <label
+                  key={item.key}
+                  className={`flex flex-col justify-between rounded-lg border p-4 cursor-pointer transition ${
+                    paymentMethod === item.key
+                      ? "border-leaf-500 bg-leaf-50/40 dark:bg-white/10 text-leaf-950 dark:text-white shadow-sm ring-1 ring-leaf-500"
+                      : "border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-lg">{item.icon}</span>
+                      <span className="font-bold text-sm">{item.label}</span>
+                    </div>
+                    <input
+                      type="radio"
+                      name="payment"
+                      checked={paymentMethod === item.key}
+                      onChange={() => setPaymentMethod(item.key as any)}
+                      className="h-4 w-4 accent-leaf-600"
+                    />
+                  </div>
+                  <div className="mt-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span>{item.desc}</span>
+                    <span className="rounded bg-leaf-100/80 px-1.5 py-0.5 text-[10px] font-semibold text-leaf-800 dark:bg-leaf-950/40 dark:text-leaf-300">
+                      {item.badge}
+                    </span>
+                  </div>
                 </label>
               ))}
+            </div>
+
+            {/* Security Assurance Badge */}
+            <div className="mt-4 flex items-center justify-between rounded-lg bg-slate-50 p-3 text-xs text-slate-600 dark:bg-white/5 dark:text-slate-400 border border-slate-200/60 dark:border-white/5">
+              <div className="flex items-center gap-2">
+                <span>🔒</span>
+                <span>
+                  {paymentMethod === "cod"
+                    ? "Safe contactless doorstep delivery available."
+                    : "256-Bit SSL Encrypted Online Payment via Razorpay."}
+                </span>
+              </div>
+              <span className="font-bold text-[11px] text-leaf-700 dark:text-leaf-400">
+                {paymentMethod === "cod" ? "Verified Delivery" : "Razorpay Verified"}
+              </span>
             </div>
           </Panel>
         </section>
@@ -351,9 +491,15 @@ export function Checkout() {
           <button
             type="submit"
             disabled={loading || cart.length === 0}
-            className={`mt-6 w-full rounded-lg bg-leaf-500 py-3.5 font-bold text-white transition shadow-soft ${loading || cart.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-leaf-700"}`}
+            className={`mt-6 w-full rounded-lg bg-leaf-500 py-3.5 font-bold text-white transition shadow-soft flex items-center justify-center gap-2 ${loading || cart.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-leaf-700"}`}
           >
-            {loading ? "Placing Order..." : `Place Order (Rs. ${grandTotal})`}
+            {loading ? (
+              <span>Processing...</span>
+            ) : paymentMethod === "cod" ? (
+              <span>Place Order (COD Rs. {grandTotal})</span>
+            ) : (
+              <span>Pay Rs. {grandTotal} with Razorpay ⚡</span>
+            )}
           </button>
         </aside>
       </form>
