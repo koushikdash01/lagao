@@ -55,7 +55,7 @@ export function Layout({ children, sidebarOpen, setSidebarOpen, darkMode, setDar
       >
         <div className="mb-8 flex items-center justify-between">
           <div className="min-w-0">
-            <img src="/logo.png" alt="Lagao.shop" className="mb-2 h-16 w-auto object-contain" />
+            <img src="/logo.png" alt="Lagao.shop" className="mb-2 h-16 w-auto object-contain transition-all duration-300 dark:brightness-110 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.85)]" />
             <h1 className="text-2xl font-bold text-leaf-900 dark:text-white">Admin Panel</h1>
           </div>
           <button className="rounded-full p-2 hover:bg-slate-100 dark:hover:bg-white/10 lg:hidden" onClick={() => setSidebarOpen(false)}>

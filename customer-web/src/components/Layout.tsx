@@ -35,8 +35,8 @@ export function Layout() {
       <header className="sticky top-0 z-40 border-b border-black/5 bg-cream/90 backdrop-blur dark:border-white/10 dark:bg-[#08120c]/85">
         <div className="mx-auto flex h-20 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
           <button className="lg:hidden" onClick={() => setOpen(true)}><Menu className="h-6 w-6" /></button>
-          <Link to="/" className="mr-2 flex h-14 w-32 items-center overflow-hidden">
-            <img src="/logo.png" alt="Lagao.shop" className="h-full w-auto object-contain" />
+          <Link to="/" className="mr-2 flex h-14 w-32 items-center">
+            <img src="/logo.png" alt="Lagao.shop" className="h-full w-auto object-contain transition-all duration-300 dark:brightness-110 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.85)]" />
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-bold text-slate-700 dark:text-slate-200 lg:flex">{nav}</nav>
           <div className="group relative hidden lg:block">
@@ -60,8 +60,8 @@ export function Layout() {
         <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
           <div className="h-full w-80 bg-white p-5 dark:bg-[#102517]">
             <div className="mb-8 flex items-center justify-between">
-              <Link to="/" className="flex h-14 w-32 items-center overflow-hidden">
-                <img src="/logo.png" alt="Lagao.shop" className="h-full w-auto object-contain" />
+              <Link to="/" className="flex h-14 w-32 items-center">
+                <img src="/logo.png" alt="Lagao.shop" className="h-full w-auto object-contain transition-all duration-300 dark:brightness-110 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.85)]" />
               </Link>
               <button onClick={() => setOpen(false)}><X /></button>
             </div>

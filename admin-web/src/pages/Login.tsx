@@ -29,7 +29,7 @@ export function Login({ onLogin }: { onLogin: () => void }) {
     <main className="grid min-h-screen place-items-center bg-[#f5f7f3] px-4">
       <form onSubmit={handleSubmit} className="w-full max-w-md rounded-lg bg-white p-8 shadow-soft">
         <div className="mb-8 flex items-center gap-3">
-          <img src="/logo.png" alt="Lagao.shop" className="h-16 w-auto" />
+          <img src="/logo.png" alt="Lagao.shop" className="h-16 w-auto transition-all duration-300 dark:brightness-110 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.85)]" />
           <div>
             <h1 className="text-2xl font-bold text-leaf-900">Lagao Admin</h1>
             <p className="text-sm text-slate-500">Secure admin login</p>
