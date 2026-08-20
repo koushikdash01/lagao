@@ -1,17 +1,58 @@
 import { SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { categories } from "../data/catalog";
 import { PlantCard, SectionHeader } from "../components/ui";
 import { useStore } from "../lib/store";
 
 export function Catalog() {
   const { plants } = useStore();
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const querySearch = searchParams.get("q") || searchParams.get("search") || "";
+  const queryCategory = searchParams.get("category") || "All";
+
+  const [search, setSearch] = useState(querySearch);
+  const [category, setCategory] = useState(queryCategory);
   const [sort, setSort] = useState("newest");
 
+  useEffect(() => {
+    if (querySearch !== search) setSearch(querySearch);
+    if (queryCategory !== category) setCategory(queryCategory);
+  }, [querySearch, queryCategory]);
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    const params = new URLSearchParams(searchParams);
+    if (val.trim()) params.set("q", val);
+    else params.delete("q");
+    setSearchParams(params, { replace: true });
+  };
+
+  const handleCategoryChange = (val: string) => {
+    setCategory(val);
+    const params = new URLSearchParams(searchParams);
+    if (val !== "All") params.set("category", val);
+    else params.delete("category");
+    setSearchParams(params, { replace: true });
+  };
+
   const filtered = useMemo(() => {
-    const result = plants.filter((plant) => plant.name.toLowerCase().includes(search.toLowerCase()) && (category === "All" || plant.category === category));
+    const s = search.toLowerCase().trim();
+    const result = plants.filter((plant) => {
+      const matchesSearch =
+        !s ||
+        plant.name.toLowerCase().includes(s) ||
+        plant.category.toLowerCase().includes(s) ||
+        plant.type.toLowerCase().includes(s) ||
+        (plant.description && plant.description.toLowerCase().includes(s)) ||
+        (plant.sunlight && plant.sunlight.toLowerCase().includes(s));
+
+      const matchesCategory =
+        category === "All" || plant.category.toLowerCase() === category.toLowerCase();
+
+      return matchesSearch && matchesCategory;
+    });
+
     if (sort === "price-low") result.sort((a, b) => (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price));
     if (sort === "price-high") result.sort((a, b) => (b.discountPrice ?? b.price) - (a.discountPrice ?? a.price));
     if (sort === "rating") result.sort((a, b) => b.rating - a.rating);
@@ -22,11 +63,20 @@ export function Catalog() {
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <SectionHeader title="Plant Catalog" subtitle="Search, filter, sort, quick view, wishlist, and cart-ready plant cards." />
       <div className="mb-6 grid gap-3 rounded-lg bg-white p-4 shadow-soft dark:bg-white/10 md:grid-cols-[1fr_auto_auto]">
-        <input value={search} onChange={(event) => setSearch(event.target.value)} className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 outline-none dark:border-white/10" placeholder="Search by plant name..." />
-        <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-white">
+        <input
+          value={search}
+          onChange={(event) => handleSearchChange(event.target.value)}
+          className="rounded-lg border border-slate-200 bg-transparent px-3 py-2 outline-none dark:border-white/10"
+          placeholder="Search plants, categories, indoor, outdoor..."
+        />
+        <select
+          value={category}
+          onChange={(event) => handleCategoryChange(event.target.value)}
+          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-800 outline-none dark:border-white/10 dark:bg-slate-900 dark:text-white"
+        >
           <option className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">All</option>
           {categories.map((item) => (
-            <option key={item} className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">
+            <option key={item} value={item} className="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">
               {item}
             </option>
           ))}
