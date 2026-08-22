@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Banknote, Building2, Check, CreditCard, ShieldCheck, Smartphone } from "lucide-react";
 import { Button, SectionHeader } from "../components/ui";
 import { useStore } from "../lib/store";
 import { apiRequest } from "../lib/api";
@@ -366,84 +367,103 @@ export function Checkout() {
             </div>
           </Panel>
 
-          <Panel title="Payment Methods">
-            <div className="grid gap-3 sm:grid-cols-2">
+          <Panel title="Payment Method">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {[
                 {
                   key: "upi",
-                  label: "UPI (Google Pay / PhonePe / Paytm)",
-                  badge: "Instant & Fast",
-                  icon: "📱",
-                  desc: "Scan QR or enter UPI VPA ID",
+                  label: "UPI / QR",
+                  subtitle: "GPay, PhonePe, Paytm, BHIM",
+                  badge: "Instant ⚡",
+                  icon: Smartphone,
+                  iconColor: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40",
                 },
                 {
                   key: "card",
-                  label: "Credit / Debit Card",
-                  badge: "Visa, MC, RuPay",
-                  icon: "💳",
-                  desc: "All Indian & International cards",
+                  label: "Cards",
+                  subtitle: "Credit & Debit (Visa, Master, RuPay)",
+                  badge: "All Cards",
+                  icon: CreditCard,
+                  iconColor: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40",
                 },
                 {
                   key: "net_banking",
-                  label: "Net Banking / Wallets",
+                  label: "Net Banking",
+                  subtitle: "SBI, HDFC, ICICI & 50+ Banks",
                   badge: "50+ Banks",
-                  icon: "🏦",
-                  desc: "SBI, HDFC, ICICI, Axis & more",
+                  icon: Building2,
+                  iconColor: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40",
                 },
                 {
                   key: "cod",
                   label: "Cash on Delivery",
-                  badge: "Pay at Doorstep",
-                  icon: "💵",
-                  desc: "Pay cash/UPI when plants arrive",
+                  subtitle: "Pay cash/UPI at doorstep",
+                  badge: "Pay at Door",
+                  icon: Banknote,
+                  iconColor: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40",
                 },
-              ].map((item) => (
-                <label
-                  key={item.key}
-                  className={`flex flex-col justify-between rounded-lg border p-4 cursor-pointer transition ${
-                    paymentMethod === item.key
-                      ? "border-leaf-500 bg-leaf-50/40 dark:bg-white/10 text-leaf-950 dark:text-white shadow-sm ring-1 ring-leaf-500"
-                      : "border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-slate-300"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-lg">{item.icon}</span>
-                      <span className="font-bold text-sm">{item.label}</span>
+              ].map((item) => {
+                const isSelected = paymentMethod === item.key;
+                const IconComponent = item.icon;
+                return (
+                  <label
+                    key={item.key}
+                    onClick={() => setPaymentMethod(item.key as any)}
+                    className={`group relative flex items-center justify-between gap-2.5 rounded-xl border p-2.5 sm:p-3 cursor-pointer transition-all duration-200 ${
+                      isSelected
+                        ? "border-leaf-500 bg-leaf-50/60 dark:bg-leaf-950/30 text-leaf-950 dark:text-white shadow-sm ring-1 ring-leaf-500/60"
+                        : "border-slate-200/80 bg-slate-50/40 dark:border-white/10 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg ${item.iconColor} transition-transform group-hover:scale-105`}>
+                        <IconComponent className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs sm:text-sm font-bold truncate">{item.label}</span>
+                          <span className="hidden xs:inline-block sm:inline-block rounded bg-leaf-100/80 px-1.5 py-0.2 text-[9px] font-bold text-leaf-800 dark:bg-leaf-950/60 dark:text-leaf-300">
+                            {item.badge}
+                          </span>
+                        </div>
+                        <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
+                          {item.subtitle}
+                        </p>
+                      </div>
                     </div>
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === item.key}
-                      onChange={() => setPaymentMethod(item.key as any)}
-                      className="h-4 w-4 accent-leaf-600"
-                    />
-                  </div>
-                  <div className="mt-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                    <span>{item.desc}</span>
-                    <span className="rounded bg-leaf-100/80 px-1.5 py-0.5 text-[10px] font-semibold text-leaf-800 dark:bg-leaf-950/40 dark:text-leaf-300">
-                      {item.badge}
-                    </span>
-                  </div>
-                </label>
-              ))}
+
+                    <div className="shrink-0 pl-1">
+                      <div
+                        className={`flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full border transition-all ${
+                          isSelected
+                            ? "border-leaf-500 bg-leaf-500 text-white shadow-sm"
+                            : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                        }`}
+                      >
+                        {isSelected && <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 stroke-[3]" />}
+                      </div>
+                    </div>
+                  </label>
+                );
+              })}
             </div>
 
             {/* Security Assurance Badge */}
-            <div className="mt-4 flex items-center justify-between rounded-lg bg-slate-50 p-3 text-xs text-slate-600 dark:bg-white/5 dark:text-slate-400 border border-slate-200/60 dark:border-white/5">
-              <div className="flex items-center gap-2">
-                <span>🔒</span>
-                <span>
+            <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-50/80 px-3 py-2 text-[11px] sm:text-xs text-slate-600 dark:bg-white/5 dark:text-slate-400 border border-slate-200/60 dark:border-white/5">
+              <div className="flex items-center gap-1.5 truncate">
+                <ShieldCheck className="h-4 w-4 shrink-0 text-leaf-600 dark:text-leaf-400" />
+                <span className="truncate">
                   {paymentMethod === "cod"
                     ? "Safe contactless doorstep delivery available."
                     : "256-Bit SSL Encrypted Online Payment via Razorpay."}
                 </span>
               </div>
-              <span className="font-bold text-[11px] text-leaf-700 dark:text-leaf-400">
+              <span className="shrink-0 font-bold text-[10px] sm:text-[11px] text-leaf-700 dark:text-leaf-400 ml-2">
                 {paymentMethod === "cod" ? "Verified Delivery" : "Razorpay Verified"}
               </span>
             </div>
           </Panel>
+
         </section>
 
         <aside className="rounded-lg bg-white p-5 shadow-soft dark:bg-white/10 h-fit self-start">
@@ -525,11 +545,12 @@ export function Checkout() {
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg bg-white p-6 shadow-soft dark:bg-white/10">
-      <h3 className="mb-4 text-xl font-bold text-leaf-900 dark:text-white">{title}</h3>
-      <div className="[&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-slate-200 [&_input]:bg-transparent [&_input]:px-3 [&_input]:py-2.5 [&_input]:outline-none [&_input]:focus:border-leaf-500 [&_input]:dark:border-white/10 dark:text-white">
+    <div className="rounded-2xl bg-white p-4 sm:p-6 shadow-soft dark:bg-white/10">
+      <h3 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-leaf-900 dark:text-white">{title}</h3>
+      <div className="[&_input:not([type='radio']):not([type='checkbox'])]:w-full [&_input:not([type='radio']):not([type='checkbox'])]:rounded-lg [&_input:not([type='radio']):not([type='checkbox'])]:border [&_input:not([type='radio']):not([type='checkbox'])]:border-slate-200 [&_input:not([type='radio']):not([type='checkbox'])]:bg-transparent [&_input:not([type='radio']):not([type='checkbox'])]:px-3 [&_input:not([type='radio']):not([type='checkbox'])]:py-2.5 [&_input:not([type='radio']):not([type='checkbox'])]:outline-none [&_input:not([type='radio']):not([type='checkbox'])]:focus:border-leaf-500 [&_input:not([type='radio']):not([type='checkbox'])]:dark:border-white/10 dark:text-white">
         {children}
       </div>
     </div>
   );
 }
+
