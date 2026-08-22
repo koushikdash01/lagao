@@ -327,28 +327,28 @@ export function Checkout() {
                           }}
                           className={`group cursor-pointer rounded-xl border p-3 transition-all flex flex-col justify-between ${
                             isSelected
-                              ? "border-leaf-500 bg-leaf-50/70 dark:bg-leaf-950/40 shadow-sm ring-2 ring-leaf-500/60"
-                              : "border-slate-200/80 bg-white hover:border-slate-300 dark:border-white/10 dark:bg-white/5"
+                              ? "border-emerald-500 bg-emerald-50/80 dark:border-emerald-400/80 dark:bg-emerald-950/30 shadow-sm ring-1 ring-emerald-500/50 dark:ring-emerald-400/30 dark:shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                              : "border-slate-200/80 bg-slate-50/40 hover:border-slate-300 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
                           }`}
                         >
                           <div>
                             <div className="flex items-center justify-between gap-1.5">
                               <div className="flex items-center gap-1.5">
-                                <span className="rounded-md bg-leaf-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-leaf-800 dark:bg-leaf-950 dark:text-leaf-300">
+                                <span className="rounded-md bg-emerald-100/90 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border dark:border-emerald-500/20">
                                   {addr.type}
                                 </span>
                                 {addr.isDefault && (
-                                  <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                                  <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:bg-amber-400/20 dark:text-amber-300 dark:border dark:border-amber-400/30">
                                     Default
                                   </span>
                                 )}
                               </div>
                               {isSelected ? (
-                                <span className="flex items-center gap-1 text-[10px] font-bold text-leaf-700 dark:text-leaf-400 bg-leaf-100 dark:bg-leaf-950 px-2 py-0.5 rounded-full">
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-800 dark:text-emerald-200 bg-emerald-100 dark:bg-emerald-500/25 dark:border dark:border-emerald-400/30 px-2 py-0.5 rounded-full">
                                   <Check className="h-3 w-3 stroke-[3]" /> Deliver Here
                                 </span>
                               ) : (
-                                <span className="text-[10px] font-bold text-slate-400 group-hover:text-leaf-600 transition">
+                                <span className="text-[10px] font-bold text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
                                   Use this
                                 </span>
                               )}
@@ -357,7 +357,7 @@ export function Checkout() {
                             <h4 className="mt-2 font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
                               {addr.name}
                             </h4>
-                            <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-300 leading-snug line-clamp-2">
+                            <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-200 leading-snug line-clamp-2">
                               {addr.line}, {addr.city} - {addr.pin}
                             </p>
                           </div>
@@ -499,7 +499,7 @@ export function Checkout() {
                     onClick={() => setPaymentMethod(item.key as any)}
                     className={`group relative flex items-center justify-between gap-2.5 rounded-xl border p-2.5 sm:p-3 cursor-pointer transition-all duration-200 ${
                       isSelected
-                        ? "border-leaf-500 bg-leaf-50/60 dark:bg-leaf-950/30 text-leaf-950 dark:text-white shadow-sm ring-1 ring-leaf-500/60"
+                        ? "border-emerald-500 bg-emerald-50/80 dark:border-emerald-400/80 dark:bg-emerald-950/30 text-emerald-950 dark:text-white shadow-sm ring-1 ring-emerald-500/50 dark:ring-emerald-400/30 dark:shadow-[0_0_15px_rgba(16,185,129,0.1)]"
                         : "border-slate-200/80 bg-slate-50/40 dark:border-white/10 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-white/10"
                     }`}
                   >
@@ -510,7 +510,7 @@ export function Checkout() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs sm:text-sm font-bold truncate">{item.label}</span>
-                          <span className="hidden xs:inline-block sm:inline-block rounded bg-leaf-100/80 px-1.5 py-0.2 text-[9px] font-bold text-leaf-800 dark:bg-leaf-950/60 dark:text-leaf-300">
+                          <span className="hidden xs:inline-block sm:inline-block rounded bg-emerald-100/90 px-1.5 py-0.2 text-[9px] font-bold text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border dark:border-emerald-500/20">
                             {item.badge}
                           </span>
                         </div>
@@ -524,7 +524,7 @@ export function Checkout() {
                       <div
                         className={`flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full border transition-all ${
                           isSelected
-                            ? "border-leaf-500 bg-leaf-500 text-white shadow-sm"
+                            ? "border-emerald-500 bg-emerald-500 text-white shadow-sm"
                             : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                         }`}
                       >

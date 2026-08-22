@@ -549,18 +549,18 @@ export function Profile() {
                       onClick={() => selectAddress(addr.id)}
                       className={`group relative flex flex-col justify-between rounded-2xl border p-4 transition-all cursor-pointer min-w-0 ${
                         isSelected
-                          ? "border-leaf-500 bg-leaf-50/70 dark:bg-leaf-950/40 shadow-md ring-2 ring-leaf-500/60"
-                          : "border-slate-200/80 bg-white hover:border-slate-300 dark:border-white/10 dark:bg-white/5"
+                          ? "border-emerald-500 bg-emerald-50/80 dark:border-emerald-400/80 dark:bg-emerald-950/30 shadow-sm ring-1 ring-emerald-500/50 dark:ring-emerald-400/30 dark:shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                          : "border-slate-200/80 bg-white hover:border-slate-300 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20"
                       }`}
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5">
-                            <span className="rounded-md bg-leaf-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-leaf-800 dark:bg-leaf-950 dark:text-leaf-300">
+                            <span className="rounded-md bg-emerald-100/90 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border dark:border-emerald-500/20">
                               {addr.type}
                             </span>
                             {addr.isDefault && (
-                              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-800 dark:bg-amber-400/20 dark:text-amber-300 dark:border dark:border-amber-400/30">
                                 Default
                               </span>
                             )}
@@ -568,7 +568,7 @@ export function Profile() {
 
                           <div className="flex items-center gap-1">
                             {isSelected ? (
-                              <span className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-leaf-700 dark:text-leaf-400 bg-leaf-100 dark:bg-leaf-950 px-2 py-0.5 rounded-full">
+                              <span className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-emerald-800 dark:text-emerald-200 bg-emerald-100 dark:bg-emerald-500/25 dark:border dark:border-emerald-400/30 px-2.5 py-0.5 rounded-full">
                                 <Check className="h-3 w-3 stroke-[3]" /> Selected
                               </span>
                             ) : (
@@ -578,7 +578,7 @@ export function Profile() {
                                   e.stopPropagation();
                                   selectAddress(addr.id);
                                 }}
-                                className="text-[10px] font-bold text-slate-400 group-hover:text-leaf-600 dark:group-hover:text-leaf-400 transition"
+                                className="text-[10px] font-bold text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition"
                               >
                                 Select
                               </button>
@@ -589,7 +589,7 @@ export function Profile() {
                         <h4 className="mt-2.5 font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
                           {addr.name}
                         </h4>
-                        <p className="mt-1 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        <p className="mt-1 text-[11px] sm:text-xs text-slate-600 dark:text-slate-200 leading-relaxed">
                           {addr.line}, {addr.city} - {addr.pin}
                         </p>
                         <p className="mt-1.5 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
@@ -606,7 +606,7 @@ export function Profile() {
                                 e.stopPropagation();
                                 setDefaultAddress(addr.id);
                               }}
-                              className="text-[11px] font-bold text-leaf-600 hover:underline dark:text-leaf-400"
+                              className="text-[11px] font-bold text-emerald-700 hover:underline dark:text-emerald-400"
                             >
                               Set Default
                             </button>
@@ -619,7 +619,7 @@ export function Profile() {
                           <button
                             type="button"
                             onClick={() => handleOpenEditModal(addr)}
-                            className="flex items-center gap-1 rounded-lg bg-leaf-50 px-2.5 py-1 text-[11px] font-bold text-leaf-700 hover:bg-leaf-100 dark:bg-white/10 dark:text-leaf-300 dark:hover:bg-white/20 transition"
+                            className="flex items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/20 transition"
                             title="Edit address"
                           >
                             <Edit3 className="h-3 w-3" />
