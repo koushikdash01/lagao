@@ -4,6 +4,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { categories } from "../data/catalog";
 import { useStore } from "../lib/store";
 import { FloatingCheckoutBar } from "./FloatingCheckoutBar";
+import { Footer } from "./Footer";
 
 export function Layout() {
   const [open, setOpen] = useState(false);
@@ -293,15 +294,7 @@ export function Layout() {
 
       <FloatingCheckoutBar />
 
-      <footer className="mt-16 bg-leaf-900 px-4 py-12 text-white">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-4">
-          <div>
-            <img src="/logo.png" alt="Lagao.shop" className="h-16 w-auto rounded bg-white/95 p-1" />
-            <p className="mt-3 text-sm text-white/70">Premium plants, careful packing, and useful care guidance.</p>
-          </div>
-          {["Shipping Policy", "Return Policy", "Privacy Policy", "Terms and Conditions"].map((item) => <Link key={item} to={`/pages/${item.toLowerCase().replace(/ /g, "-")}`} className="text-sm text-white/75 hover:text-white">{item}</Link>)}
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
