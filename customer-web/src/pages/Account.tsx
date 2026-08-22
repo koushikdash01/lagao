@@ -222,8 +222,9 @@ export function Profile() {
     }
   ]);
 
-  const [newAddrModal, setNewAddrModal] = useState(false);
-  const [newAddrForm, setNewAddrForm] = useState({
+  const [addrModalOpen, setAddrModalOpen] = useState(false);
+  const [editingAddrId, setEditingAddrId] = useState<string | null>(null);
+  const [addrForm, setAddrForm] = useState({
     type: "Home",
     name: "Koushik Dash",
     phone: "+91 98765 43210",
@@ -239,24 +240,49 @@ export function Profile() {
     setTimeout(() => setSavedSuccess(false), 3000);
   };
 
-  const handleAddAddress = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newAddrForm.line || !newAddrForm.pin) return;
-    const newAddr = {
-      id: `addr-${Date.now()}`,
-      ...newAddrForm,
-      isDefault: addresses.length === 0
-    };
-    setAddresses([...addresses, newAddr]);
-    setNewAddrModal(false);
-    setNewAddrForm({
+  const handleOpenAddModal = () => {
+    setEditingAddrId(null);
+    setAddrForm({
       type: "Home",
-      name: "Koushik Dash",
-      phone: "+91 98765 43210",
+      name: profileData.name || "Koushik Dash",
+      phone: profileData.phone || "+91 98765 43210",
       line: "",
       city: "Kolkata",
       pin: "700091"
     });
+    setAddrModalOpen(true);
+  };
+
+  const handleOpenEditModal = (addr: any) => {
+    setEditingAddrId(addr.id);
+    setAddrForm({
+      type: addr.type,
+      name: addr.name,
+      phone: addr.phone,
+      line: addr.line,
+      city: addr.city,
+      pin: addr.pin
+    });
+    setAddrModalOpen(true);
+  };
+
+  const handleSaveAddress = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addrForm.line || !addrForm.pin) return;
+    if (editingAddrId) {
+      setAddresses(
+        addresses.map((a) => (a.id === editingAddrId ? { ...a, ...addrForm } : a))
+      );
+    } else {
+      const newAddr = {
+        id: `addr-${Date.now()}`,
+        ...addrForm,
+        isDefault: addresses.length === 0
+      };
+      setAddresses([...addresses, newAddr]);
+    }
+    setAddrModalOpen(false);
+    setEditingAddrId(null);
   };
 
   const handleDeleteAddress = (id: string) => {
@@ -532,7 +558,7 @@ export function Profile() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setNewAddrModal(true)}
+                  onClick={handleOpenAddModal}
                   className="flex items-center gap-1 rounded-xl bg-leaf-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-leaf-600 shadow-sm transition shrink-0"
                 >
                   <Plus className="h-3.5 w-3.5" /> Add
@@ -572,48 +598,62 @@ export function Profile() {
                       </p>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/5">
+                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/5 gap-2">
                       {!addr.isDefault ? (
                         <button
                           type="button"
                           onClick={() => handleSetDefaultAddress(addr.id)}
-                          className="text-[11px] font-bold text-leaf-600 hover:underline dark:text-leaf-400"
+                          className="text-[11px] font-bold text-leaf-600 hover:underline dark:text-leaf-400 truncate"
                         >
                           Set Default
                         </button>
                       ) : (
-                        <span className="text-[11px] text-slate-400">Primary</span>
+                        <span className="text-[11px] text-slate-400 font-semibold truncate">Primary</span>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteAddress(addr.id)}
-                        className="p-1 text-slate-400 hover:text-red-500 transition"
-                        title="Delete address"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditModal(addr)}
+                          className="flex items-center gap-1 rounded-lg bg-leaf-50 px-2 py-1 text-[11px] font-bold text-leaf-700 hover:bg-leaf-100 dark:bg-white/10 dark:text-leaf-300 dark:hover:bg-white/20 transition"
+                          title="Edit address"
+                        >
+                          <Edit3 className="h-3 w-3" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteAddress(addr.id)}
+                          className="rounded-lg p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 transition"
+                          title="Delete address"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Add New Address Modal */}
-              {newAddrModal && (
+              {/* Add / Edit Address Modal */}
+              {addrModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3.5 backdrop-blur-sm animate-fadeIn">
                   <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl dark:bg-[#102517] dark:text-white max-h-[90vh] overflow-y-auto">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/10">
-                      <h3 className="font-bold text-sm sm:text-base">Add New Address</h3>
-                      <button onClick={() => setNewAddrModal(false)}>
+                      <h3 className="font-bold text-sm sm:text-base">
+                        {editingAddrId ? "Edit Saved Address" : "Add New Address"}
+                      </h3>
+                      <button onClick={() => setAddrModalOpen(false)}>
                         <X className="h-4 w-4 text-slate-400 hover:text-slate-600" />
                       </button>
                     </div>
 
-                    <form onSubmit={handleAddAddress} className="mt-3.5 space-y-3">
+                    <form onSubmit={handleSaveAddress} className="mt-3.5 space-y-3">
                       <div>
                         <label className="text-xs font-bold text-slate-500">Address Label</label>
                         <select
-                          value={newAddrForm.type}
-                          onChange={(e) => setNewAddrForm({ ...newAddrForm, type: e.target.value })}
+                          value={addrForm.type}
+                          onChange={(e) => setAddrForm({ ...addrForm, type: e.target.value })}
                           className="mt-1 w-full rounded-xl border p-2 text-xs sm:text-sm dark:bg-slate-900"
                         >
                           <option value="Home">Home</option>
@@ -623,12 +663,34 @@ export function Profile() {
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-slate-500">Street Address</label>
+                        <label className="text-xs font-bold text-slate-500">Recipient Name</label>
+                        <input
+                          required
+                          placeholder="Full Name"
+                          value={addrForm.name}
+                          onChange={(e) => setAddrForm({ ...addrForm, name: e.target.value })}
+                          className="mt-1 w-full rounded-xl border p-2 text-xs sm:text-sm dark:bg-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold text-slate-500">Contact Phone</label>
+                        <input
+                          required
+                          placeholder="Phone Number"
+                          value={addrForm.phone}
+                          onChange={(e) => setAddrForm({ ...addrForm, phone: e.target.value })}
+                          className="mt-1 w-full rounded-xl border p-2 text-xs sm:text-sm dark:bg-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold text-slate-500">Street Address / Landmark</label>
                         <input
                           required
                           placeholder="House/Flat No, Street, Landmark"
-                          value={newAddrForm.line}
-                          onChange={(e) => setNewAddrForm({ ...newAddrForm, line: e.target.value })}
+                          value={addrForm.line}
+                          onChange={(e) => setAddrForm({ ...addrForm, line: e.target.value })}
                           className="mt-1 w-full rounded-xl border p-2 text-xs sm:text-sm dark:bg-transparent"
                         />
                       </div>
@@ -638,8 +700,8 @@ export function Profile() {
                           <label className="text-xs font-bold text-slate-500">City</label>
                           <input
                             required
-                            value={newAddrForm.city}
-                            onChange={(e) => setNewAddrForm({ ...newAddrForm, city: e.target.value })}
+                            value={addrForm.city}
+                            onChange={(e) => setAddrForm({ ...addrForm, city: e.target.value })}
                             className="mt-1 w-full rounded-xl border p-2 text-xs sm:text-sm dark:bg-transparent"
                           />
                         </div>
@@ -647,8 +709,8 @@ export function Profile() {
                           <label className="text-xs font-bold text-slate-500">Postal Code</label>
                           <input
                             required
-                            value={newAddrForm.pin}
-                            onChange={(e) => setNewAddrForm({ ...newAddrForm, pin: e.target.value })}
+                            value={addrForm.pin}
+                            onChange={(e) => setAddrForm({ ...addrForm, pin: e.target.value })}
                             className="mt-1 w-full rounded-xl border p-2 text-xs sm:text-sm dark:bg-transparent"
                           />
                         </div>
@@ -657,16 +719,16 @@ export function Profile() {
                       <div className="flex justify-end gap-2 pt-2">
                         <button
                           type="button"
-                          onClick={() => setNewAddrModal(false)}
+                          onClick={() => setAddrModalOpen(false)}
                           className="rounded-xl border px-3.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:text-slate-300"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
-                          className="rounded-xl bg-leaf-500 px-4 py-1.5 text-xs font-bold text-white hover:bg-leaf-600"
+                          className="rounded-xl bg-leaf-500 px-4 py-1.5 text-xs font-bold text-white hover:bg-leaf-600 shadow-sm"
                         >
-                          Save
+                          {editingAddrId ? "Update Address" : "Save Address"}
                         </button>
                       </div>
                     </form>
