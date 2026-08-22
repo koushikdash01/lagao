@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { categories } from "../data/catalog";
 import { useStore } from "../lib/store";
+import { FloatingCheckoutBar } from "./FloatingCheckoutBar";
 
 export function Layout() {
   const [open, setOpen] = useState(false);
@@ -286,7 +287,12 @@ export function Layout() {
         </div>
       ) : null}
 
-      <Outlet />
+      <div className={cartCount > 0 ? "pb-24 sm:pb-28" : ""}>
+        <Outlet />
+      </div>
+
+      <FloatingCheckoutBar />
+
       <footer className="mt-16 bg-leaf-900 px-4 py-12 text-white">
         <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-4">
           <div>
