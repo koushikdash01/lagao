@@ -7,21 +7,31 @@ import { apiRequest } from "../lib/api";
 import { LocationPickerModal } from "../components/LocationPickerModal";
 
 export function Checkout() {
-  const { cart, cartTotal, clearCart, loadPlants } = useStore();
+  const {
+    cart,
+    cartTotal,
+    clearCart,
+    loadPlants,
+    addresses,
+    selectedAddressId,
+    selectAddress,
+    selectedAddress
+  } = useStore();
   const location = useLocation();
   const appliedCoupon = location.state?.coupon || null;
 
   const [deliveryTarget, setDeliveryTarget] = useState<"self" | "gift">("self");
-  const [recipientName, setRecipientName] = useState("Koushik Dash");
+  const [recipientName, setRecipientName] = useState(() => selectedAddress?.name || "Koushik Dash");
   const [email, setEmail] = useState("koushik@email.com");
-  const [phone, setPhone] = useState("+91 98765 43210");
-  const [addressLine, setAddressLine] = useState("Salt Lake, Sector V");
-  const [city, setCity] = useState("Kolkata");
-  const [postalCode, setPostalCode] = useState("700091");
+  const [phone, setPhone] = useState(() => selectedAddress?.phone || "+91 98765 43210");
+  const [addressLine, setAddressLine] = useState(() => selectedAddress?.line || "Salt Lake, Sector V");
+  const [city, setCity] = useState(() => selectedAddress?.city || "Kolkata");
+  const [postalCode, setPostalCode] = useState(() => selectedAddress?.pin || "700091");
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "net_banking" | "cod">("cod");
 
-  const [latitude, setLatitude] = useState<number | null>(22.5726);
-  const [longitude, setLongitude] = useState<number | null>(88.3639);
+  const [latitude, setLatitude] = useState<number | null>(() => selectedAddress?.latitude || 22.5726);
+  const [longitude, setLongitude] = useState<number | null>(() => selectedAddress?.longitude || 88.3639);
+
   const [locating, setLocating] = useState(false);
   const [locationMsg, setLocationMsg] = useState<string | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
@@ -282,6 +292,84 @@ export function Checkout() {
                   </label>
                 </div>
               </div>
+
+              {/* Saved Address Quick Selector (When delivering to self) */}
+              {addresses.length > 0 && deliveryTarget === "self" && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Select Saved Address
+                    </span>
+                    <Link
+                      to="/profile"
+                      className="text-xs font-bold text-leaf-600 dark:text-leaf-400 hover:underline"
+                    >
+                      + Manage Addresses
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {addresses.map((addr) => {
+                      const isSelected = selectedAddressId === addr.id;
+                      return (
+                        <div
+                          key={addr.id}
+                          onClick={() => {
+                            selectAddress(addr.id);
+                            setRecipientName(addr.name);
+                            setPhone(addr.phone);
+                            setAddressLine(addr.line);
+                            setCity(addr.city);
+                            setPostalCode(addr.pin);
+                            if (addr.latitude && addr.longitude) {
+                              setLatitude(addr.latitude);
+                              setLongitude(addr.longitude);
+                            }
+                          }}
+                          className={`group cursor-pointer rounded-xl border p-3 transition-all flex flex-col justify-between ${
+                            isSelected
+                              ? "border-leaf-500 bg-leaf-50/70 dark:bg-leaf-950/40 shadow-sm ring-2 ring-leaf-500/60"
+                              : "border-slate-200/80 bg-white hover:border-slate-300 dark:border-white/10 dark:bg-white/5"
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between gap-1.5">
+                              <div className="flex items-center gap-1.5">
+                                <span className="rounded-md bg-leaf-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-leaf-800 dark:bg-leaf-950 dark:text-leaf-300">
+                                  {addr.type}
+                                </span>
+                                {addr.isDefault && (
+                                  <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                                    Default
+                                  </span>
+                                )}
+                              </div>
+                              {isSelected ? (
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-leaf-700 dark:text-leaf-400 bg-leaf-100 dark:bg-leaf-950 px-2 py-0.5 rounded-full">
+                                  <Check className="h-3 w-3 stroke-[3]" /> Deliver Here
+                                </span>
+                              ) : (
+                                <span className="text-[10px] font-bold text-slate-400 group-hover:text-leaf-600 transition">
+                                  Use this
+                                </span>
+                              )}
+                            </div>
+
+                            <h4 className="mt-2 font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+                              {addr.name}
+                            </h4>
+                            <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-300 leading-snug line-clamp-2">
+                              {addr.line}, {addr.city} - {addr.pin}
+                            </p>
+                          </div>
+                          <p className="mt-2 text-[10px] text-slate-500 dark:text-slate-400">
+                            📞 {addr.phone}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               <div className="grid gap-3 md:grid-cols-2">
                 <div>

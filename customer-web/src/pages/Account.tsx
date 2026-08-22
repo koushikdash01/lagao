@@ -182,7 +182,16 @@ export function Orders() {
 
 export function Profile() {
   const navigate = useNavigate();
-  const { wishlist } = useStore();
+  const {
+    wishlist,
+    addresses,
+    selectedAddressId,
+    selectAddress,
+    setDefaultAddress,
+    addAddress,
+    updateAddress,
+    deleteAddress
+  } = useStore();
   const [activeTab, setActiveTab] = useState<"profile" | "addresses" | "orders" | "care" | "settings">("profile");
 
   // Editable Profile Form State
@@ -197,30 +206,6 @@ export function Profile() {
   });
 
   const [savedSuccess, setSavedSuccess] = useState(false);
-
-  // Saved Addresses State
-  const [addresses, setAddresses] = useState([
-    {
-      id: "addr-1",
-      type: "Home",
-      name: "Koushik Dash",
-      phone: "+91 98765 43210",
-      line: "Flat 4B, Greenwood Heights, Salt Lake Sector V",
-      city: "Kolkata",
-      pin: "700091",
-      isDefault: true
-    },
-    {
-      id: "addr-2",
-      type: "Work / Office",
-      name: "Koushik Dash",
-      phone: "+91 98765 43210",
-      line: "Tech Park Tower 2, 8th Floor, New Town",
-      city: "Kolkata",
-      pin: "700156",
-      isDefault: false
-    }
-  ]);
 
   const [addrModalOpen, setAddrModalOpen] = useState(false);
   const [editingAddrId, setEditingAddrId] = useState<string | null>(null);
@@ -270,24 +255,14 @@ export function Profile() {
     e.preventDefault();
     if (!addrForm.line || !addrForm.pin) return;
     if (editingAddrId) {
-      setAddresses(
-        addresses.map((a) => (a.id === editingAddrId ? { ...a, ...addrForm } : a))
-      );
+      updateAddress(editingAddrId, addrForm);
     } else {
-      const newAddr = {
-        id: `addr-${Date.now()}`,
-        ...addrForm,
-        isDefault: addresses.length === 0
-      };
-      setAddresses([...addresses, newAddr]);
+      addAddress(addrForm);
     }
     setAddrModalOpen(false);
     setEditingAddrId(null);
   };
 
-  const handleDeleteAddress = (id: string) => {
-    setAddresses(addresses.filter((a) => a.id !== id));
-  };
 
   const handleSetDefaultAddress = (id: string) => {
     setAddresses(
@@ -566,73 +541,103 @@ export function Profile() {
               </div>
 
               <div className="mt-4 sm:mt-5 grid gap-3 sm:grid-cols-2">
-                {addresses.map((addr) => (
-                  <div
-                    key={addr.id}
-                    className={`relative flex flex-col justify-between rounded-xl border p-3.5 transition-all min-w-0 ${
-                      addr.isDefault
-                        ? "border-leaf-500 bg-leaf-50/40 dark:bg-leaf-950/20 shadow-sm ring-1 ring-leaf-500/50"
-                        : "border-slate-200/80 bg-white dark:border-white/10 dark:bg-white/5"
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <span className="rounded-md bg-leaf-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-leaf-800 dark:bg-leaf-950 dark:text-leaf-300">
-                          {addr.type}
-                        </span>
-                        {addr.isDefault && (
-                          <span className="flex items-center gap-1 text-[10px] font-bold text-leaf-700 dark:text-leaf-400">
-                            <Check className="h-3 w-3 stroke-[3]" /> Default
-                          </span>
-                        )}
+                {addresses.map((addr) => {
+                  const isSelected = selectedAddressId === addr.id;
+                  return (
+                    <div
+                      key={addr.id}
+                      onClick={() => selectAddress(addr.id)}
+                      className={`group relative flex flex-col justify-between rounded-2xl border p-4 transition-all cursor-pointer min-w-0 ${
+                        isSelected
+                          ? "border-leaf-500 bg-leaf-50/70 dark:bg-leaf-950/40 shadow-md ring-2 ring-leaf-500/60"
+                          : "border-slate-200/80 bg-white hover:border-slate-300 dark:border-white/10 dark:bg-white/5"
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="rounded-md bg-leaf-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-leaf-800 dark:bg-leaf-950 dark:text-leaf-300">
+                              {addr.type}
+                            </span>
+                            {addr.isDefault && (
+                              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                                Default
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            {isSelected ? (
+                              <span className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-leaf-700 dark:text-leaf-400 bg-leaf-100 dark:bg-leaf-950 px-2 py-0.5 rounded-full">
+                                <Check className="h-3 w-3 stroke-[3]" /> Selected
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  selectAddress(addr.id);
+                                }}
+                                className="text-[10px] font-bold text-slate-400 group-hover:text-leaf-600 dark:group-hover:text-leaf-400 transition"
+                              >
+                                Select
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <h4 className="mt-2.5 font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+                          {addr.name}
+                        </h4>
+                        <p className="mt-1 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                          {addr.line}, {addr.city} - {addr.pin}
+                        </p>
+                        <p className="mt-1.5 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                          📞 {addr.phone}
+                        </p>
                       </div>
 
-                      <h4 className="mt-2 font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
-                        {addr.name}
-                      </h4>
-                      <p className="mt-1 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                        {addr.line}, {addr.city} - {addr.pin}
-                      </p>
-                      <p className="mt-1.5 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
-                        📞 {addr.phone}
-                      </p>
-                    </div>
+                      <div className="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/5 gap-2">
+                        <div>
+                          {!addr.isDefault ? (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDefaultAddress(addr.id);
+                              }}
+                              className="text-[11px] font-bold text-leaf-600 hover:underline dark:text-leaf-400"
+                            >
+                              Set Default
+                            </button>
+                          ) : (
+                            <span className="text-[11px] text-slate-400 font-semibold">Primary Address</span>
+                          )}
+                        </div>
 
-                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/5 gap-2">
-                      {!addr.isDefault ? (
-                        <button
-                          type="button"
-                          onClick={() => handleSetDefaultAddress(addr.id)}
-                          className="text-[11px] font-bold text-leaf-600 hover:underline dark:text-leaf-400 truncate"
-                        >
-                          Set Default
-                        </button>
-                      ) : (
-                        <span className="text-[11px] text-slate-400 font-semibold truncate">Primary</span>
-                      )}
-
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEditModal(addr)}
-                          className="flex items-center gap-1 rounded-lg bg-leaf-50 px-2 py-1 text-[11px] font-bold text-leaf-700 hover:bg-leaf-100 dark:bg-white/10 dark:text-leaf-300 dark:hover:bg-white/20 transition"
-                          title="Edit address"
-                        >
-                          <Edit3 className="h-3 w-3" />
-                          <span>Edit</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteAddress(addr.id)}
-                          className="rounded-lg p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 transition"
-                          title="Delete address"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditModal(addr)}
+                            className="flex items-center gap-1 rounded-lg bg-leaf-50 px-2.5 py-1 text-[11px] font-bold text-leaf-700 hover:bg-leaf-100 dark:bg-white/10 dark:text-leaf-300 dark:hover:bg-white/20 transition"
+                            title="Edit address"
+                          >
+                            <Edit3 className="h-3 w-3" />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteAddress(addr.id)}
+                            className="rounded-lg p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 transition"
+                            title="Delete address"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Add / Edit Address Modal */}
