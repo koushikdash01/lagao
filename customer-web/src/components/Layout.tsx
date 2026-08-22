@@ -1,6 +1,6 @@
 import { Heart, Menu, Moon, Search, ShoppingBag, Sun, User, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { categories } from "../data/catalog";
 import { useStore } from "../lib/store";
 import { FloatingCheckoutBar } from "./FloatingCheckoutBar";
@@ -12,6 +12,7 @@ export function Layout() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { cartCount, wishlist, plants } = useStore();
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
@@ -294,7 +295,9 @@ export function Layout() {
 
       <FloatingCheckoutBar />
 
-      <Footer />
+      <div className={location.pathname.startsWith("/profile") ? "hidden lg:block" : ""}>
+        <Footer />
+      </div>
     </div>
   );
 }

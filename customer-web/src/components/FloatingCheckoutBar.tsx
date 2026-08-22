@@ -9,8 +9,14 @@ export function FloatingCheckoutBar() {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Do not show on Cart or Checkout pages where full cart / payment flow is already visible
-  const isHiddenRoute = location.pathname === "/cart" || location.pathname === "/checkout";
+  // Do not show on Cart, Checkout, Profile, Orders, or Auth pages
+  const isHiddenRoute =
+    location.pathname === "/cart" ||
+    location.pathname === "/checkout" ||
+    location.pathname.startsWith("/profile") ||
+    location.pathname.startsWith("/orders") ||
+    location.pathname.startsWith("/login") ||
+    location.pathname.startsWith("/signup");
 
   if (cartCount === 0 || isHiddenRoute) {
     return null;
