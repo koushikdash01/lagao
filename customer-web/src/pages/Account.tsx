@@ -265,12 +265,7 @@ export function Profile() {
 
 
   const handleSetDefaultAddress = (id: string) => {
-    setAddresses(
-      addresses.map((a) => ({
-        ...a,
-        isDefault: a.id === id
-      }))
-    );
+    setDefaultAddress(id);
   };
 
   const tabs = [
