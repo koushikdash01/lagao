@@ -43,7 +43,7 @@ const initialFilters: FilterState = {
 };
 
 export function Catalog() {
-  const { plants } = useStore();
+  const { plants, cartCount } = useStore();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const querySearch = searchParams.get("q") || searchParams.get("search") || "";
@@ -447,7 +447,12 @@ export function Catalog() {
       )}
 
       {/* Floating Mobile Capsule Bar (Sticky at Bottom on Mobile Scroll) */}
-      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 md:hidden flex items-center gap-2.5 rounded-full border border-leaf-600/40 bg-leaf-950/95 px-4 py-2.5 text-white shadow-2xl backdrop-blur-md">
+      <div
+        className={clsx(
+          "fixed left-1/2 -translate-x-1/2 z-30 md:hidden flex items-center gap-2.5 rounded-full border border-leaf-600/40 bg-leaf-950/95 px-4 py-2.5 text-white shadow-2xl backdrop-blur-md transition-all duration-300 ease-out",
+          cartCount > 0 ? "bottom-[6.25rem]" : "bottom-5"
+        )}
+      >
         <button
           type="button"
           onClick={() => setIsFilterDrawerOpen(true)}

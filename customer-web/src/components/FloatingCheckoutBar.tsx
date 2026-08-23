@@ -36,24 +36,24 @@ export function FloatingCheckoutBar() {
       {/* Quick Drawer Backdrop */}
       {isExpanded && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 animate-fadeIn"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300 animate-fadeIn"
           onClick={() => setIsExpanded(false)}
         />
       )}
 
       {/* Quick Cart Drawer */}
       <div
-        className={`fixed left-0 right-0 z-45 mx-auto max-w-2xl px-4 transition-all duration-300 ease-out ${
+        className={`fixed left-0 right-0 z-50 mx-auto max-w-2xl px-4 transition-all duration-300 ease-out ${
           isExpanded
-            ? "bottom-24 sm:bottom-28 opacity-100 translate-y-0 pointer-events-auto"
+            ? "bottom-20 sm:bottom-24 opacity-100 translate-y-0 pointer-events-auto"
             : "bottom-0 opacity-0 translate-y-8 pointer-events-none"
         }`}
       >
-        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-2xl backdrop-blur-md dark:border-white/10 dark:bg-[#102517]/95">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/10">
+        <div className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white/95 p-4 shadow-2xl backdrop-blur-md dark:border-white/10 dark:bg-stone-900/95">
+          <div className="flex items-center justify-between border-b border-stone-100 pb-3 dark:border-white/10">
             <div className="flex items-center gap-2">
-              <ShoppingBag className="h-5 w-5 text-leaf-500" />
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              <ShoppingBag className="h-5 w-5 text-leaf-600 dark:text-leaf-400" />
+              <h3 className="text-sm font-bold text-stone-900 dark:text-white">
                 Cart Items ({cartCount})
               </h3>
             </div>
@@ -69,7 +69,7 @@ export function FloatingCheckoutBar() {
               <button
                 type="button"
                 onClick={() => setIsExpanded(false)}
-                className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-white transition"
+                className="rounded-full p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600 dark:hover:bg-white/10 dark:hover:text-white transition"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -81,7 +81,7 @@ export function FloatingCheckoutBar() {
             {cart.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 p-2.5 dark:bg-white/5"
+                className="flex items-center justify-between gap-3 rounded-xl bg-stone-50 p-2.5 dark:bg-white/5"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <img
@@ -90,7 +90,7 @@ export function FloatingCheckoutBar() {
                     className="h-11 w-11 shrink-0 rounded-lg object-cover shadow-sm"
                   />
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-bold text-slate-800 dark:text-slate-100">
+                    <p className="truncate text-xs font-bold text-stone-800 dark:text-stone-100">
                       {item.name}
                     </p>
                     <p className="text-[11px] font-semibold text-leaf-600 dark:text-leaf-400">
@@ -99,7 +99,7 @@ export function FloatingCheckoutBar() {
                   </div>
                 </div>
 
-                <div className="flex items-center rounded-lg border border-leaf-500 bg-leaf-500 text-white font-bold h-7 w-20 overflow-hidden shadow-sm shrink-0">
+                <div className="flex items-center rounded-lg border border-leaf-600 bg-leaf-600 text-white font-bold h-7 w-20 overflow-hidden shadow-sm shrink-0">
                   <button
                     type="button"
                     onClick={() => {
@@ -109,15 +109,15 @@ export function FloatingCheckoutBar() {
                         updateQuantity(item.id, item.quantity - 1);
                       }
                     }}
-                    className="flex-1 h-full hover:bg-leaf-600 active:bg-leaf-700 transition flex items-center justify-center text-xs select-none"
+                    className="flex-1 h-full hover:bg-leaf-700 active:bg-leaf-800 transition flex items-center justify-center text-xs select-none"
                   >
                     -
                   </button>
-                  <span className="text-xs select-none px-1">{item.quantity}</span>
+                  <span className="text-xs select-none px-1 font-bold">{item.quantity}</span>
                   <button
                     type="button"
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="flex-1 h-full hover:bg-leaf-600 active:bg-leaf-700 transition flex items-center justify-center text-xs select-none"
+                    className="flex-1 h-full hover:bg-leaf-700 active:bg-leaf-800 transition flex items-center justify-center text-xs select-none"
                   >
                     +
                   </button>
@@ -128,11 +128,11 @@ export function FloatingCheckoutBar() {
         </div>
       </div>
 
-      {/* Floating Bottom Checkout Bar (Zomato / Blinkit Style) */}
-      <div className="fixed bottom-3 sm:bottom-5 left-0 right-0 z-45 mx-auto max-w-xl sm:max-w-2xl px-3 sm:px-4 pointer-events-auto animate-floatSlideUp">
-        <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/20 bg-gradient-to-r from-[#143a1e] via-[#1b5e20] to-[#207a38] p-3 sm:p-3.5 text-white shadow-[0_14px_40px_rgba(20,58,30,0.5)] backdrop-blur-xl transition-all duration-300 hover:shadow-[0_18px_50px_rgba(20,58,30,0.65)] hover:-translate-y-0.5">
+      {/* Floating Bottom Checkout Bar */}
+      <div className="fixed bottom-3 sm:bottom-4 left-0 right-0 z-40 mx-auto max-w-xl sm:max-w-2xl px-3 sm:px-4 pointer-events-auto animate-floatSlideUp">
+        <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-leaf-500/30 bg-gradient-to-r from-leaf-950 via-leaf-900 to-leaf-800 p-3 sm:p-3.5 text-white shadow-[0_14px_40px_rgba(5,46,22,0.6)] backdrop-blur-xl transition-all duration-300 hover:shadow-[0_18px_50px_rgba(5,46,22,0.75)] hover:-translate-y-0.5">
           
-          {/* Subtle Ambient Top Progress / Shimmer Bar */}
+          {/* Subtle Ambient Top Progress Bar */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-black/20">
             <div
               className={`h-full transition-all duration-500 ${
@@ -159,7 +159,7 @@ export function FloatingCheckoutBar() {
                     src={item.image}
                     alt={item.name}
                     style={{ zIndex: 10 - idx }}
-                    className="h-10 w-10 sm:h-11 sm:w-11 rounded-full sm:rounded-xl object-cover border-2 border-white dark:border-leaf-900 shadow-md ring-1 ring-black/10"
+                    className="h-10 w-10 sm:h-11 sm:w-11 rounded-full sm:rounded-xl object-cover border-2 border-white dark:border-leaf-950 shadow-md ring-1 ring-black/10"
                   />
                 ))}
                 {remainingCount > 0 && (
@@ -226,7 +226,7 @@ export function FloatingCheckoutBar() {
 
               <Link
                 to="/checkout"
-                className="relative inline-flex items-center gap-1.5 rounded-xl sm:rounded-2xl bg-white px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-black text-leaf-900 shadow-lg transition-all duration-200 hover:bg-emerald-50 hover:shadow-xl active:scale-95"
+                className="relative inline-flex items-center gap-1.5 rounded-xl sm:rounded-2xl bg-white px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-black text-leaf-950 shadow-lg transition-all duration-200 hover:bg-emerald-50 hover:shadow-xl active:scale-95"
               >
                 <span>Checkout</span>
                 <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 text-leaf-700" />
