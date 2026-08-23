@@ -198,7 +198,7 @@ export function Catalog() {
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search plants, indoor, low light..."
-            className="w-full rounded-2xl border border-stone-200/90 bg-white py-2.5 pl-10 pr-9 text-xs sm:text-sm text-stone-900 shadow-sm transition placeholder:text-stone-400 focus:border-leaf-600 focus:outline-none focus:ring-2 focus:ring-leaf-600/20 dark:border-white/10 dark:bg-stone-900 dark:text-white dark:focus:border-leaf-500"
+            className="w-full rounded-2xl border border-stone-200/90 bg-white/80 py-2.5 pl-10 pr-9 text-xs sm:text-sm text-stone-900 shadow-sm backdrop-blur-md transition placeholder:text-stone-400 focus:border-leaf-600 focus:outline-none focus:ring-2 focus:ring-leaf-600/20 dark:border-white/10 dark:bg-stone-900/80 dark:text-white dark:focus:border-leaf-500"
           />
           {search && (
             <button
@@ -248,7 +248,7 @@ export function Catalog() {
       </div>
 
       {/* Mobile & Desktop Quick Controls Bar */}
-      <div className="mb-4 flex items-center justify-between gap-2 rounded-2xl border border-stone-200/80 bg-white p-2.5 shadow-sm dark:border-white/10 dark:bg-stone-900">
+      <div className="mb-4 flex items-center justify-between gap-2 rounded-2xl border border-stone-200/80 bg-white/80 p-2.5 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-stone-900/80">
         {/* Left: Filter Trigger Button */}
         <button
           type="button"
