@@ -20,6 +20,7 @@ import {
   SectionHeader,
   QuickViewModal,
   MobileFilterDrawer,
+  PageLoader,
   type FilterState,
 } from "../components/ui";
 import { useStore } from "../lib/store";
@@ -171,6 +172,10 @@ export function Catalog() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (plants.length === 0) {
+    return <PageLoader text="Fetching fresh nursery plants..." />;
+  }
 
   return (
     <main className="mx-auto max-w-7xl px-3 py-6 sm:px-6 lg:px-8 pb-24 md:pb-12">

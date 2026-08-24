@@ -1,8 +1,8 @@
-import { Heart, Leaf, Minus, Plus, Star } from "lucide-react";
+import { Heart, Minus, Plus, Star } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import clsx from "clsx";
-import { Button, PlantCard, SectionHeader } from "../components/ui";
+import { Button, PlantCard, SectionHeader, PageLoader } from "../components/ui";
 import { useStore } from "../lib/store";
 
 export function PlantDetails() {
@@ -10,12 +10,7 @@ export function PlantDetails() {
   const { plants, cart, addToCart, removeFromCart, updateQuantity, toggleWishlist, wishlist } = useStore();
 
   if (plants.length === 0) {
-    return (
-      <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center p-8">
-        <Leaf className="h-12 w-12 animate-bounce text-leaf-500" />
-        <p className="mt-4 text-lg font-medium text-slate-600 dark:text-slate-400">Loading plant details...</p>
-      </div>
-    );
+    return <PageLoader text="Loading plant details..." />;
   }
 
   const plant = plants.find((item) => item.id === id) ?? plants[0];

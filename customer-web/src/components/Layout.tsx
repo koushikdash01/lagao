@@ -109,9 +109,103 @@ export function Layout() {
           </div>
 
           {/* Desktop Search Bar */}
-          <div ref={searchRef} className="relative ml-auto hidden min-w-72 items-center md:flex">
-            <form onSubmit={handleSearchSubmit} className="flex w-full items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm transition-all focus-within:ring-2 focus-within:ring-leaf-500 dark:bg-white/10">
-              <Search className="h-4 w-4 text-slate-400" />
+          {location.pathname !== "/" && (
+            <div ref={searchRef} className="relative ml-auto hidden min-w-72 items-center md:flex">
+              <form onSubmit={handleSearchSubmit} className="flex w-full items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm transition-all focus-within:ring-2 focus-within:ring-leaf-500 dark:bg-white/10">
+                <Search className="h-4 w-4 text-slate-400" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  className="w-full bg-transparent text-sm outline-none"
+                  placeholder="Search plants, categories..."
+                />
+                {searchQuery && (
+                  <button type="button" onClick={() => setSearchQuery("")} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </form>
+
+              {/* Desktop Autocomplete dropdown */}
+              {hasSuggestions && (
+                <div className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-2xl border border-black/5 bg-white/95 py-2 shadow-xl backdrop-blur-lg dark:border-white/10 dark:bg-[#102517]/95">
+                  {matchingCategories.length > 0 && (
+                    <div className="border-b border-black/5 px-3 py-2 dark:border-white/5">
+                      <p className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Categories</p>
+                      <div className="mt-1 flex flex-wrap gap-1.5">
+                        {matchingCategories.map((cat) => (
+                          <button
+                            key={cat}
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleCategoryClick(cat);
+                            }}
+                            className="rounded-full bg-leaf-50 px-2.5 py-1 text-xs font-semibold text-leaf-800 hover:bg-leaf-100 dark:bg-white/10 dark:text-leaf-300 dark:hover:bg-white/20"
+                          >
+                            🌿 {cat}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {matchingPlants.map((plant) => (
+                    <button
+                      key={plant.id}
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handlePlantClick(plant.id);
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-leaf-50 dark:hover:bg-white/10"
+                    >
+                      <img src={plant.image} alt={plant.name} className="h-10 w-10 rounded-lg object-cover" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{plant.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{plant.category} · ₹{plant.discountPrice ?? plant.price}</p>
+                      </div>
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleSearchSubmit();
+                    }}
+                    className="w-full border-t border-black/5 px-4 py-2.5 text-left text-xs font-bold text-leaf-600 hover:bg-leaf-50 dark:border-white/10 dark:text-leaf-400 dark:hover:bg-white/10"
+                  >
+                    View all results for "{searchQuery}" →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <button onClick={() => setDark(!dark)} aria-label="Toggle dark mode" className="ml-auto rounded-full bg-white p-2 shadow-sm dark:bg-white/10 md:ml-0">
+            {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+          <Link to="/wishlist" aria-label="Wishlist" className="relative rounded-full bg-white p-2 shadow-sm dark:bg-white/10">
+            <Heart className="h-5 w-5" />
+            {wishlist.length ? <Badge value={wishlist.length} /> : null}
+          </Link>
+          <Link to="/cart" aria-label="Cart" className="relative rounded-full bg-white p-2 shadow-sm dark:bg-white/10">
+            <ShoppingBag className="h-5 w-5" />
+            {cartCount ? <Badge value={cartCount} /> : null}
+          </Link>
+          <Link to="/profile" aria-label="Profile" className="rounded-full bg-white p-2 shadow-sm dark:bg-white/10">
+            <User className="h-5 w-5" />
+          </Link>
+        </div>
+
+        {/* Mobile Search Bar Row */}
+        {location.pathname !== "/" && (
+          <div className="border-t border-black/5 px-4 pb-3 pt-2 dark:border-white/10 md:hidden">
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-white px-3.5 py-2.5 shadow-sm transition-all focus-within:ring-2 focus-within:ring-leaf-500 dark:bg-white/10">
+              <Search className="mr-2 h-4 w-4 shrink-0 text-slate-400" />
               <input
                 value={searchQuery}
                 onChange={(e) => {
@@ -119,19 +213,19 @@ export function Layout() {
                   setShowSuggestions(true);
                 }}
                 onFocus={() => setShowSuggestions(true)}
-                className="w-full bg-transparent text-sm outline-none"
+                className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 placeholder="Search plants, categories..."
               />
               {searchQuery && (
-                <button type="button" onClick={() => setSearchQuery("")} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                <button type="button" onClick={() => setSearchQuery("")} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white">
                   <X className="h-4 w-4" />
                 </button>
               )}
             </form>
 
-            {/* Desktop Autocomplete dropdown */}
+            {/* Mobile Autocomplete Dropdown */}
             {hasSuggestions && (
-              <div className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-2xl border border-black/5 bg-white/95 py-2 shadow-xl backdrop-blur-lg dark:border-white/10 dark:bg-[#102517]/95">
+              <div className="mt-2 overflow-hidden rounded-2xl border border-black/5 bg-white/98 shadow-xl backdrop-blur-lg dark:border-white/10 dark:bg-[#102517]/98">
                 {matchingCategories.length > 0 && (
                   <div className="border-b border-black/5 px-3 py-2 dark:border-white/5">
                     <p className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Categories</p>
@@ -160,7 +254,7 @@ export function Layout() {
                       e.preventDefault();
                       handlePlantClick(plant.id);
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-leaf-50 dark:hover:bg-white/10"
+                    className="flex w-full items-center gap-3 border-b border-black/5 px-3.5 py-2.5 text-left last:border-0 hover:bg-leaf-50 dark:border-white/5 dark:hover:bg-white/10"
                   >
                     <img src={plant.image} alt={plant.name} className="h-10 w-10 rounded-lg object-cover" />
                     <div className="min-w-0 flex-1">
@@ -175,104 +269,14 @@ export function Layout() {
                     e.preventDefault();
                     handleSearchSubmit();
                   }}
-                  className="w-full border-t border-black/5 px-4 py-2.5 text-left text-xs font-bold text-leaf-600 hover:bg-leaf-50 dark:border-white/10 dark:text-leaf-400 dark:hover:bg-white/10"
+                  className="w-full bg-leaf-50/50 px-4 py-2.5 text-center text-xs font-bold text-leaf-700 hover:bg-leaf-50 dark:bg-white/5 dark:text-leaf-300 dark:hover:bg-white/10"
                 >
                   View all results for "{searchQuery}" →
                 </button>
               </div>
             )}
           </div>
-
-          <button onClick={() => setDark(!dark)} aria-label="Toggle dark mode" className="ml-auto rounded-full bg-white p-2 shadow-sm dark:bg-white/10 md:ml-0">
-            {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
-          <Link to="/wishlist" aria-label="Wishlist" className="relative rounded-full bg-white p-2 shadow-sm dark:bg-white/10">
-            <Heart className="h-5 w-5" />
-            {wishlist.length ? <Badge value={wishlist.length} /> : null}
-          </Link>
-          <Link to="/cart" aria-label="Cart" className="relative rounded-full bg-white p-2 shadow-sm dark:bg-white/10">
-            <ShoppingBag className="h-5 w-5" />
-            {cartCount ? <Badge value={cartCount} /> : null}
-          </Link>
-          <Link to="/profile" aria-label="Profile" className="rounded-full bg-white p-2 shadow-sm dark:bg-white/10">
-            <User className="h-5 w-5" />
-          </Link>
-        </div>
-
-        {/* Mobile Search Bar Row */}
-        <div className="border-t border-black/5 px-4 pb-3 pt-2 dark:border-white/10 md:hidden">
-          <form onSubmit={handleSearchSubmit} className="relative flex items-center rounded-xl bg-white px-3.5 py-2.5 shadow-sm transition-all focus-within:ring-2 focus-within:ring-leaf-500 dark:bg-white/10">
-            <Search className="mr-2 h-4 w-4 shrink-0 text-slate-400" />
-            <input
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setShowSuggestions(true);
-              }}
-              onFocus={() => setShowSuggestions(true)}
-              className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
-              placeholder="Search plants, categories..."
-            />
-            {searchQuery && (
-              <button type="button" onClick={() => setSearchQuery("")} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white">
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </form>
-
-          {/* Mobile Autocomplete Dropdown */}
-          {hasSuggestions && (
-            <div className="mt-2 overflow-hidden rounded-2xl border border-black/5 bg-white/98 shadow-xl backdrop-blur-lg dark:border-white/10 dark:bg-[#102517]/98">
-              {matchingCategories.length > 0 && (
-                <div className="border-b border-black/5 px-3 py-2 dark:border-white/5">
-                  <p className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Categories</p>
-                  <div className="mt-1 flex flex-wrap gap-1.5">
-                    {matchingCategories.map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          handleCategoryClick(cat);
-                        }}
-                        className="rounded-full bg-leaf-50 px-2.5 py-1 text-xs font-semibold text-leaf-800 hover:bg-leaf-100 dark:bg-white/10 dark:text-leaf-300 dark:hover:bg-white/20"
-                      >
-                        🌿 {cat}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {matchingPlants.map((plant) => (
-                <button
-                  key={plant.id}
-                  type="button"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    handlePlantClick(plant.id);
-                  }}
-                  className="flex w-full items-center gap-3 border-b border-black/5 px-3.5 py-2.5 text-left last:border-0 hover:bg-leaf-50 dark:border-white/5 dark:hover:bg-white/10"
-                >
-                  <img src={plant.image} alt={plant.name} className="h-10 w-10 rounded-lg object-cover" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{plant.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{plant.category} · ₹{plant.discountPrice ?? plant.price}</p>
-                  </div>
-                </button>
-              ))}
-              <button
-                type="button"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  handleSearchSubmit();
-                }}
-                className="w-full bg-leaf-50/50 px-4 py-2.5 text-center text-xs font-bold text-leaf-700 hover:bg-leaf-50 dark:bg-white/5 dark:text-leaf-300 dark:hover:bg-white/10"
-              >
-                View all results for "{searchQuery}" →
-              </button>
-            </div>
-          )}
-        </div>
+        )}
       </header>
 
       {open ? (

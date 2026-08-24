@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Heart, Star, Sun, Eye, X, SlidersHorizontal, Check, ShieldCheck, Sprout } from "lucide-react";
+import { Heart, Star, Sun, Eye, X, SlidersHorizontal, Check, ShieldCheck, Sprout, Leaf, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 import { type Plant } from "../data/catalog";
 import { useStore } from "../lib/store";
@@ -696,3 +696,22 @@ export function MobileFilterDrawer({
     </div>
   );
 }
+
+/* Clean Leaf Refresh & Page Loader */
+export function PageLoader({ text = "Loading data..." }: { text?: string }) {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center p-8 text-center animate-in fade-in duration-300">
+      <div className="relative flex items-center justify-center">
+        {/* Pulsing Green Halo */}
+        <div className="absolute h-16 w-16 animate-ping rounded-full bg-leaf-500/20 duration-1000" />
+        <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-leaf-100 dark:bg-leaf-950/60 border border-leaf-200 dark:border-leaf-800 shadow-sm">
+          <Leaf className="h-7 w-7 animate-bounce text-leaf-600 dark:text-leaf-400" />
+        </div>
+      </div>
+      <p className="mt-4 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300">
+        {text}
+      </p>
+    </div>
+  );
+}
+
