@@ -245,75 +245,75 @@ function formatImageUrl(url: string): string {
       )}
 
       {(showAddModal || editingPlant) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900 overflow-y-auto max-h-[90vh]">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold dark:text-white">{editingPlant ? "Edit Plant" : "Add New Plant"}</h3>
-              <button onClick={() => { setShowAddModal(false); setEditingPlant(null); resetForm(); }}><X className="h-6 w-6 dark:text-white" /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11] text-slate-900 dark:text-white overflow-y-auto max-h-[90vh]">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/10">
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">{editingPlant ? "Edit Plant" : "Add New Plant"}</h3>
+              <button onClick={() => { setShowAddModal(false); setEditingPlant(null); resetForm(); }} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-white"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={editingPlant ? handleEditPlant : handleAddPlant} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Plant Name</label>
-                <input required value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="e.g. Snake Plant" />
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Plant Name</label>
+                <input required value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="e.g. Snake Plant" />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Scientific Name</label>
-                <input value={scientificName} onChange={(e) => setScientificName(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="e.g. Sansevieria trifasciata" />
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Scientific Name</label>
+                <input value={scientificName} onChange={(e) => setScientificName(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="e.g. Sansevieria trifasciata" />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Category</label>
-                <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-slate-800 dark:text-white">
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Category</label>
+                <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white">
                   {categories.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
+                    <option key={c.id} value={c.id} className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">{c.name}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Description</label>
-                <textarea required value={description} onChange={(e) => setDescription(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" rows={3} placeholder="Describe the plant..." />
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Description</label>
+                <textarea required value={description} onChange={(e) => setDescription(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" rows={3} placeholder="Describe the plant..." />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Price (Rs.)</label>
-                  <input required type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(Number(e.target.value))} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Price (Rs.)</label>
+                  <input required type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(Number(e.target.value))} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Discount Price (Rs.)</label>
-                  <input type="number" min="0" step="0.01" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value === "" ? "" : Number(e.target.value))} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="Optional" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Discount Price (Rs.)</label>
+                  <input type="number" min="0" step="0.01" value={discountPrice} onChange={(e) => setDiscountPrice(e.target.value === "" ? "" : Number(e.target.value))} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="Optional" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Stock Quantity</label>
-                  <input required type="number" min="0" value={stockQuantity} onChange={(e) => setStockQuantity(Number(e.target.value))} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Stock Quantity</label>
+                  <input required type="number" min="0" value={stockQuantity} onChange={(e) => setStockQuantity(Number(e.target.value))} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Type</label>
-                  <select value={type} onChange={(e) => setType(e.target.value as "indoor" | "outdoor")} className="w-full rounded border px-3 py-2 dark:bg-slate-800 dark:text-white">
-                    <option value="indoor">Indoor</option>
-                    <option value="outdoor">Outdoor</option>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Type</label>
+                  <select value={type} onChange={(e) => setType(e.target.value as "indoor" | "outdoor")} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white">
+                    <option value="indoor" className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">Indoor</option>
+                    <option value="outdoor" className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">Outdoor</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Sunlight Requirement</label>
-                  <input value={sunlight} onChange={(e) => setSunlight(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="e.g. Low to bright indirect" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Sunlight Requirement</label>
+                  <input value={sunlight} onChange={(e) => setSunlight(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="e.g. Low to bright indirect" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Watering Frequency</label>
-                  <input value={watering} onChange={(e) => setWatering(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="e.g. Every 2-3 weeks" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Watering Frequency</label>
+                  <input value={watering} onChange={(e) => setWatering(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="e.g. Every 2-3 weeks" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Pot Size</label>
-                <input value={potSize} onChange={(e) => setPotSize(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="e.g. 6 inch" />
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Pot Size</label>
+                <input value={potSize} onChange={(e) => setPotSize(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="e.g. 6 inch" />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Image URL</label>
-                <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="https://... or Google Drive link" />
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Image URL</label>
+                <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="https://... or Google Drive link" />
               </div>
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/10">
                 <Button type="button" variant="secondary" onClick={() => { setShowAddModal(false); setEditingPlant(null); resetForm(); }}>Cancel</Button>
                 <Button type="submit">{editingPlant ? "Update Plant" : "Save Plant"}</Button>
               </div>
@@ -323,13 +323,13 @@ function formatImageUrl(url: string): string {
       )}
 
       {deletingPlant && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11]">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Delete Plant</h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Are you sure you want to delete <strong className="text-slate-800 dark:text-white">{deletingPlant.name}</strong>? This action cannot be undone.
+            <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+              Are you sure you want to delete <strong className="text-slate-900 dark:text-white">{deletingPlant.name}</strong>? This action cannot be undone.
             </p>
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-3 dark:border-white/10">
               <Button variant="secondary" onClick={() => setDeletingPlant(null)}>Cancel</Button>
               <Button variant="danger" onClick={confirmDeletePlant}>Delete</Button>
             </div>
@@ -425,22 +425,22 @@ export function CategoriesPage() {
       )}
 
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold dark:text-white">Add New Category</h3>
-              <button onClick={() => setShowAddModal(false)}><X className="h-6 w-6 dark:text-white" /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11] text-slate-900 dark:text-white">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/10">
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">Add New Category</h3>
+              <button onClick={() => setShowAddModal(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-white"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleAddCategory} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Category Name</label>
-                <input required value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" placeholder="e.g. Succulents" />
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Category Name</label>
+                <input required value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="e.g. Succulents" />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Description</label>
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" rows={3} placeholder="Category details..." />
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Description</label>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" rows={3} placeholder="Category details..." />
               </div>
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/10">
                 <Button type="button" variant="secondary" onClick={() => setShowAddModal(false)}>Cancel</Button>
                 <Button type="submit">Save Category</Button>
               </div>
@@ -450,13 +450,13 @@ export function CategoriesPage() {
       )}
 
       {deletingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11] text-slate-900 dark:text-white">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Delete Category</h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Are you sure you want to delete <strong className="text-slate-800 dark:text-white">{deletingCategory.name}</strong>? All plants in this category will be shifted to 'Other Greens'.
+            <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+              Are you sure you want to delete <strong className="text-slate-900 dark:text-white">{deletingCategory.name}</strong>? All plants in this category will be shifted to 'Other Greens'.
             </p>
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-3 dark:border-white/10">
               <Button variant="secondary" onClick={() => setDeletingCategory(null)}>Cancel</Button>
               <Button variant="danger" onClick={confirmDeleteCategory}>Delete</Button>
             </div>
@@ -878,45 +878,45 @@ export function CouponsPage() {
       )}
 
       {(showAddModal || editingCoupon) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900 overflow-y-auto max-h-[90vh]">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold dark:text-white">{editingCoupon ? "Edit Coupon" : "Add New Coupon"}</h3>
-              <button onClick={() => { setShowAddModal(false); setEditingCoupon(null); resetForm(); }}><X className="h-6 w-6 dark:text-white" /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11] text-slate-900 dark:text-white overflow-y-auto max-h-[90vh]">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/10">
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">{editingCoupon ? "Edit Coupon" : "Add New Coupon"}</h3>
+              <button onClick={() => { setShowAddModal(false); setEditingCoupon(null); resetForm(); }} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-white"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={editingCoupon ? handleEditCoupon : handleAddCoupon} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Coupon Code</label>
-                <input required value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="w-full rounded border px-3 py-2 font-mono dark:bg-transparent dark:text-white" placeholder="e.g. SAVE20" />
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Coupon Code</label>
+                <input required value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 font-mono text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="e.g. SAVE20" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Discount Type</label>
-                  <select value={discountType} onChange={(e) => setDiscountType(e.target.value as "percentage" | "flat")} className="w-full rounded border px-3 py-2 dark:bg-slate-800 dark:text-white">
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="flat">Flat Amount (Rs.)</option>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Discount Type</label>
+                  <select value={discountType} onChange={(e) => setDiscountType(e.target.value as "percentage" | "flat")} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white">
+                    <option value="percentage" className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">Percentage (%)</option>
+                    <option value="flat" className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">Flat Amount (Rs.)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Discount Value</label>
-                  <input required type="number" min="0" step="0.01" value={discountValue} onChange={(e) => setDiscountValue(Number(e.target.value))} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Discount Value</label>
+                  <input required type="number" min="0" step="0.01" value={discountValue} onChange={(e) => setDiscountValue(Number(e.target.value))} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Applies To</label>
-                <select value={appliesTo} onChange={(e) => setAppliesTo(e.target.value as "all" | "category" | "plant")} className="w-full rounded border px-3 py-2 dark:bg-slate-800 dark:text-white">
-                  <option value="all">All Items (Global)</option>
-                  <option value="category">Specific Category</option>
-                  <option value="plant">Specific Plant</option>
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Applies To</label>
+                <select value={appliesTo} onChange={(e) => setAppliesTo(e.target.value as "all" | "category" | "plant")} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white">
+                  <option value="all" className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">All Items (Global)</option>
+                  <option value="category" className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">Specific Category</option>
+                  <option value="plant" className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">Specific Plant</option>
                 </select>
               </div>
 
               {appliesTo === "category" && (
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Select Category</label>
-                  <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-slate-800 dark:text-white">
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Select Category</label>
+                  <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white">
                     {categories.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
+                      <option key={c.id} value={c.id} className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">{c.name}</option>
                     ))}
                   </select>
                 </div>
@@ -924,10 +924,10 @@ export function CouponsPage() {
 
               {appliesTo === "plant" && (
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Select Plant</label>
-                  <select value={plantId} onChange={(e) => setPlantId(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-slate-800 dark:text-white">
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Select Plant</label>
+                  <select value={plantId} onChange={(e) => setPlantId(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white">
                     {plants.map((p) => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
+                      <option key={p.id} value={p.id} className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">{p.name}</option>
                     ))}
                   </select>
                 </div>
@@ -935,19 +935,19 @@ export function CouponsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Expiry Date</label>
-                  <input required type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Expiry Date</label>
+                  <input required type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1 dark:text-slate-200">Min Order Amount (Rs.)</label>
-                  <input type="number" min="0" value={minimumOrderAmount} onChange={(e) => setMinimumOrderAmount(Number(e.target.value))} className="w-full rounded border px-3 py-2 dark:bg-transparent dark:text-white" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Min Order Amount (Rs.)</label>
+                  <input type="number" min="0" value={minimumOrderAmount} onChange={(e) => setMinimumOrderAmount(Number(e.target.value))} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" />
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="isActive" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-4 w-4 rounded" />
-                <label htmlFor="isActive" className="text-sm font-semibold dark:text-slate-200">Active Coupon</label>
+                <input type="checkbox" id="isActive" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-4 w-4 rounded accent-leaf-600" />
+                <label htmlFor="isActive" className="text-xs font-bold text-slate-700 dark:text-slate-300">Active Coupon</label>
               </div>
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/10">
                 <Button type="button" variant="secondary" onClick={() => { setShowAddModal(false); setEditingCoupon(null); resetForm(); }}>Cancel</Button>
                 <Button type="submit">{editingCoupon ? "Update Coupon" : "Save Coupon"}</Button>
               </div>
@@ -957,13 +957,13 @@ export function CouponsPage() {
       )}
 
       {deletingCoupon && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-soft dark:bg-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11] text-slate-900 dark:text-white">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Delete Coupon</h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Are you sure you want to delete coupon <strong className="text-slate-800 dark:text-white">{deletingCoupon.code}</strong>? This action cannot be undone.
+            <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+              Are you sure you want to delete coupon <strong className="text-slate-900 dark:text-white">{deletingCoupon.code}</strong>? This action cannot be undone.
             </p>
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-3 dark:border-white/10">
               <Button variant="secondary" onClick={() => setDeletingCoupon(null)}>Cancel</Button>
               <Button variant="danger" onClick={confirmDeleteCoupon}>Delete</Button>
             </div>

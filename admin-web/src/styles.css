@@ -26,22 +26,23 @@ body {
   color: #f8fafc;
 }
 
-/* Global input & select styling for dark mode form elements */
+/* Global form elements visibility fixes for both Light & Dark Theme */
 input, select, textarea {
-  color: inherit;
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+option {
+  background-color: #ffffff;
+  color: #0f172a;
 }
 
 .dark input, 
 .dark select, 
 .dark textarea {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #0d1f14;
   border-color: rgba(255, 255, 255, 0.15);
   color: #f8fafc;
-}
-
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: #94a3b8;
 }
 
 .dark option {
@@ -111,5 +112,6 @@ input, select, textarea {
   background-color: #07120c !important;
   color: #ffffff !important;
 }
+
 
 

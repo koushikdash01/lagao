@@ -34,9 +34,11 @@ export function Login({ onLogin }: { onLogin: () => void }) {
           className="rounded-3xl border border-slate-200/90 bg-white p-8 shadow-xl dark:border-white/10 dark:bg-[#0c1a11]"
         >
           <div className="mb-8 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-600 text-white shadow-md shadow-leaf-600/30">
-              <Sprout className="h-7 w-7" />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Lagao.shop"
+              className="h-14 w-auto max-w-[150px] object-contain transition-all duration-300 dark:brightness-110 dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]"
+            />
             <div>
               <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
                 Lagao Admin

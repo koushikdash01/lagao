@@ -104,21 +104,17 @@ export function Layout({
         <div>
           {/* Logo & Brand Header */}
           <div className="mb-6 flex items-center justify-between px-2">
-            <div className="flex items-center gap-3">
-              <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-leaf-600 text-white shadow-md shadow-leaf-600/30">
-                <Sprout className="h-6 w-6 text-white" />
-                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400 text-[10px] font-bold text-slate-950 ring-2 ring-white dark:ring-slate-900">
-                  ✓
-                </span>
-              </div>
-              <div>
-                <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                  Lagao Admin
-                  <span className="inline-flex items-center rounded-full bg-leaf-500/15 px-2 py-0.5 text-[10px] font-extrabold text-leaf-700 dark:text-leaf-300 border border-leaf-500/30">
-                    v2.0
-                  </span>
+            <div className="flex items-center gap-3 min-w-0">
+              <img
+                src="/logo.png"
+                alt="Lagao.shop"
+                className="h-12 w-auto max-w-[140px] object-contain transition-all duration-300 dark:brightness-110 dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]"
+              />
+              <div className="min-w-0">
+                <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                  Admin Panel
                 </h1>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                   Nursery Operations
                 </p>
               </div>
