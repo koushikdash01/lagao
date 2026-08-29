@@ -344,6 +344,7 @@ export function CategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<any | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [deletingCategory, setDeletingCategory] = useState<any | null>(null);
@@ -364,19 +365,43 @@ export function CategoriesPage() {
     loadCategories();
   }, []);
 
-  const handleAddCategory = async (e: React.FormEvent) => {
+  const resetCategoryForm = () => {
+    setName("");
+    setDescription("");
+    setEditingCategory(null);
+  };
+
+  const handleOpenAdd = () => {
+    resetCategoryForm();
+    setShowAddModal(true);
+  };
+
+  const handleOpenEdit = (category: any) => {
+    setEditingCategory(category);
+    setName(category.name || "");
+    setDescription(category.description || "");
+  };
+
+  const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await apiRequest("/demo/categories", {
-        method: "POST",
-        body: JSON.stringify({ name, description }),
-      });
-      setShowAddModal(false);
-      setName("");
-      setDescription("");
+      if (editingCategory) {
+        await apiRequest(`/demo/categories/${editingCategory.id}`, {
+          method: "PUT",
+          body: JSON.stringify({ name, description }),
+        });
+        setEditingCategory(null);
+      } else {
+        await apiRequest("/demo/categories", {
+          method: "POST",
+          body: JSON.stringify({ name, description }),
+        });
+        setShowAddModal(false);
+      }
+      resetCategoryForm();
       loadCategories();
     } catch (e) {
-      alert("Failed to add category");
+      alert(`Failed to ${editingCategory ? "update" : "add"} category`);
     }
   };
 
@@ -385,7 +410,7 @@ export function CategoriesPage() {
     const id = deletingCategory.id;
     try {
       await apiRequest(`/demo/categories/${id}`, { method: "DELETE" });
-      setCategories(prev => prev.filter(c => c.id !== id));
+      setCategories((prev) => prev.filter((c) => c.id !== id));
       setDeletingCategory(null);
     } catch (e: any) {
       console.error("Failed to delete category:", e);
@@ -400,7 +425,7 @@ export function CategoriesPage() {
         title="Category Management"
         description="Manage plant categories in the database."
         action={
-          <Button onClick={() => setShowAddModal(true)}>
+          <Button onClick={handleOpenAdd}>
             <Plus className="mr-2 inline h-4 w-4" />Add Category
           </Button>
         }
@@ -418,31 +443,69 @@ export function CategoriesPage() {
             c.description || "Curated storefront collection",
             <StatusPill value="Active" />,
             <div className="flex gap-2">
-              <Button variant="danger" onClick={() => setDeletingCategory(c)}><Trash2 className="h-4 w-4" /></Button>
-            </div>
+              <Button variant="secondary" onClick={() => handleOpenEdit(c)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="danger" onClick={() => setDeletingCategory(c)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>,
           ])}
         />
       )}
 
-      {showAddModal && (
+      {(showAddModal || editingCategory) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11] text-slate-900 dark:text-white">
             <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/10">
-              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">Add New Category</h3>
-              <button onClick={() => setShowAddModal(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-white"><X className="h-5 w-5" /></button>
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                {editingCategory ? "Edit Category" : "Add New Category"}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowAddModal(false);
+                  resetCategoryForm();
+                }}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <form onSubmit={handleAddCategory} className="space-y-4">
+            <form onSubmit={handleSaveCategory} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Category Name</label>
-                <input required value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" placeholder="e.g. Succulents" />
+                <input
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white"
+                  placeholder="e.g. Succulents"
+                />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Description</label>
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white" rows={3} placeholder="Category details..." />
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white"
+                  rows={3}
+                  placeholder="Category details..."
+                />
               </div>
               <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/10">
-                <Button type="button" variant="secondary" onClick={() => setShowAddModal(false)}>Cancel</Button>
-                <Button type="submit">Save Category</Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setShowAddModal(false);
+                    resetCategoryForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  {editingCategory ? "Update Category" : "Save Category"}
+                </Button>
               </div>
             </form>
           </div>
@@ -469,12 +532,34 @@ export function CategoriesPage() {
 
 export function InventoryPage() {
   const [plants, setPlants] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingPlant, setEditingPlant] = useState<any | null>(null);
+  const [deletingPlant, setDeletingPlant] = useState<any | null>(null);
 
-  const loadPlants = async () => {
+  // Form state for plant edit modal inside Inventory page
+  const [name, setName] = useState("");
+  const [scientificName, setScientificName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState(299);
+  const [discountPrice, setDiscountPrice] = useState<number | "">("");
+  const [stockQuantity, setStockQuantity] = useState(10);
+  const [type, setType] = useState<"indoor" | "outdoor">("indoor");
+  const [sunlight, setSunlight] = useState("Bright indirect");
+  const [watering, setWatering] = useState("Water weekly");
+  const [potSize, setPotSize] = useState("6 inch");
+  const [imageUrl, setImageUrl] = useState("");
+
+  const loadData = async () => {
+    setLoading(true);
     try {
-      const res = await apiRequest<{ data: any[] }>("/demo/plants");
-      setPlants(res.data);
+      const [plantsRes, catsRes] = await Promise.all([
+        apiRequest<{ data: any[] }>("/demo/plants"),
+        apiRequest<{ data: any[] }>("/demo/categories"),
+      ]);
+      setPlants(plantsRes.data);
+      setCategories(catsRes.data);
     } catch (e) {
       console.error(e);
     } finally {
@@ -483,12 +568,107 @@ export function InventoryPage() {
   };
 
   useEffect(() => {
-    loadPlants();
+    loadData();
   }, []);
+
+  const handleAdjustStock = async (id: string, change: number) => {
+    try {
+      await apiRequest(`/demo/plants/${id}/stock`, {
+        method: "PATCH",
+        body: JSON.stringify({ change }),
+      });
+      setPlants((prev) =>
+        prev.map((p) => {
+          if (p.id === id) {
+            const newStock = Math.max(0, p.stock_quantity + change);
+            return {
+              ...p,
+              stock_quantity: newStock,
+              status: newStock > 0 ? "available" : "out_of_stock",
+            };
+          }
+          return p;
+        })
+      );
+    } catch (e) {
+      alert("Failed to update stock");
+    }
+  };
+
+  function formatImageUrl(url: string): string {
+    if (!url) return url;
+    const trimmed = url.trim();
+    const match = trimmed.match(/\/file\/d\/([^\/\?]+)/) || trimmed.match(/[?&]id=([^&]+)/) || trimmed.match(/\/d\/([^\/\?]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+    }
+    return trimmed;
+  }
+
+  const handleOpenEdit = (plant: any) => {
+    setEditingPlant(plant);
+    setName(plant.name || "");
+    setScientificName(plant.scientific_name || "");
+    setCategoryId(plant.category_id || (categories[0]?.id || ""));
+    setDescription(plant.description || "");
+    setPrice(Number(plant.price));
+    setDiscountPrice(plant.discount_price ? Number(plant.discount_price) : "");
+    setStockQuantity(plant.stock_quantity);
+    setType(plant.type || "indoor");
+    setSunlight(plant.sunlight_requirement || "Bright indirect");
+    setWatering(plant.watering_frequency || "Water weekly");
+    setPotSize(plant.pot_size || "6 inch");
+    setImageUrl(plant.image_url || "");
+  };
+
+  const handleEditPlant = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPlant) return;
+    try {
+      await apiRequest(`/demo/plants/${editingPlant.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          name,
+          scientificName: scientificName || null,
+          categoryId,
+          description,
+          price,
+          discountPrice: discountPrice === "" ? null : Number(discountPrice),
+          stockQuantity,
+          type,
+          sunlightRequirement: sunlight,
+          wateringFrequency: watering,
+          potSize,
+          imageUrl: formatImageUrl(imageUrl) || null,
+        }),
+      });
+      setEditingPlant(null);
+      loadData();
+    } catch (e) {
+      alert("Failed to update plant details");
+    }
+  };
+
+  const confirmDeletePlant = async () => {
+    if (!deletingPlant) return;
+    const id = deletingPlant.id;
+    try {
+      await apiRequest(`/demo/plants/${id}`, { method: "DELETE" });
+      setPlants((prev) => prev.filter((p) => p.id !== id));
+      setDeletingPlant(null);
+    } catch (e: any) {
+      console.error("Failed to delete plant:", e);
+      alert(e?.message || "Failed to delete plant");
+      setDeletingPlant(null);
+    }
+  };
 
   return (
     <>
-      <PageHeader title="Inventory Monitor" description="Monitor real stock counts, low stock alerts, and catalog availability." />
+      <PageHeader
+        title="Inventory Monitor"
+        description="Monitor real stock counts, low stock alerts, catalog availability, and perform stock adjustments."
+      />
       {loading ? (
         <div className="py-10 flex flex-col items-center justify-center gap-3">
           <Leaf className="h-10 w-10 animate-bounce text-leaf-500" />
@@ -496,14 +676,156 @@ export function InventoryPage() {
         </div>
       ) : (
         <DataTable
-          columns={["Plant", "Current Stock", "Alert Status", "Last Update"]}
+          columns={["Plant", "Category", "Current Stock", "Alert Status", "Last Update", "Actions"]}
           rows={plants.map((plant) => [
-            plant.name,
-            plant.stock_quantity,
-            <StatusPill value={plant.stock_quantity === 0 ? "Out of Stock" : plant.stock_quantity <= 5 ? "Pending" : "Available"} />,
-            new Date(plant.updated_at).toLocaleTimeString()
+            <div className="flex items-center gap-3">
+              {plant.image_url && <img src={plant.image_url} alt="" className="h-9 w-9 rounded-lg object-cover" />}
+              <div>
+                <strong className="text-slate-900 dark:text-white">{plant.name}</strong>
+                {plant.scientific_name && <p className="text-xs italic text-slate-400">{plant.scientific_name}</p>}
+              </div>
+            </div>,
+            plant.category_name || "Other Greens",
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleAdjustStock(plant.id, -1)}
+                className="h-7 w-7 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 flex items-center justify-center font-bold text-sm select-none text-slate-800 dark:text-white transition-colors"
+                title="Decrease stock"
+              >
+                -
+              </button>
+              <span className="w-8 text-center font-bold">{plant.stock_quantity}</span>
+              <button
+                type="button"
+                onClick={() => handleAdjustStock(plant.id, 1)}
+                className="h-7 w-7 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 flex items-center justify-center font-bold text-sm select-none text-slate-800 dark:text-white transition-colors"
+                title="Increase stock"
+              >
+                +
+              </button>
+            </div>,
+            <StatusPill value={plant.stock_quantity === 0 ? "Out of Stock" : plant.stock_quantity <= 5 ? "Low Stock" : "Available"} />,
+            new Date(plant.updated_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => handleOpenEdit(plant)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="danger" onClick={() => setDeletingPlant(plant)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>,
           ])}
         />
+      )}
+
+      {editingPlant && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11] text-slate-900 dark:text-white overflow-y-auto max-h-[90vh]">
+            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/10">
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">Edit Plant Details</h3>
+              <button
+                onClick={() => setEditingPlant(null)}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleEditPlant} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Plant Name</label>
+                <input
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Scientific Name</label>
+                <input
+                  value={scientificName}
+                  onChange={(e) => setScientificName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Category</label>
+                <select
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white"
+                >
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id} className="bg-white text-slate-900 dark:bg-[#0c1a11] dark:text-white">
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Description</label>
+                <textarea
+                  required
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white"
+                  rows={3}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Price (Rs.)</label>
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={price}
+                    onChange={(e) => setPrice(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 dark:text-slate-300">Stock Quantity</label>
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    value={stockQuantity}
+                    onChange={(e) => setStockQuantity(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-leaf-500 dark:border-white/15 dark:bg-[#06110a] dark:text-white"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/10">
+                <Button type="button" variant="secondary" onClick={() => setEditingPlant(null)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Update Plant</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {deletingPlant && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/15 dark:bg-[#0c1a11] text-slate-900 dark:text-white">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Delete Plant</h3>
+            <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+              Are you sure you want to delete <strong className="text-slate-900 dark:text-white">{deletingPlant.name}</strong>? This action cannot be undone.
+            </p>
+            <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-3 dark:border-white/10">
+              <Button variant="secondary" onClick={() => setDeletingPlant(null)}>
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={confirmDeletePlant}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

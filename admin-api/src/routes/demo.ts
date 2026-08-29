@@ -712,6 +712,17 @@ router.delete("/categories/:id", asyncHandler(async (req, res) => {
   res.json({ success: true });
 }));
 
+// 12. PUT /api/demo/categories/:id (Update category)
+router.put("/categories/:id", asyncHandler(async (req, res) => {
+  const { name, description } = req.body;
+  const result = await query(
+    "update categories set name = coalesce($2, name), description = coalesce($3, description), updated_at = now() where id = $1 returning *",
+    [req.params.id, name || null, description || null]
+  );
+  res.json({ data: result.rows[0] });
+}));
+
+
 // 13. GET /api/demo/dashboard (Real live overview stats)
 router.get("/dashboard", asyncHandler(async (_req, res) => {
   const [stats, recentOrders, revenueTrend] = await Promise.all([
