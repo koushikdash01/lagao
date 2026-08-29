@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { apiRequest } from "../lib/api";
+import { Lock, Mail, Sprout } from "lucide-react";
 
 export function Login({ onLogin }: { onLogin: () => void }) {
   const [loading, setLoading] = useState(false);
@@ -26,47 +27,76 @@ export function Login({ onLogin }: { onLogin: () => void }) {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-[#f5f7f3] px-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-md rounded-lg bg-white p-8 shadow-soft">
-        <div className="mb-8 flex items-center gap-3">
-          <img src="/logo.png" alt="Lagao.shop" className="h-16 w-auto transition-all duration-300 dark:brightness-110 dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.85)]" />
-          <div>
-            <h1 className="text-2xl font-bold text-leaf-900">Lagao Admin</h1>
-            <p className="text-sm text-slate-500">Secure admin login</p>
+    <main className="grid min-h-screen place-items-center bg-[#f6f8f5] px-4 dark:bg-[#06110a] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
+      <div className="w-full max-w-md">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-3xl border border-slate-200/90 bg-white p-8 shadow-xl dark:border-white/10 dark:bg-[#0c1a11]"
+        >
+          <div className="mb-8 flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-600 text-white shadow-md shadow-leaf-600/30">
+              <Sprout className="h-7 w-7" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                Lagao Admin
+              </h1>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                Nursery & Store Management Portal
+              </p>
+            </div>
           </div>
-        </div>
 
-        {error && (
-          <div className="mb-4 rounded-lg bg-red-50 p-4 text-sm font-semibold text-red-700">
-            ⚠️ {error}
+          {error && (
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-bold text-red-700 dark:border-red-900/60 dark:bg-red-950/60 dark:text-red-300">
+              ⚠️ {error}
+            </div>
+          )}
+
+          <div className="mb-4">
+            <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-semibold text-slate-900 outline-none transition-all focus:border-leaf-500 focus:bg-white focus:ring-2 focus:ring-leaf-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-[#06110a] dark:focus:border-leaf-400"
+                type="email"
+                required
+                placeholder="admin@lagao.shop"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
           </div>
-        )}
 
-        <label className="mb-2 block text-sm font-bold">Email</label>
-        <input 
-          className="mb-4 w-full rounded-lg border border-slate-200 px-3 py-3 outline-none focus:border-leaf-500" 
-          type="email" 
-          required 
-          placeholder="admin@lagao.shop" 
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
+          <div className="mb-6">
+            <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">
+              Password
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-semibold text-slate-900 outline-none transition-all focus:border-leaf-500 focus:bg-white focus:ring-2 focus:ring-leaf-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-[#06110a] dark:focus:border-leaf-400"
+                type="password"
+                required
+                minLength={8}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
 
-        <label className="mb-2 block text-sm font-bold">Password</label>
-        <input 
-          className="mb-6 w-full rounded-lg border border-slate-200 px-3 py-3 outline-none focus:border-leaf-500" 
-          type="password" 
-          required 
-          minLength={8} 
-          placeholder="At least 8 characters" 
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-
-        <button className="w-full rounded-lg bg-leaf-500 px-4 py-3 font-bold text-white hover:bg-leaf-700" disabled={loading}>
-          {loading ? "Signing in..." : "Sign In"}
-        </button>
-      </form>
+          <button
+            className="w-full rounded-xl bg-leaf-600 py-3 text-sm font-extrabold text-white shadow-lg shadow-leaf-600/25 transition-all hover:bg-leaf-700 active:scale-[0.98] disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign In to Admin Portal"}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }
+
